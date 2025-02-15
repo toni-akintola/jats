@@ -7,6 +7,7 @@ import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
+import StaggeredDropdown from "@/components/ui/dropdown";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
@@ -52,92 +53,97 @@ export function SentimentDashboard() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="space-y-4">
-        <div className="flex gap-4">
-          <Input
-            placeholder="Enter company name..."
-            value={company}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCompany(e.target.value)
-            }
-            disabled={loading}
-          />
-          <Button
-            onClick={handleAnalyze}
-            disabled={loading}
-            className="min-w-[100px]"
-          >
-            {loading ? <LoadingSpinner /> : "Analyze"}
-          </Button>
-        </div>
-
-        {loading && (
-          <Card className="p-8">
-            <div className="flex flex-col items-center gap-4">
-              <LoadingSpinner />
-              <p className="text-sm text-muted-foreground">
-                Analyzing sentiment for {company}...
-              </p>
-            </div>
-          </Card>
-        )}
-
-        {result && (
-          <div className="grid gap-4 md:grid-cols-2">
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">Sentiment Score</h3>
-              <p className="text-2xl font-bold">{result.score.toFixed(2)}</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Based on {result.mentions} mentions
-              </p>
-            </Card>
-
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">Top Keywords</h3>
-              <div className="flex gap-2 flex-wrap">
-                {result.topKeywords.map((keyword) => (
-                  <span
-                    key={keyword}
-                    className="bg-secondary px-2 py-1 rounded-full text-sm"
-                  >
-                    {keyword}
-                  </span>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-4 md:col-span-2">
-              <h3 className="font-semibold mb-2">Recent Mentions</h3>
-              <div className="space-y-2">
-                {result.recentMentions.map((mention, i) => (
-                  <div key={i} className="p-2 rounded bg-secondary">
-                    <Link href={mention.url || ""} target="_blank">
-                      <p className="text-sm">{mention.text}</p>
-
-                      <div className="flex gap-2 items-center">
-                        <span
-                          className={`text-xs ${
-                            mention.sentiment > 0
-                              ? "text-green-500"
-                              : mention.sentiment < 0
-                                ? "text-red-500"
-                                : "text-gray-500"
-                          }`}
-                        >
-                          Sentiment: {mention.sentiment.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          • {mention.source}
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            </Card>
+    <div>
+      <div style={{ position: 'absolute', top: 10, left: 20 }}>
+        <StaggeredDropdown />
+      </div>
+      <div className="max-w-4xl mx-auto p-6">
+        <div className="space-y-4">
+          <div className="flex gap-4">
+            <Input
+              placeholder="Enter company name..."
+              value={company}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setCompany(e.target.value)
+              }
+              disabled={loading}
+            />
+            <Button
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="min-w-[100px]"
+            >
+              {loading ? <LoadingSpinner /> : "Analyze"}
+            </Button>
           </div>
-        )}
+
+          {loading && (
+            <Card className="p-8">
+              <div className="flex flex-col items-center gap-4">
+                <LoadingSpinner />
+                <p className="text-sm text-muted-foreground">
+                  Analyzing sentiment for {company}...
+                </p>
+              </div>
+            </Card>
+          )}
+
+          {result && (
+            <div className="grid gap-4 md:grid-cols-2">
+              <Card className="p-4">
+                <h3 className="font-semibold mb-2">Sentiment Score</h3>
+                <p className="text-2xl font-bold">{result.score.toFixed(2)}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Based on {result.mentions} mentions
+                </p>
+              </Card>
+
+              <Card className="p-4">
+                <h3 className="font-semibold mb-2">Top Keywords</h3>
+                <div className="flex gap-2 flex-wrap">
+                  {result.topKeywords.map((keyword) => (
+                    <span
+                      key={keyword}
+                      className="bg-secondary px-2 py-1 rounded-full text-sm"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-4 md:col-span-2">
+                <h3 className="font-semibold mb-2">Recent Mentions</h3>
+                <div className="space-y-2">
+                  {result.recentMentions.map((mention, i) => (
+                    <div key={i} className="p-2 rounded bg-secondary">
+                      <Link href={mention.url || ""} target="_blank">
+                        <p className="text-sm">{mention.text}</p>
+
+                        <div className="flex gap-2 items-center">
+                          <span
+                            className={`text-xs ${
+                              mention.sentiment > 0
+                                ? "text-green-500"
+                                : mention.sentiment < 0
+                                  ? "text-red-500"
+                                  : "text-gray-500"
+                            }`}
+                          >
+                            Sentiment: {mention.sentiment.toFixed(2)}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            • {mention.source}
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
