@@ -1,33 +1,40 @@
-import {
-  AgentSource,
-  SearchState,
-  AgentMessage,
-  SourceData,
-} from "./agent-types";
+import { SearchState, AgentMessage, SourceData } from "./agent-types";
+import { HackerNewsAgent } from "@/services/sources/hackernews-agent";
 
 const SUPPORTED_SOURCES = ["hacker news", "twitter", "reddit"] as const;
 
-const mockSourceData: SourceData = {
-  mentions: [],
-  sentiment: 0,
+// Helper to generate a random date within the last month
+const getRandomDate = () => {
+  const now = new Date();
+  const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+  return new Date(
+    oneMonthAgo.getTime() +
+      Math.random() * (now.getTime() - oneMonthAgo.getTime()),
+  );
 };
 
-const createMockMentions = (source: string) => ({
-  mentions: Array(5)
+const createMockMentions = (source: string): SourceData => {
+  const dates = Array(5)
     .fill(null)
-    .map((_, i) => ({
+    .map(() => getRandomDate())
+    .sort((a, b) => b.getTime() - a.getTime());
+
+  return {
+    mentions: dates.map((date, i) => ({
       text: `This is a sample ${source} mention ${i + 1}. The company seems to be doing ${
         Math.random() > 0.5 ? "well" : "poorly"
       } according to recent reports.`,
       sentiment: Number((Math.random() * 2 - 1).toFixed(2)),
       url: "#",
       source,
-      date: new Date(
-        Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000,
-      ).toISOString(),
+      date: date.toISOString(),
     })),
-  sentiment: Number((Math.random() * 2 - 1).toFixed(2)),
-});
+    sentiment: Number((Math.random() * 2 - 1).toFixed(2)),
+  };
+};
+
+// Create agents
+const hackerNewsAgent = new HackerNewsAgent();
 
 export class AgentCoordinator {
   private state: SearchState;
@@ -72,17 +79,12 @@ export class AgentCoordinator {
       ),
     });
 
-    // Simulate different sources completing at different times with different outcomes
-    setTimeout(
-      () =>
-        this.handleMessage({
-          type: "source_complete",
-          source: "hacker news",
-          data: createMockMentions("hacker news"),
-        }),
-      2000,
-    );
+    // Start HackerNews search
+    hackerNewsAgent
+      .search(company)
+      .then((message) => this.handleMessage(message));
 
+    // Keep the mock data for other sources for now
     setTimeout(
       () =>
         this.handleMessage({

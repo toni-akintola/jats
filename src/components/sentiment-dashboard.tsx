@@ -39,17 +39,6 @@ export function SentimentDashboard() {
 
     try {
       await agentCoordinator.startSearch(company);
-
-      // Keep the API call for now, but we'll move this logic to the agents later
-      const response = await fetch("/api/sentiment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company }),
-      });
-
-      if (!response.ok) throw new Error("Failed to analyze sentiment");
-      const data = await response.json();
-      setResult(data);
     } catch (error) {
       console.error(error);
       toast({
@@ -59,7 +48,19 @@ export function SentimentDashboard() {
       });
     }
   };
-  console.log("result is", result?.sentimentOverTime);
+
+  useEffect(() => {
+    if (searchState.status === "completed") {
+      const aggregatedData = getAggregatedMentions(searchState.sources);
+      setResult({
+        score: aggregatedData.score,
+        mentions: aggregatedData.mentionCount,
+        topKeywords: aggregatedData.topKeywords,
+        recentMentions: aggregatedData.mentions.slice(0, 5),
+        sentimentOverTime: aggregatedData.sentimentOverTime,
+      });
+    }
+  }, [searchState]);
 
   const getLoadingMessages = (sources: Record<string, AgentSource>) => {
     const messages: string[] = [];
@@ -75,6 +76,70 @@ export function SentimentDashboard() {
     });
 
     return messages;
+  };
+
+  const getAggregatedMentions = (sources: Record<string, AgentSource>) => {
+    const allMentions = Object.values(sources)
+      .filter(
+        (source) => source.status === "completed" && source.data?.mentions,
+      )
+      .flatMap((source) => source.data!.mentions);
+
+    const sortedMentions = [...allMentions].sort(
+      (a, b) => b.sentiment - a.sentiment,
+    );
+
+    // Calculate average sentiment
+    const averageSentiment = allMentions.length
+      ? Number(
+          (
+            allMentions.reduce((sum, mention) => sum + mention.sentiment, 0) /
+            allMentions.length
+          ).toFixed(2),
+        )
+      : 0;
+
+    // Get dates for sentiment over time
+    const datePoints = [
+      ...new Set(allMentions.map((m) => m.date.split("T")[0])),
+    ].sort();
+    const sentimentOverTime = datePoints.map((date) => {
+      const dayMentions = allMentions.filter((m) => m.date.startsWith(date));
+      return {
+        date,
+        sentiment: Number(
+          (
+            dayMentions.reduce((sum, m) => sum + m.sentiment, 0) /
+            dayMentions.length
+          ).toFixed(2),
+        ),
+      };
+    });
+
+    // Extract common words for keywords
+    const words = allMentions
+      .flatMap((mention) => mention.text.toLowerCase().split(/\W+/))
+      .filter((word) => word.length > 3)
+      .reduce(
+        (acc, word) => ({
+          ...acc,
+          [word]: (acc[word] || 0) + 1,
+        }),
+        {} as Record<string, number>,
+      );
+
+    const topKeywords = Object.entries(words)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 5)
+      .map(([word]) => word);
+
+    return {
+      mentions: sortedMentions,
+      score: averageSentiment,
+      mentionCount: allMentions.length,
+      topKeywords,
+      sentimentOverTime,
+    };
   };
 
   const SourceMentionsCard = ({
@@ -189,8 +254,40 @@ export function SentimentDashboard() {
             </Card>
 
             <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
-              <h3 className="font-semibold mb-2 text-white">recent mentions</h3>
+              <h3 className="font-semibold mb-2 text-white">top mentions</h3>
               <div className="space-y-2">
+                {getAggregatedMentions(searchState.sources)
+                  .mentions.slice(0, 5)
+                  .map((mention, idx: number) => (
+                    <div key={idx} className="p-3 rounded bg-white/10">
+                      <Link href={mention.url || "#"} target="_blank">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm text-white capitalize">
+                            from {mention.source}
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              mention.sentiment > 0
+                                ? "text-green-400"
+                                : mention.sentiment < 0
+                                  ? "text-red-400"
+                                  : "text-white/60"
+                            }`}
+                          >
+                            sentiment: {mention.sentiment.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-white/90 line-clamp-2">
+                          {mention.text}
+                        </p>
+                        <div className="flex gap-2 mt-2">
+                          <span className="text-xs text-white/60">
+                            {new Date(mention.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </Link>
+                    </div>
+                  ))}
                 {Object.entries(searchState.sources).map(
                   ([source, sourceData]) => (
                     <div key={source} className="p-3 rounded bg-white/10">
@@ -228,12 +325,16 @@ export function SentimentDashboard() {
                           </svg>
                         )}
                       </div>
-                      <Skeleton className="h-4 w-full bg-white/20 mb-2" />
-                      <Skeleton className="h-4 w-3/4 bg-white/20" />
-                      <div className="flex gap-2 mt-2">
-                        <Skeleton className="h-3 w-16 bg-white/20" />
-                        <Skeleton className="h-3 w-16 bg-white/20" />
-                      </div>
+                      {sourceData.status === "running" && (
+                        <>
+                          <Skeleton className="h-4 w-full bg-white/20 mb-2" />
+                          <Skeleton className="h-4 w-3/4 bg-white/20" />
+                          <div className="flex gap-2 mt-2">
+                            <Skeleton className="h-3 w-16 bg-white/20" />
+                            <Skeleton className="h-3 w-16 bg-white/20" />
+                          </div>
+                        </>
+                      )}
                     </div>
                   ),
                 )}
