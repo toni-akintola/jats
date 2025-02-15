@@ -57,7 +57,7 @@ export class SentimentAnalyzer {
       });
     }
 
-    const result = {
+    const result: SentimentResult = {
       score: avgScore,
       mentions: flattenedTexts.length,
       sentimentOverTime: sentimentOverTime.sort(
