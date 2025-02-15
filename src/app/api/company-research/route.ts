@@ -3,6 +3,10 @@ import { ChatMistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SystemMessage } from "@langchain/core/messages";
+import {
+  convertLangChainMessageToVercelMessage,
+  parseAgentResult,
+} from "@/lib/utils";
 
 // Define module interfaces
 interface ResearchModule {
@@ -59,12 +63,18 @@ class FinancialModule implements ResearchModule {
         },
       ],
     });
-    console.log(result);
-    return {
-      stockPrice: null, // Placeholder
-      fundingRounds: null, // Placeholder
-      secFilings: null, // Placeholder
-    };
+
+    // Use the new parsing utility
+    const parsedResult = parseAgentResult(result);
+
+    // If parsing fails, return default values
+    return (
+      parsedResult || {
+        stockPrice: null,
+        fundingRounds: null,
+        secFilings: null,
+      }
+    );
   }
 }
 
@@ -115,12 +125,15 @@ class MarketModule implements ResearchModule {
         },
       ],
     });
-    console.log(result);
-    return {
-      newsSentiment: null, // Placeholder
-      socialSentiment: null, // Placeholder
-      competitorComparison: null, // Placeholder
-    };
+    const parsedResult = parseAgentResult(result);
+    // If parsing fails, return default values
+    return (
+      parsedResult || {
+        newsSentiment: null,
+        socialSentiment: null,
+        competitorComparison: null,
+      }
+    );
   }
 }
 
@@ -171,12 +184,15 @@ class PeopleModule implements ResearchModule {
         },
       ],
     });
-    console.log(result);
-    return {
-      leadershipChanges: null, // Placeholder
-      jobPostings: null, // Placeholder
-      employeeSentiment: null, // Placeholder
-    };
+    const parsedResult = parseAgentResult(result);
+    // If parsing fails, return default values
+    return (
+      parsedResult || {
+        leadershipChanges: null, // Placeholder
+        jobPostings: null, // Placeholder
+        employeeSentiment: null, // Placeholder
+      }
+    );
   }
 }
 
@@ -227,12 +243,15 @@ class ProductModule implements ResearchModule {
         },
       ],
     });
-    console.log(result);
-    return {
-      githubActivity: null, // Placeholder
-      apiChanges: null, // Placeholder
-      productInnovation: null, // Placeholder
-    };
+    const parsedResult = parseAgentResult(result);
+    // If parsing fails, return default values
+    return (
+      parsedResult || {
+        githubActivity: null, // Placeholder
+        apiChanges: null, // Placeholder
+        productInnovation: null, // Placeholder
+      }
+    );
   }
 }
 
