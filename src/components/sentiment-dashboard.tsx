@@ -21,7 +21,15 @@ export function SentimentDashboard() {
   const [company, setCompany] = useState("");
   const [result, setResult] = useState<SentimentResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadingSources, setLoadingSources] = useState<{
+    [key: string]: boolean;
+  }>({
+    "hacker news": false,
+    twitter: false,
+    reddit: false,
+  });
   const { toast } = useToast();
+
   const handleAnalyze = async () => {
     if (!company.trim()) {
       toast({
@@ -34,18 +42,34 @@ export function SentimentDashboard() {
 
     try {
       setLoading(true);
+      // Simulate different sources loading
+      setLoadingSources({
+        "hacker news": true,
+        twitter: true,
+        reddit: true,
+      });
+
       const response = await fetch("/api/sentiment", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to analyze sentiment");
-      }
+      // Simulate sources completing at different times
+      setTimeout(
+        () => setLoadingSources((prev) => ({ ...prev, "hacker news": false })),
+        1000,
+      );
+      setTimeout(
+        () => setLoadingSources((prev) => ({ ...prev, twitter: false })),
+        2000,
+      );
+      setTimeout(
+        () => setLoadingSources((prev) => ({ ...prev, reddit: false })),
+        3000,
+      );
 
+      if (!response.ok) throw new Error("Failed to analyze sentiment");
       const data = await response.json();
       setResult(data);
     } catch (error) {
@@ -66,50 +90,81 @@ export function SentimentDashboard() {
       <div className="space-y-4">
         <div className="flex gap-4">
           <Input
-            placeholder="Enter company name..."
+            placeholder="enter company name..."
             value={company}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setCompany(e.target.value)
-            }
+            onChange={(e) => setCompany(e.target.value)}
             disabled={loading}
+            className="bg-black/20 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-white/20"
           />
           <Button
             onClick={handleAnalyze}
             disabled={loading}
-            className="min-w-[100px]"
+            className="min-w-[100px] bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
           >
-            {loading ? <LoadingSpinner /> : "Analyze"}
+            {loading ? <LoadingSpinner /> : "analyze"}
           </Button>
         </div>
 
         {loading && (
-          <Card className="p-8">
-            <div className="flex flex-col items-center gap-4">
-              <LoadingSpinner />
-              <p className="text-sm text-muted-foreground">
-                Analyzing sentiment for {company}...
-              </p>
+          <Card className="p-8 bg-white/10 backdrop-blur-md border-white/10">
+            <div className="space-y-6">
+              <div className="flex flex-col items-center gap-4">
+                <LoadingSpinner className="text-white" />
+                <p className="text-sm text-white/80">
+                  analyzing sentiment for {company}...
+                </p>
+              </div>
+
+              <div className="grid gap-3">
+                {Object.entries(loadingSources).map(([source, isLoading]) => (
+                  <div
+                    key={source}
+                    className="flex items-center justify-between p-3 rounded-lg bg-white/10"
+                  >
+                    <span className="text-sm text-white">{source}</span>
+                    {isLoading ? (
+                      <LoadingSpinner className="w-4 h-4 text-white" />
+                    ) : (
+                      <svg
+                        className="w-4 h-4 text-green-400"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </Card>
         )}
 
         {result && (
           <div className="grid gap-4 md:grid-cols-2">
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">Sentiment Score</h3>
-              <p className="text-2xl font-bold">{result.score.toFixed(2)}</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Based on {result.mentions} mentions
+            <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">sentiment score</h3>
+              <p className="text-2xl font-bold text-white">
+                {result.score.toFixed(2)}
+              </p>
+              <p className="text-sm text-white/60 mt-2">
+                based on {result.mentions} mentions
               </p>
             </Card>
 
-            <Card className="p-4">
-              <h3 className="font-semibold mb-2">Top Keywords</h3>
+            <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">top keywords</h3>
               <div className="flex gap-2 flex-wrap">
                 {result.topKeywords.map((keyword) => (
                   <span
                     key={keyword}
-                    className="bg-secondary px-2 py-1 rounded-full text-sm"
+                    className="bg-white/20 text-white px-2 py-1 rounded-full text-sm"
                   >
                     {keyword}
                   </span>
@@ -117,32 +172,32 @@ export function SentimentDashboard() {
               </div>
             </Card>
 
-            <Card className="p-4 md:col-span-2">
-              <h3 className="font-semibold mb-2">Recent Mentions</h3>
+            <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">recent mentions</h3>
               <div className="space-y-2">
                 {result.recentMentions.map((mention, i) => (
-                  <div key={i} className="p-2 rounded bg-secondary">
+                  <div key={i} className="p-2 rounded bg-white/10">
                     <Link href={mention.url || ""} target="_blank">
-                      <p className="text-sm">{mention.text}</p>
-
-                      <div className="flex gap-2 items-center">
+                      <p className="text-sm text-white/90">{mention.text}</p>
+                      <div className="flex gap-2 items-center mt-2">
                         <span
                           className={`text-xs ${
                             mention.sentiment > 0
-                              ? "text-green-500"
+                              ? "text-green-400"
                               : mention.sentiment < 0
-                                ? "text-red-500"
-                                : "text-gray-500"
+                                ? "text-red-400"
+                                : "text-white/60"
                           }`}
                         >
-                          Sentiment: {mention.sentiment.toFixed(2)}
+                          sentiment: {mention.sentiment.toFixed(2)}
                         </span>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-xs text-white/60">
                           • {mention.source}
                         </span>
 
                         <span className="text-xs text-muted-foreground">
-                          {mention.date} </span>
+                          {mention.date}{" "}
+                        </span>
                       </div>
                     </Link>
                   </div>
@@ -155,8 +210,9 @@ export function SentimentDashboard() {
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    data={[...(result.sentimentOverTime || [])].sort((a, b) => 
-                      new Date(a.date).getTime() - new Date(b.date).getTime()
+                    data={[...(result.sentimentOverTime || [])].sort(
+                      (a, b) =>
+                        new Date(a.date).getTime() - new Date(b.date).getTime(),
                     )}
                     margin={{
                       top: 5,
@@ -168,12 +224,19 @@ export function SentimentDashboard() {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
                       dataKey="date"
-                      tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                      tickFormatter={(date) =>
+                        new Date(date).toLocaleDateString()
+                      }
                     />
                     <YAxis domain={[-1, 1]} />
                     <Tooltip
-                      labelFormatter={(date) => new Date(date).toLocaleDateString()}
-                      formatter={(value: number) => [value.toFixed(2), "Sentiment"]}
+                      labelFormatter={(date) =>
+                        new Date(date).toLocaleDateString()
+                      }
+                      formatter={(value: number) => [
+                        value.toFixed(2),
+                        "Sentiment",
+                      ]}
                     />
                     <Line
                       type="monotone"
