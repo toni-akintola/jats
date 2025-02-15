@@ -1,10 +1,11 @@
 export interface DataSource {
   fetchData(query: string): Promise<
-    {
+    Array<{
       text: string;
       source: string;
       url?: string;
-    }[]
+      date?: string;
+    }>
   >;
 }
 
