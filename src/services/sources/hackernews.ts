@@ -1,5 +1,6 @@
 import { DataSource } from "@/services/types";
 import { HackerNewsHit } from "@/services/types/hackernews";
+import { SentimentSource, SentimentResult, Mention } from "../types";
 
 export class HackerNewsSource implements DataSource {
   private BASE_URL = "https://hn.algolia.com/api/v1";
@@ -41,3 +42,30 @@ export class HackerNewsSource implements DataSource {
     }
   }
 }
+
+export const hackernewsSource: SentimentSource = {
+  name: "Hacker News",
+  async fetchSentiment(company: string): Promise<SentimentResult> {
+    const response = await fetch("/api/hackernews-sentiment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ company }),
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch Hacker News sentiment");
+
+    const data = await response.json();
+
+    return {
+      mentions: data.recentMentions.map((mention: any) => ({
+        text: mention.text,
+        sentiment: mention.sentiment,
+        source: "Hacker News",
+        date: mention.date,
+        url: mention.url,
+      })),
+      score: data.score,
+      keywords: data.topKeywords,
+    };
+  },
+};

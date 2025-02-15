@@ -11,6 +11,7 @@ import {
   StaggeredDropdownProps,
 } from "@/components/ui/dropdown";
 import { FiHome, FiUser } from "react-icons/fi";
+import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
   company: string;
@@ -49,20 +50,14 @@ export function SentimentDashboard() {
         [company]: true,
       }));
 
-      const response = await fetch("/api/sentiment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company }),
-      });
-
-      if (!response.ok) throw new Error(`Failed to analyze ${company}`);
-      const data = await response.json();
+      const data = await analyzeSentiment(company);
 
       setResults((prev) => ({
         ...prev,
         [company]: { ...data, company },
       }));
     } catch (error) {
+      console.error(error);
       toast({
         title: `Error analyzing ${company}`,
         description: "Failed to analyze sentiment. Please try again.",

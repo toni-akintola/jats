@@ -14,16 +14,21 @@ export interface SentimentTimePoint {
   sentiment: number;
 }
 
+export interface Mention {
+  text: string;
+  sentiment: number;
+  source: string;
+  date: string;
+  url?: string;
+}
+
 export interface SentimentResult {
-  score: number; // -1 to 1
-  mentions: number;
-  topKeywords: string[];
-  recentMentions: {
-    text: string;
-    source: string;
-    url?: string;
-    sentiment: number;
-    date?: string;
-  }[];
-  sentimentOverTime: SentimentTimePoint[];
+  mentions: Mention[];
+  score: number;
+  keywords: string[];
+}
+
+export interface SentimentSource {
+  name: string;
+  fetchSentiment: (company: string) => Promise<SentimentResult>;
 }
