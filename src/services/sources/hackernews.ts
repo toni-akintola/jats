@@ -6,11 +6,12 @@ export class HackerNewsSource implements DataSource {
 
   async fetchData(
     companyName: string,
-  ): Promise<{ text: string; source: string; url?: string }[]> {
+    maxHits: number = 100,
+  ): Promise<{ text: string; source: string; url?: string; date?: string }[]> {
     try {
       // Search HN stories and comments
       const response = await fetch(
-        `${this.BASE_URL}/search?query="${companyName}"&tags=(story,comment)`,
+        `${this.BASE_URL}/search?query="${companyName}"&tags=(story,comment)&hitsPerPage=${maxHits}`,
       );
       const data = await response.json();
 
@@ -19,11 +20,13 @@ export class HackerNewsSource implements DataSource {
         .map((hit: HackerNewsHit) => {
           const text = hit.story_text || hit.title || "";
           const url = hit.url; // story_url for comments, url for stories
+          const date = hit.created_at;
 
           return {
             text,
             source: "Hacker News",
             url: url || `https://news.ycombinator.com/item?id=${hit.objectID}`,
+            date,
           };
         })
         .filter((item: { text: string }) => item.text);

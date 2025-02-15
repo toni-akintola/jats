@@ -14,11 +14,11 @@ const StaggeredDropDown = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="p-8 pb-56 flex items-center justify-center bg-white">
+    <div className="p-8 pb-56 flex items-center justify-center">
       <motion.div animate={open ? "open" : "closed"} className="relative">
         <button
           onClick={() => setOpen((pv) => !pv)}
-          className="flex items-center gap-2 px-3 py-2 rounded-md text-indigo-50 bg-indigo-500 hover:bg-indigo-500 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 rounded-md bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm transition-colors"
         >
           <span className="font-medium text-sm">Menu</span>
           <motion.span variants={iconVariants}>
@@ -30,7 +30,7 @@ const StaggeredDropDown = () => {
           initial={wrapperVariants.closed}
           variants={wrapperVariants}
           style={{ originY: "top", translateX: "-50%" }}
-          className="flex flex-col gap-2 p-2 rounded-lg bg-white shadow-xl absolute top-[120%] left-[50%] w-48 overflow-hidden"
+          className="flex flex-col gap-2 p-2 rounded-lg bg-white shadow-xl absolute top-[120%] left-[50%] w-28 overflow-hidden"
         >
           <Link href="/">
             <Option setOpen={setOpen} Icon={FiEdit} text="Home" />
