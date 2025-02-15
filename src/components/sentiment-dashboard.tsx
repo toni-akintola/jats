@@ -11,7 +11,7 @@ import {
   StaggeredDropdown,
   StaggeredDropdownProps,
 } from "@/components/ui/dropdown";
-import { FiHome, FiUser } from "react-icons/fi";
+import { FiHome, FiUser, FiFile } from "react-icons/fi";
 import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
@@ -168,6 +168,11 @@ export function SentimentDashboard() {
       text: "Profile",
       Icon: FiUser,
       href: "/profile",
+    },
+    {
+      text: "Spreadsheet",
+      Icon: FiFile,
+      href: "/spreadsheet",
     },
   ];
 
