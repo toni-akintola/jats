@@ -57,7 +57,7 @@ export class SentimentAnalyzer {
       });
     }
 
-    const result = {
+    const result: SentimentResult = {
       score: avgScore,
       mentions: flattenedTexts.length,
       sentimentOverTime: sentimentOverTime.sort(
@@ -98,4 +98,80 @@ export class SentimentAnalyzer {
       .slice(0, 10)
       .map(([word]) => word);
   }
+}
+
+export async function analyzeSentiment(text: string): Promise<number> {
+  // Simple word-based sentiment analysis
+  const positiveWords = new Set([
+    "good",
+    "great",
+    "awesome",
+    "excellent",
+    "happy",
+    "love",
+    "wonderful",
+    "fantastic",
+    "amazing",
+    "positive",
+    "success",
+    "successful",
+    "win",
+    "winning",
+    "innovative",
+    "improve",
+    "improved",
+    "improvement",
+    "grow",
+    "growing",
+    "growth",
+    "profit",
+    "profitable",
+    "benefit",
+    "beneficial",
+  ]);
+
+  const negativeWords = new Set([
+    "bad",
+    "terrible",
+    "awful",
+    "horrible",
+    "sad",
+    "hate",
+    "poor",
+    "negative",
+    "fail",
+    "failing",
+    "failed",
+    "failure",
+    "lose",
+    "losing",
+    "loss",
+    "decline",
+    "declining",
+    "decrease",
+    "decreasing",
+    "worry",
+    "worried",
+    "concerning",
+    "concern",
+    "problem",
+    "problematic",
+  ]);
+
+  const words = text.toLowerCase().split(/\W+/);
+  let score = 0;
+  let relevantWords = 0;
+
+  words.forEach((word) => {
+    if (positiveWords.has(word)) {
+      score += 1;
+      relevantWords++;
+    } else if (negativeWords.has(word)) {
+      score -= 1;
+      relevantWords++;
+    }
+  });
+
+  // Normalize score to be between -1 and 1
+  return relevantWords > 0 ? score / relevantWords : 0;
 }

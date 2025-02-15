@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { SentimentResult } from "@/services/types";
 import Link from "next/link";
+import { analyzeSentiment } from "@/services/sentiment-service";
 
 interface Cell {
   value: string;
@@ -52,7 +52,7 @@ export function SpreadsheetDashboard() {
     });
   };
 
-  const analyzeSentiment = async (rowIndex: number) => {
+  const analyzeSentimentForRow = async (rowIndex: number) => {
     const companyName = rows[rowIndex].cells[0].value.trim();
     
     if (!companyName) {
@@ -67,19 +67,7 @@ export function SpreadsheetDashboard() {
     });
 
     try {
-      const response = await fetch("/api/sentiment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ company: companyName }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to analyze sentiment");
-      }
-
-      const data: SentimentResult = await response.json();
+      const data = await analyzeSentiment(companyName);
       
       setRows(prevRows => {
         const newRows = [...prevRows];
@@ -106,7 +94,7 @@ export function SpreadsheetDashboard() {
 
   const handleBlur = async (rowIndex: number) => {
     setActiveCell(null);
-    await analyzeSentiment(rowIndex);
+    await analyzeSentimentForRow(rowIndex);
   };
 
   const addRow = () => {

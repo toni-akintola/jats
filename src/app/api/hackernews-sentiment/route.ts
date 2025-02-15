@@ -1,13 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { HackerNewsSource } from "@/services/sources/hackernews";
 import { SentimentAnalyzer } from "@/services/sentiment-analyzer";
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { company } = await request.json();
+    const { company } = await req.json();
 
     if (!company) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Company name is required" },
         { status: 400 },
       );
@@ -16,10 +16,10 @@ export async function POST(request: Request) {
     const analyzer = new SentimentAnalyzer([new HackerNewsSource()]);
     const result = await analyzer.analyze(company);
 
-    return NextResponse.json(result);
+    return Response.json(result);
   } catch (error) {
     console.error("Sentiment analysis error:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Failed to analyze sentiment" },
       { status: 500 },
     );

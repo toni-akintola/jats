@@ -3,6 +3,24 @@ import { Button } from "@/components/ui/button";
 import { NavBar } from "@/components/nav-bar";
 
 export default function Home() {
+  const dataSources = [
+    "Twitter",
+    "Reddit",
+    "HackerNews",
+    "Bloomberg",
+    "Reuters",
+    "Financial Times",
+    "Wall Street Journal",
+    "TechCrunch",
+    "Yahoo Finance",
+    "MarketWatch",
+    "Seeking Alpha",
+    "The Motley Fool",
+    "CNBC",
+    "Forbes",
+    "Business Insider",
+  ];
+
   return (
     <div
       className="min-h-screen relative"
@@ -123,6 +141,131 @@ export default function Home() {
                   aggregate insights from multiple sources using our intelligent
                   swarm
                 </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Add Logo Carousel after Features Grid */}
+          <section className="py-16 overflow-hidden bg-white/5 backdrop-blur-sm">
+            <div className="container mx-auto px-4">
+              <h2 className="text-2xl font-semibold text-center text-white mb-8">
+                comprehensive data sources
+              </h2>
+              <div className="relative">
+                <div className="flex animate-scroll space-x-8 whitespace-nowrap">
+                  {[...dataSources, ...dataSources].map((source, i) => (
+                    <div
+                      key={`${source}-${i}`}
+                      className="inline-flex items-center justify-center min-w-[160px] h-12 px-6 
+                               bg-white/90 backdrop-blur-sm rounded-lg text-[#0e3b5c] font-medium"
+                    >
+                      {source}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* How It Works Section */}
+          <section className="py-20">
+            <div className="container mx-auto px-4">
+              <h2 className="text-3xl font-bold text-center text-white mb-16">
+                how it works
+              </h2>
+              <div className="grid md:grid-cols-4 gap-8">
+                <div className="relative">
+                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
+                    <div
+                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
+                                  text-white flex items-center justify-center font-bold"
+                    >
+                      1
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3 mt-2">
+                      Input Company
+                    </h3>
+                    <p className="text-gray-600">
+                      Enter any publicly traded company or trending topic
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
+                    <div
+                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
+                                  text-white flex items-center justify-center font-bold"
+                    >
+                      2
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3 mt-2">
+                      AI Swarm Activates
+                    </h3>
+                    <p className="text-gray-600">
+                      Our AI agents scan multiple sources simultaneously
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
+                    <div
+                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
+                                  text-white flex items-center justify-center font-bold"
+                    >
+                      3
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3 mt-2">
+                      Data Analysis
+                    </h3>
+                    <p className="text-gray-600">
+                      Advanced sentiment analysis processes thousands of data
+                      points
+                    </p>
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
+                    <div
+                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
+                                  text-white flex items-center justify-center font-bold"
+                    >
+                      4
+                    </div>
+                    <h3 className="text-lg font-semibold mb-3 mt-2">
+                      Instant Insights
+                    </h3>
+                    <p className="text-gray-600">
+                      Get clear, actionable sentiment data in real-time
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Stats Section */}
+          <section className="py-20 bg-white/5 backdrop-blur-sm">
+            <div className="container mx-auto px-4">
+              <div className="grid md:grid-cols-3 gap-8 text-center">
+                <div className="p-6">
+                  <div className="text-5xl font-bold text-white mb-2">15+</div>
+                  <div className="text-white/80">Data Sources</div>
+                </div>
+                <div className="p-6">
+                  <div className="text-5xl font-bold text-white mb-2">
+                    500ms
+                  </div>
+                  <div className="text-white/80">Average Response Time</div>
+                </div>
+                <div className="p-6">
+                  <div className="text-5xl font-bold text-white mb-2">
+                    99.9%
+                  </div>
+                  <div className="text-white/80">Uptime</div>
+                </div>
               </div>
             </div>
           </section>
