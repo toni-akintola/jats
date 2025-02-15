@@ -5,16 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+import { AreaChart } from "@/components/ui/area-chart";
 import {
   StaggeredDropdown,
   StaggeredDropdownProps,
@@ -240,52 +231,18 @@ export function SentimentDashboard() {
               </div>
 
               <div className="md:col-span-2">
-                <Card className="p-4 h-full">
-                  <h3 className="font-semibold mb-4">Sentiment Comparison</h3>
-                  <div className="h-[400px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart
-                        data={combinedSentimentData}
-                        margin={{
-                          top: 5,
-                          right: 30,
-                          left: 20,
-                          bottom: 5,
-                        }}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                          dataKey="date"
-                          tickFormatter={(date) =>
-                            new Date(date).toLocaleDateString()
-                          }
-                        />
-                        <YAxis domain={[-1, 1]} />
-                        <Tooltip
-                          labelFormatter={(date) =>
-                            new Date(date).toLocaleDateString()
-                          }
-                          formatter={(value: number) => [
-                            value?.toFixed(2) || "N/A",
-                            "Sentiment",
-                          ]}
-                        />
-                        <Legend />
-                        {Object.keys(results).map((company, index) => (
-                          <Line
-                            key={company}
-                            type="monotone"
-                            dataKey={company}
-                            stroke={COLORS[index % COLORS.length]}
-                            dot={false}
-                            name={company}
-                            connectNulls
-                          />
-                        ))}
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                </Card>
+                <AreaChart
+                  data={combinedSentimentData}
+                  title="Sentiment Comparison"
+                  config={Object.fromEntries(
+                    Object.keys(results).map((company, index) => [
+                      company,
+                      { label: company, color: COLORS[index % COLORS.length] },
+                    ]),
+                  )}
+                  xAxisKey="date"
+                  xAxisFormatter={(date) => new Date(date).toLocaleDateString()}
+                />
               </div>
             </div>
 
