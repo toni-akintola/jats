@@ -1,16 +1,17 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AreaChart, DataPoint } from "@/components/ui/area-chart";
 import {
   StaggeredDropdown,
   StaggeredDropdownProps,
 } from "@/components/ui/dropdown";
-import { FiHome, FiUser } from "react-icons/fi";
+import { FiHome, FiUser, FiFile } from "react-icons/fi";
 import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
@@ -42,6 +43,7 @@ export function SentimentDashboard() {
     [key: string]: boolean;
   }>({});
   const { toast } = useToast();
+  const searchParams = useSearchParams();
 
   const analyzeCompany = async (company: string) => {
     try {
@@ -90,6 +92,12 @@ export function SentimentDashboard() {
     await analyzeCompany(company);
   };
 
+      // const response = await fetch("/api/sentiment", {
+      //   method: "POST",
+      //   body: JSON.stringify({ company: companyToAnalyze }),
+      //   headers: { "Content-Type": "application/json" },
+      // });
+
   const handleRemoveCompany = (company: string) => {
     setCompanies(companies.filter((c) => c !== company));
     setResults((prev) => {
@@ -118,6 +126,14 @@ export function SentimentDashboard() {
       setLoading(false);
     }
   };
+
+  // useEffect(() => {
+  //   const companyFromUrl = searchParams.get("company");
+  //   if (companyFromUrl) {
+  //     setCompany(companyFromUrl);
+  //     handleAnalyze(companyFromUrl);
+  //   }
+  // }, [searchParams]);
 
   const combinedSentimentData = (() => {
     const allDates = new Set(
@@ -152,6 +168,11 @@ export function SentimentDashboard() {
       text: "Profile",
       Icon: FiUser,
       href: "/profile",
+    },
+    {
+      text: "Spreadsheet",
+      Icon: FiFile,
+      href: "/spreadsheet",
     },
   ];
 
