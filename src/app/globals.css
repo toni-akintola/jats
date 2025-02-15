@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -64,9 +60,17 @@ body {
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border font-light;
+    text-transform: lowercase;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* keep URLs and code uppercase when needed */
+  a[href^="http"],
+  code {
+    text-transform: none;
   }
 }
