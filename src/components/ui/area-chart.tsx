@@ -10,7 +10,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  Payload,
 } from "recharts";
 
 import {
@@ -21,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Payload } from "recharts/types/component/DefaultTooltipContent";
 // import {
 //   ChartConfig,
 //   ChartContainer,

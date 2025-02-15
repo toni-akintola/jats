@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatMistralAI, MistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { Calculator } from "@langchain/community/tools/calculator";
 import {
@@ -70,8 +70,8 @@ export async function POST(req: NextRequest) {
     // Requires process.env.SERPAPI_API_KEY to be set: https://serpapi.com/
     // You can remove this or use a different tool instead.
     const tools = [new Calculator(), new TavilySearchResults()];
-    const chat = new ChatOpenAI({
-      model: "gpt-4o-mini",
+    const chat = new ChatMistralAI({
+      model: "mistral-large-latest",
       temperature: 0,
     });
 
