@@ -7,15 +7,8 @@ import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AreaChart } from "@/components/ui/area-chart";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
@@ -93,6 +86,11 @@ export function SentimentDashboard() {
             placeholder="enter company name..."
             value={company}
             onChange={(e) => setCompany(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !loading) {
+                handleAnalyze();
+              }
+            }}
             disabled={loading}
             className="bg-black/20 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-white/20"
           />
@@ -106,44 +104,70 @@ export function SentimentDashboard() {
         </div>
 
         {loading && (
-          <Card className="p-8 bg-white/10 backdrop-blur-md border-white/10">
-            <div className="space-y-6">
-              <div className="flex flex-col items-center gap-4">
-                <LoadingSpinner className="text-white" />
-                <p className="text-sm text-white/80">
-                  analyzing sentiment for {company}...
-                </p>
-              </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">sentiment score</h3>
+              <Skeleton className="h-8 w-24 bg-white/20" />
+              <Skeleton className="h-4 w-32 bg-white/20 mt-2" />
+            </Card>
 
-              <div className="grid gap-3">
+            <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">top keywords</h3>
+              <div className="flex gap-2 flex-wrap">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton
+                    key={i}
+                    className="h-6 w-16 bg-white/20 rounded-full"
+                  />
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">recent mentions</h3>
+              <div className="space-y-2">
                 {Object.entries(loadingSources).map(([source, isLoading]) => (
-                  <div
-                    key={source}
-                    className="flex items-center justify-between p-3 rounded-lg bg-white/10"
-                  >
-                    <span className="text-sm text-white">{source}</span>
-                    {isLoading ? (
-                      <LoadingSpinner className="w-4 h-4 text-white" />
-                    ) : (
-                      <svg
-                        className="w-4 h-4 text-green-400"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                    )}
+                  <div key={source} className="p-3 rounded bg-white/10">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm text-white">{source}</span>
+                      {isLoading ? (
+                        <LoadingSpinner className="w-4 h-4 text-white" />
+                      ) : (
+                        <svg
+                          className="w-4 h-4 text-green-400"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      )}
+                    </div>
+                    <Skeleton className="h-4 w-full bg-white/20 mb-2" />
+                    <Skeleton className="h-4 w-3/4 bg-white/20" />
+                    <div className="flex gap-2 mt-2">
+                      <Skeleton className="h-3 w-16 bg-white/20" />
+                      <Skeleton className="h-3 w-16 bg-white/20" />
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </Card>
+            </Card>
+
+            <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-4 text-white">
+                Sentiment Over Time
+              </h3>
+              <div className="h-[300px] w-full">
+                <Skeleton className="h-full w-full bg-white/20" />
+              </div>
+            </Card>
+          </div>
         )}
 
         {result && (
@@ -205,49 +229,37 @@ export function SentimentDashboard() {
               </div>
             </Card>
 
-            <Card className="p-4 md:col-span-2">
-              <h3 className="font-semibold mb-4">Sentiment Over Time</h3>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={[...(result.sentimentOverTime || [])].sort(
-                      (a, b) =>
-                        new Date(a.date).getTime() - new Date(b.date).getTime(),
-                    )}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="date"
-                      tickFormatter={(date) =>
-                        new Date(date).toLocaleDateString()
-                      }
-                    />
-                    <YAxis domain={[-1, 1]} />
-                    <Tooltip
-                      labelFormatter={(date) =>
-                        new Date(date).toLocaleDateString()
-                      }
-                      formatter={(value: number) => [
-                        value.toFixed(2),
-                        "Sentiment",
-                      ]}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="sentiment"
-                      stroke="#2563eb"
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
+            <AreaChart
+              data={[...(result.sentimentOverTime || [])].sort(
+                (a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime(),
+              )}
+              title="Sentiment Over Time"
+              config={{
+                sentiment: {
+                  label: "Sentiment",
+                  color: "hsl(217, 91%, 60%)", // Tailwind blue-500
+                },
+              }}
+              xAxisKey="date"
+              xAxisFormatter={(date) => new Date(date).toLocaleDateString()}
+              dateRange={`${new Date(result.sentimentOverTime[0].date).toLocaleDateString()} - ${new Date(
+                result.sentimentOverTime[
+                  result.sentimentOverTime.length - 1
+                ].date,
+              ).toLocaleDateString()}`}
+              trend={{
+                value:
+                  result.sentimentOverTime[result.sentimentOverTime.length - 1]
+                    .sentiment - result.sentimentOverTime[0].sentiment,
+                label: `Trending ${
+                  result.sentimentOverTime[result.sentimentOverTime.length - 1]
+                    .sentiment > result.sentimentOverTime[0].sentiment
+                    ? "up"
+                    : "down"
+                } in sentiment`,
+              }}
+            />
           </div>
         )}
       </div>
