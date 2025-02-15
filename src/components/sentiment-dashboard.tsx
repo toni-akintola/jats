@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import Link from "next/link";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
@@ -86,7 +87,7 @@ export function SentimentDashboard() {
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="p-4">
               <h3 className="font-semibold mb-2">Sentiment Score</h3>
-              <Progress value={(result.score + 1) * 50} className="h-4" />
+              <p className="text-2xl font-bold">{result.score.toFixed(2)}</p>
               <p className="text-sm text-muted-foreground mt-2">
                 Based on {result.mentions} mentions
               </p>
@@ -111,18 +112,26 @@ export function SentimentDashboard() {
               <div className="space-y-2">
                 {result.recentMentions.map((mention, i) => (
                   <div key={i} className="p-2 rounded bg-secondary">
-                    <p className="text-sm">{mention.text}</p>
-                    <span
-                      className={`text-xs ${
-                        mention.sentiment > 0
-                          ? "text-green-500"
-                          : mention.sentiment < 0
-                            ? "text-red-500"
-                            : "text-gray-500"
-                      }`}
-                    >
-                      Sentiment: {mention.sentiment.toFixed(2)}
-                    </span>
+                    <Link href={mention.url || ""} target="_blank">
+                      <p className="text-sm">{mention.text}</p>
+
+                      <div className="flex gap-2 items-center">
+                        <span
+                          className={`text-xs ${
+                            mention.sentiment > 0
+                              ? "text-green-500"
+                              : mention.sentiment < 0
+                                ? "text-red-500"
+                                : "text-gray-500"
+                          }`}
+                        >
+                          Sentiment: {mention.sentiment.toFixed(2)}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          • {mention.source}
+                        </span>
+                      </div>
+                    </Link>
                   </div>
                 ))}
               </div>

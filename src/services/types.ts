@@ -1,5 +1,11 @@
 export interface DataSource {
-  fetchData(query: string): Promise<string[]>;
+  fetchData(query: string): Promise<
+    {
+      text: string;
+      source: string;
+      url?: string;
+    }[]
+  >;
 }
 
 export interface SentimentResult {
@@ -8,6 +14,8 @@ export interface SentimentResult {
   topKeywords: string[];
   recentMentions: {
     text: string;
+    source: string;
+    url?: string;
     sentiment: number;
     date?: string;
   }[];

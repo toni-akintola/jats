@@ -1,5 +1,21 @@
 import { DataSource, SentimentResult } from "./types";
-import Sentiment from "sentiment"; // We'll use a simple sentiment library for this example
+import Sentiment from "sentiment";
+
+interface SentimentData {
+  text: {
+    text: string;
+    source: string;
+    url?: string;
+  };
+  analysis: {
+    score: number;
+    comparative: number;
+    tokens: string[];
+    words: string[];
+    positive: string[];
+    negative: string[];
+  };
+}
 
 export class SentimentAnalyzer {
   private sources: DataSource[];
@@ -19,9 +35,9 @@ export class SentimentAnalyzer {
     const flattenedTexts = allTexts.flat();
 
     // Analyze sentiment for each text
-    const sentiments = flattenedTexts.map((text) => ({
-      text,
-      analysis: this.sentimentAnalyzer.analyze(text),
+    const sentiments: SentimentData[] = flattenedTexts.map((item) => ({
+      text: item,
+      analysis: this.sentimentAnalyzer.analyze(item.text),
     }));
 
     // Calculate aggregate metrics
@@ -29,7 +45,7 @@ export class SentimentAnalyzer {
       sentiments.reduce((acc, curr) => acc + curr.analysis.comparative, 0) /
       sentiments.length;
 
-    // Extract top keywords (excluding common words)
+    // Extract top keywords from positive and negative words
     const keywords = this.extractTopKeywords(sentiments);
 
     return {
@@ -37,15 +53,34 @@ export class SentimentAnalyzer {
       mentions: flattenedTexts.length,
       topKeywords: keywords,
       recentMentions: sentiments.slice(0, 5).map((s) => ({
-        text: s.text,
+        text: s.text.text,
+        source: s.text.source,
+        url: s.text.url,
         sentiment: s.analysis.comparative,
       })),
     };
   }
 
-  private extractTopKeywords(sentiments: any[]): string[] {
-    // Implementation for keyword extraction
-    // This is a simplified version
-    return ["keyword1", "keyword2", "keyword3"];
+  private extractTopKeywords(sentiments: SentimentData[]): string[] {
+    // Collect all words that contributed to sentiment
+    const words = sentiments.flatMap((s) => [
+      ...s.analysis.positive,
+      ...s.analysis.negative,
+    ]);
+
+    // Count word frequencies
+    const wordCount = words.reduce(
+      (acc, word) => {
+        acc[word] = (acc[word] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
+
+    // Sort by frequency and take top 10
+    return Object.entries(wordCount)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 10)
+      .map(([word]) => word);
   }
 }
