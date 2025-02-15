@@ -1,16 +1,20 @@
-import {
-  FiEdit,
-  FiChevronDown,
-  FiTrash,
-  FiShare,
-  FiPlusSquare,
-} from "react-icons/fi";
+import { FiChevronDown } from "react-icons/fi";
 import { motion } from "framer-motion";
 import { Dispatch, SetStateAction, useState } from "react";
 import { IconType } from "react-icons";
 import Link from "next/link";
 
-const StaggeredDropDown = () => {
+export interface StaggeredDropdownProps {
+  text: string;
+  Icon: IconType;
+  href: string;
+}
+
+interface StaggeredDropdownComponentProps {
+  options: StaggeredDropdownProps[];
+}
+
+export const StaggeredDropdown = ({ options }: StaggeredDropdownComponentProps) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -32,12 +36,11 @@ const StaggeredDropDown = () => {
           style={{ originY: "top", translateX: "-50%" }}
           className="flex flex-col gap-2 p-2 rounded-lg bg-white shadow-xl absolute top-[120%] left-[50%] w-28 overflow-hidden"
         >
-          <Link href="/">
-            <Option setOpen={setOpen} Icon={FiEdit} text="Home" />
-          </Link>
-          <Link href="/profile">
-            <Option setOpen={setOpen} Icon={FiPlusSquare} text="Profile" />
-          </Link>
+          {options.map((option) => (
+            <Link key={option.text} href={option.href}>
+              <Option setOpen={setOpen} Icon={option.Icon} text={option.text} />
+            </Link>
+          ))}
         </motion.ul>
       </motion.div>
     </div>
@@ -64,8 +67,6 @@ const Option = ({ text, Icon, setOpen }: OptionProps) => {
     </motion.li>
   );
 };
-
-export default StaggeredDropDown;
 
 const wrapperVariants = {
   open: {

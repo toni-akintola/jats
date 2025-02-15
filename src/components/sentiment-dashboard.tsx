@@ -16,7 +16,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import StaggeredDropdown from "@/components/ui/dropdown";
+import {
+  StaggeredDropdown,
+  StaggeredDropdownProps,
+} from "@/components/ui/dropdown";
+import { FiHome, FiUser } from "react-icons/fi";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
@@ -86,10 +90,23 @@ export function SentimentDashboard() {
   };
   console.log("result is", result?.sentimentOverTime);
 
+  const dropdownOptions: StaggeredDropdownProps[] = [
+    {
+      text: "Home",
+      Icon: FiHome,
+      href: "/",
+    },
+    {
+      text: "Profile",
+      Icon: FiUser,
+      href: "/profile",
+    },
+  ]
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div style={{ position: 'absolute', top: 10, left: 20 }}>
-        <StaggeredDropdown />
+        <StaggeredDropdown options={dropdownOptions} />
       </div>
       <div className="space-y-4">
         <div className="flex gap-4">
@@ -113,7 +130,7 @@ export function SentimentDashboard() {
           <Card className="p-8 bg-white/10 backdrop-blur-md border-white/10">
             <div className="space-y-6">
               <div className="flex flex-col items-center gap-4">
-                <LoadingSpinner className="text-white" />
+                <LoadingSpinner className="text-white max-w-[20px]" />
                 <p className="text-sm text-white/80">
                   analyzing sentiment for {company}...
                 </p>
