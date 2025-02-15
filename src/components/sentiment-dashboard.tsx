@@ -88,6 +88,11 @@ export function SentimentDashboard() {
       return null;
     }
 
+    // Sort mentions by sentiment score in descending order
+    const sortedMentions = [...data.mentions].sort(
+      (a, b) => b.sentiment - a.sentiment,
+    );
+
     return (
       <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
         <div className="flex items-center justify-between mb-4">
@@ -99,7 +104,7 @@ export function SentimentDashboard() {
           </span>
         </div>
         <div className="space-y-3">
-          {data.mentions.slice(0, 5).map((mention, idx) => (
+          {sortedMentions.slice(0, 5).map((mention, idx) => (
             <div key={idx} className="p-3 rounded bg-white/10">
               <Link href={mention.url || "#"} target="_blank">
                 <p className="text-sm text-white/90 line-clamp-2">
