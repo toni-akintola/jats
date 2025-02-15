@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -7,6 +7,7 @@ import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   LineChart,
   Line,
@@ -22,8 +23,10 @@ export function SentimentDashboard() {
   const [result, setResult] = useState<SentimentResult | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
-  const handleAnalyze = async () => {
-    if (!company.trim()) {
+  const searchParams = useSearchParams();
+
+  const handleAnalyze = async (companyToAnalyze: string) => {
+    if (!companyToAnalyze.trim()) {
       toast({
         title: "Error",
         description: "Please enter a company name",
@@ -39,7 +42,7 @@ export function SentimentDashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ company }),
+        body: JSON.stringify({ company: companyToAnalyze }),
       });
 
       if (!response.ok) {
@@ -59,7 +62,14 @@ export function SentimentDashboard() {
       setLoading(false);
     }
   };
-  console.log("result is", result?.sentimentOverTime);
+
+  useEffect(() => {
+    const companyFromUrl = searchParams.get("company");
+    if (companyFromUrl) {
+      setCompany(companyFromUrl);
+      handleAnalyze(companyFromUrl);
+    }
+  }, [searchParams]);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -74,7 +84,7 @@ export function SentimentDashboard() {
             disabled={loading}
           />
           <Button
-            onClick={handleAnalyze}
+            onClick={() => handleAnalyze(company)}
             disabled={loading}
             className="min-w-[100px]"
           >
