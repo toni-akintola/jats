@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage } from "ai";
 
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
-import { ChatMistralAI, MistralAI } from "@langchain/mistralai";
+import { ChatMistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { Calculator } from "@langchain/community/tools/calculator";
 import {
