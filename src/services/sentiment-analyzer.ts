@@ -1,4 +1,4 @@
-import { DataSource, SentimentResult } from "./types";
+import { DataSource, SentimentResult, SentimentTimePoint } from "./types";
 import Sentiment from "sentiment";
 
 interface SentimentData {
@@ -6,6 +6,7 @@ interface SentimentData {
     text: string;
     source: string;
     url?: string;
+    date?: string;
   };
   analysis: {
     score: number;
@@ -48,17 +49,31 @@ export class SentimentAnalyzer {
     // Extract top keywords from positive and negative words
     const keywords = this.extractTopKeywords(sentiments);
 
-    return {
+    const sentimentOverTime: SentimentTimePoint[] = [];
+    for (const sentiment of sentiments) {
+      sentimentOverTime.push({
+        date: sentiment.text.date || "",
+        sentiment: sentiment.analysis.score,
+      });
+    }
+
+    const result = {
       score: avgScore,
       mentions: flattenedTexts.length,
+      sentimentOverTime: sentimentOverTime.sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      ),
       topKeywords: keywords,
       recentMentions: sentiments.slice(0, 5).map((s) => ({
         text: s.text.text,
         source: s.text.source,
         url: s.text.url,
         sentiment: s.analysis.comparative,
+        date: s.text.date,
       })),
     };
+
+    return result;
   }
 
   private extractTopKeywords(sentiments: SentimentData[]): string[] {

@@ -7,6 +7,15 @@ import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
@@ -50,6 +59,7 @@ export function SentimentDashboard() {
       setLoading(false);
     }
   };
+  console.log("result is", result?.sentimentOverTime);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -130,10 +140,49 @@ export function SentimentDashboard() {
                         <span className="text-xs text-muted-foreground">
                           • {mention.source}
                         </span>
+
+                        <span className="text-xs text-muted-foreground">
+                          {mention.date} </span>
                       </div>
                     </Link>
                   </div>
                 ))}
+              </div>
+            </Card>
+
+            <Card className="p-4 md:col-span-2">
+              <h3 className="font-semibold mb-4">Sentiment Over Time</h3>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={[...(result.sentimentOverTime || [])].sort((a, b) => 
+                      new Date(a.date).getTime() - new Date(b.date).getTime()
+                    )}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="date"
+                      tickFormatter={(date) => new Date(date).toLocaleDateString()}
+                    />
+                    <YAxis domain={[-1, 1]} />
+                    <Tooltip
+                      labelFormatter={(date) => new Date(date).toLocaleDateString()}
+                      formatter={(value: number) => [value.toFixed(2), "Sentiment"]}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="sentiment"
+                      stroke="#2563eb"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </Card>
           </div>
