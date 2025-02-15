@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { AreaChart } from "@/components/ui/area-chart";
+import { AreaChart, DataPoint } from "@/components/ui/area-chart";
 import {
   StaggeredDropdown,
   StaggeredDropdownProps,
@@ -126,18 +126,20 @@ export function SentimentDashboard() {
       ),
     );
 
-    return Array.from(allDates)
+    const dataPoints: DataPoint[] = Array.from(allDates)
       .sort()
       .map((date) => {
-        const dataPoint: any = { date };
+        const dataPoint: DataPoint = { date };
         Object.entries(results).forEach(([company, data]) => {
           const matchingPoint = data.sentimentOverTime.find(
             (p) => p.date === date,
           );
-          dataPoint[company] = matchingPoint ? matchingPoint.sentiment : null;
+          dataPoint[company] = matchingPoint ? matchingPoint.sentiment : 0;
         });
         return dataPoint;
       });
+
+    return dataPoints;
   })();
 
   const dropdownOptions: StaggeredDropdownProps[] = [
@@ -209,7 +211,9 @@ export function SentimentDashboard() {
                 {Object.entries(results).map(([company, data], index) => (
                   <div
                     key={company}
-                    className="p-3 rounded bg-white/5"
+                    className={`p-3 rounded bg-white/5 ${
+                      loadingSources[company] ? "opacity-50" : ""
+                    }`}
                     style={{
                       borderLeft: `4px solid ${COLORS[index % COLORS.length]}`,
                     }}
@@ -244,7 +248,7 @@ export function SentimentDashboard() {
             <div className="space-y-2">
               <h3 className="font-semibold text-white">Company Details</h3>
               <div className="flex gap-4 overflow-x-auto pb-4">
-                {Object.entries(results).map(([company, data], index) => (
+                {Object.entries(results).map(([company, data]) => (
                   <Card
                     key={company}
                     className="p-4 bg-white/10 backdrop-blur-md border-white/10 min-w-[350px] max-w-[400px] flex-shrink-0"

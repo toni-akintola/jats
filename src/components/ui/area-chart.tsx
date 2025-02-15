@@ -10,6 +10,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  Payload,
 } from "recharts";
 
 import {
@@ -27,8 +28,18 @@ import {
 //   ChartTooltipContent,
 // } from "@/components/ui/chart";
 
+export interface DataPoint {
+  date: string;
+  [key: string]: number | string; // For dynamic company data
+}
+
+// Add type for the tooltip payload
+type TooltipPayload = Payload<number, string> & {
+  color: string;
+};
+
 interface AreaChartProps {
-  data: any[];
+  data: DataPoint[];
   title: string;
   description?: string;
   config: {
@@ -43,7 +54,7 @@ interface AreaChartProps {
     label: string;
   };
   xAxisKey?: string;
-  xAxisFormatter?: (value: any) => string;
+  xAxisFormatter?: (value: string) => string;
 }
 
 export function AreaChart({
@@ -99,7 +110,7 @@ export function AreaChart({
                       <div className="text-sm text-white">
                         {xAxisFormatter(label)}
                       </div>
-                      {payload.map((entry: any, index: number) => (
+                      {(payload as TooltipPayload[]).map((entry, index) => (
                         <div
                           key={index}
                           className="flex items-center gap-2 text-sm"

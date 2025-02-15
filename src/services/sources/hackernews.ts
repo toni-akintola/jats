@@ -1,6 +1,13 @@
 import { DataSource } from "@/services/types";
 import { HackerNewsHit } from "@/services/types/hackernews";
-import { SentimentSource, SentimentResult, Mention } from "../types";
+import { SentimentSource, SentimentResult } from "../types";
+
+interface HNItem {
+  text: string;
+  source: string;
+  url?: string;
+  date?: string;
+}
 
 export class HackerNewsSource implements DataSource {
   private BASE_URL = "https://hn.algolia.com/api/v1";
@@ -35,7 +42,7 @@ export class HackerNewsSource implements DataSource {
             date,
           };
         })
-        .filter((item) => item.text);
+        .filter((item: HNItem) => item.text);
     } catch (error) {
       console.error("Error fetching from HN:", error);
       return [];
@@ -57,13 +64,20 @@ export const hackernewsSource: SentimentSource = {
     const data = await response.json();
 
     return {
-      mentions: data.recentMentions.map((mention: any) => ({
-        text: mention.text,
-        sentiment: mention.sentiment,
-        source: "Hacker News",
-        date: mention.date,
-        url: mention.url,
-      })),
+      mentions: data.recentMentions.map(
+        (mention: {
+          text: string;
+          sentiment: number;
+          date: string;
+          url?: string;
+        }) => ({
+          text: mention.text,
+          sentiment: mention.sentiment,
+          source: "Hacker News",
+          date: mention.date,
+          url: mention.url,
+        }),
+      ),
       score: data.score,
       keywords: data.topKeywords,
     };
