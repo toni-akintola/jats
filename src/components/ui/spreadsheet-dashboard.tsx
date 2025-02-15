@@ -135,7 +135,7 @@ export function SpreadsheetDashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-6 text-white">
       <div className="space-y-6">
         <div className="space-y-4">
           <div style={{ position: "absolute", top: 10, left: 20, zIndex: 50 }}>
@@ -153,13 +153,13 @@ export function SpreadsheetDashboard() {
                   <table className="min-w-full divide-y divide-white/10 border-collapse">
                     <thead>
                       <tr className="bg-white/5">
-                        <th className="px-3 py-3 text-left text-sm font-semibold text-white/90 border-r border-white/10">
+                        <th className="px-3 py-3 text-left text-sm font-semibold text-white border-r border-white/10">
                           Company Name
                         </th>
-                        <th className="px-3 py-3 text-left text-sm font-semibold text-white/90 border-r border-white/10">
+                        <th className="px-3 py-3 text-left text-sm font-semibold text-white border-r border-white/10">
                           Sentiment Score
                         </th>
-                        <th className="px-3 py-3 text-left text-sm font-semibold text-white/90">
+                        <th className="px-3 py-3 text-left text-sm font-semibold text-white">
                           Actions
                         </th>
                       </tr>
@@ -170,7 +170,7 @@ export function SpreadsheetDashboard() {
                           {row.cells.map((cell, cellIndex) => (
                             <td
                               key={cell.id}
-                              className="whitespace-nowrap px-3 py-2 text-sm border-r border-white/10 last:border-r-0"
+                              className="whitespace-nowrap px-3 py-2 text-sm border-r border-white/10 last:border-r-0 text-white"
                             >
                               {activeCell === cell.id ? (
                                 <Input
@@ -180,7 +180,7 @@ export function SpreadsheetDashboard() {
                                     handleCellChange(rowIndex, cellIndex, e.target.value)
                                   }
                                   onBlur={() => handleBlur(rowIndex)}
-                                  className="w-full bg-white/10 border-white/20 text-white"
+                                  className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/50"
                                 />
                               ) : (
                                 <div
@@ -193,7 +193,7 @@ export function SpreadsheetDashboard() {
                                         ? 'text-green-400 font-medium'
                                         : cell.sentiment && cell.sentiment < 0
                                           ? 'text-red-400 font-medium'
-                                          : 'text-white/60'
+                                          : 'text-white/80'
                                       : ''
                                   }`}
                                 >
@@ -206,7 +206,7 @@ export function SpreadsheetDashboard() {
                               )}
                             </td>
                           ))}
-                          <td className="whitespace-nowrap px-3 py-2 text-sm">
+                          <td className="whitespace-nowrap px-3 py-2 text-sm text-white">
                             {rows[rowIndex].cells[0].value && !rows[rowIndex].cells[1].isLoading && (
                               <Link 
                                 href={`/dashboard?company=${encodeURIComponent(rows[rowIndex].cells[0].value)}`}
