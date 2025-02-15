@@ -1,8 +1,17 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { NavBar } from "@/components/nav-bar";
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default async function Home() {
+  const cookie = await cookies();
+  const hasVisited = cookie.get('hasVisited');
+  
+  if (!hasVisited) {
+    redirect('/hello');
+  }
+
   const dataSources = [
     "Twitter",
     "Reddit",
