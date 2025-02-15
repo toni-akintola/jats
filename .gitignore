@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+pip-log.txt
+
+# Testing
+/coverage
+.pytest_cache/
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+
+# Production
+/build
+/dist
+*.egg-info/
+
+# Development
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Frontend specific
+.next/
+out/
+.nuxt/
+dist/
+
+# Backend specific
+*.sqlite3
+.pytest_cache/
+celerybeat-schedule
+*.sage.py
+
+# Misc
+.DS_Store
+Thumbs.db
