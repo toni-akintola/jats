@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,19 +9,23 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AreaChart } from "@/components/ui/area-chart";
+import { agentCoordinator } from "@/services/agent-coordinator";
+import { AgentSource, SearchState, SourceData } from "@/services/agent-types";
+import { TypewriterText } from "@/components/ui/typewriter-text";
 
 export function SentimentDashboard() {
   const [company, setCompany] = useState("");
   const [result, setResult] = useState<SentimentResult | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingSources, setLoadingSources] = useState<{
-    [key: string]: boolean;
-  }>({
-    "hacker news": false,
-    twitter: false,
-    reddit: false,
-  });
+  const [searchState, setSearchState] = useState<SearchState>(
+    agentCoordinator.getState(),
+  );
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Subscribe to agent coordinator updates
+    const unsubscribe = agentCoordinator.subscribe(setSearchState);
+    return unsubscribe;
+  }, []);
 
   const handleAnalyze = async () => {
     if (!company.trim()) {
@@ -34,33 +38,14 @@ export function SentimentDashboard() {
     }
 
     try {
-      setLoading(true);
-      // Simulate different sources loading
-      setLoadingSources({
-        "hacker news": true,
-        twitter: true,
-        reddit: true,
-      });
+      await agentCoordinator.startSearch(company);
 
+      // Keep the API call for now, but we'll move this logic to the agents later
       const response = await fetch("/api/sentiment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company }),
       });
-
-      // Simulate sources completing at different times
-      setTimeout(
-        () => setLoadingSources((prev) => ({ ...prev, "hacker news": false })),
-        1000,
-      );
-      setTimeout(
-        () => setLoadingSources((prev) => ({ ...prev, twitter: false })),
-        2000,
-      );
-      setTimeout(
-        () => setLoadingSources((prev) => ({ ...prev, reddit: false })),
-        3000,
-      );
 
       if (!response.ok) throw new Error("Failed to analyze sentiment");
       const data = await response.json();
@@ -72,11 +57,77 @@ export function SentimentDashboard() {
         description: "Failed to analyze sentiment. Please try again.",
         variant: "destructive",
       });
-    } finally {
-      setLoading(false);
     }
   };
   console.log("result is", result?.sentimentOverTime);
+
+  const getLoadingMessages = (sources: Record<string, AgentSource>) => {
+    const messages: string[] = [];
+
+    Object.entries(sources).forEach(([source, data]) => {
+      if (data.status === "running") {
+        messages.push(`searching ${source}...`);
+      } else if (data.status === "completed") {
+        messages.push(`found data from ${source}!`);
+      } else if (data.status === "error") {
+        messages.push(`error searching ${source}`);
+      }
+    });
+
+    return messages;
+  };
+
+  const SourceMentionsCard = ({
+    source,
+    data,
+  }: {
+    source: string;
+    data?: SourceData;
+  }) => {
+    if (!data?.mentions.length) {
+      return null;
+    }
+
+    return (
+      <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-white capitalize">
+            {source} mentions
+          </h3>
+          <span className="text-sm text-white/60">
+            sentiment: {data.sentiment.toFixed(2)}
+          </span>
+        </div>
+        <div className="space-y-3">
+          {data.mentions.slice(0, 5).map((mention, idx) => (
+            <div key={idx} className="p-3 rounded bg-white/10">
+              <Link href={mention.url || "#"} target="_blank">
+                <p className="text-sm text-white/90 line-clamp-2">
+                  {mention.text}
+                </p>
+                <div className="flex gap-2 items-center mt-2">
+                  <span
+                    className={`text-xs ${
+                      mention.sentiment > 0
+                        ? "text-green-400"
+                        : mention.sentiment < 0
+                          ? "text-red-400"
+                          : "text-white/60"
+                    }`}
+                  >
+                    sentiment: {mention.sentiment.toFixed(2)}
+                  </span>
+                  <span className="text-xs text-white/60">
+                    • {new Date(mention.date).toLocaleDateString()}
+                  </span>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </Card>
+    );
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -87,24 +138,33 @@ export function SentimentDashboard() {
             value={company}
             onChange={(e) => setCompany(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && !loading) {
+              if (e.key === "Enter") {
                 handleAnalyze();
               }
             }}
-            disabled={loading}
             className="bg-black/20 border-white/20 text-white placeholder:text-white/60 focus-visible:ring-white/20"
           />
           <Button
             onClick={handleAnalyze}
-            disabled={loading}
             className="min-w-[100px] bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
           >
-            {loading ? <LoadingSpinner /> : "analyze"}
+            analyze
           </Button>
         </div>
 
-        {loading && (
+        {searchState.status === "running" && (
           <div className="grid gap-4 md:grid-cols-2">
+            <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
+              <h3 className="font-semibold mb-2 text-white">Search Progress</h3>
+              <div className="text-white/80">
+                <TypewriterText
+                  messages={getLoadingMessages(searchState.sources)}
+                  typingSpeed={40}
+                  delayBetweenMessages={800}
+                />
+              </div>
+            </Card>
+
             <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
               <h3 className="font-semibold mb-2 text-white">sentiment score</h3>
               <Skeleton className="h-8 w-24 bg-white/20" />
@@ -126,36 +186,52 @@ export function SentimentDashboard() {
             <Card className="p-4 md:col-span-2 bg-white/10 backdrop-blur-md border-white/10">
               <h3 className="font-semibold mb-2 text-white">recent mentions</h3>
               <div className="space-y-2">
-                {Object.entries(loadingSources).map(([source, isLoading]) => (
-                  <div key={source} className="p-3 rounded bg-white/10">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm text-white">{source}</span>
-                      {isLoading ? (
-                        <LoadingSpinner className="w-4 h-4 text-white" />
-                      ) : (
-                        <svg
-                          className="w-4 h-4 text-green-400"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      )}
+                {Object.entries(searchState.sources).map(
+                  ([source, sourceData]) => (
+                    <div key={source} className="p-3 rounded bg-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-white">{source}</span>
+                        {sourceData.status === "running" ? (
+                          <LoadingSpinner className="w-4 h-4 text-white" />
+                        ) : sourceData.status === "error" ? (
+                          <svg
+                            className="w-4 h-4 text-red-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-4 h-4 text-green-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        )}
+                      </div>
+                      <Skeleton className="h-4 w-full bg-white/20 mb-2" />
+                      <Skeleton className="h-4 w-3/4 bg-white/20" />
+                      <div className="flex gap-2 mt-2">
+                        <Skeleton className="h-3 w-16 bg-white/20" />
+                        <Skeleton className="h-3 w-16 bg-white/20" />
+                      </div>
                     </div>
-                    <Skeleton className="h-4 w-full bg-white/20 mb-2" />
-                    <Skeleton className="h-4 w-3/4 bg-white/20" />
-                    <div className="flex gap-2 mt-2">
-                      <Skeleton className="h-3 w-16 bg-white/20" />
-                      <Skeleton className="h-3 w-16 bg-white/20" />
-                    </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </Card>
 
@@ -170,7 +246,7 @@ export function SentimentDashboard() {
           </div>
         )}
 
-        {result && (
+        {result && result.score && (
           <div className="grid gap-4 md:grid-cols-2">
             <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
               <h3 className="font-semibold mb-2 text-white">sentiment score</h3>
@@ -218,7 +294,6 @@ export function SentimentDashboard() {
                         <span className="text-xs text-white/60">
                           • {mention.source}
                         </span>
-
                         <span className="text-xs text-muted-foreground">
                           {mention.date}{" "}
                         </span>
@@ -228,6 +303,17 @@ export function SentimentDashboard() {
                 ))}
               </div>
             </Card>
+
+            {Object.entries(searchState.sources).map(
+              ([source, sourceData]) =>
+                sourceData.status === "completed" && (
+                  <SourceMentionsCard
+                    key={source}
+                    source={source}
+                    data={sourceData.data}
+                  />
+                ),
+            )}
 
             <AreaChart
               data={[...(result.sentimentOverTime || [])].sort(
