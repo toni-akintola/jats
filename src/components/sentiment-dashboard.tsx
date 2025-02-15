@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { SentimentResult } from "@/services/types";
 import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -41,6 +40,7 @@ export function SentimentDashboard() {
       const data = await response.json();
       setResult(data);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Error",
         description: "Failed to analyze sentiment. Please try again.",

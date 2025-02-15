@@ -1,4 +1,5 @@
 import { DataSource } from "@/services/types";
+import { HackerNewsHit } from "@/services/types/hackernews";
 
 export class HackerNewsSource implements DataSource {
   private BASE_URL = "https://hn.algolia.com/api/v1";
@@ -15,9 +16,9 @@ export class HackerNewsSource implements DataSource {
 
       // Extract relevant text content with URLs
       return data.hits
-        .map((hit: any) => {
-          const text = hit.comment_text || hit.story_text || hit.title || "";
-          const url = hit.story_url || hit.url; // story_url for comments, url for stories
+        .map((hit: HackerNewsHit) => {
+          const text = hit.story_text || hit.title || "";
+          const url = hit.url; // story_url for comments, url for stories
 
           return {
             text,
