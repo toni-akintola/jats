@@ -1,18 +1,17 @@
 "use client";
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SentimentResult } from "@/services/types";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AreaChart } from "@/components/ui/area-chart";
 
 export function SentimentDashboard() {
-  const [company, setCompany] = useState("");
-  const [result, setResult] = useState<SentimentResult | null>(null);
+  const [companies, setCompanies] = useState<string[]>([]);
+  const [newCompany, setNewCompany] = useState("");
+  const [results, setResults] = useState<Record<string, CompanyData>>({});
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -39,14 +38,68 @@ export function SentimentDashboard() {
       }
 
       const data = await response.json();
-      setResult(data);
+      
+      setResults(prev => ({
+        ...prev,
+        [company]: { ...data, company }
+      }));
     } catch (error) {
-      console.error(error);
       toast({
-        title: "Error",
+        title: `Error analyzing ${company}`,
         description: "Failed to analyze sentiment. Please try again.",
         variant: "destructive",
       });
+      setCompanies(prev => prev.filter(c => c !== company));
+    } finally {
+      setLoadingSources(prev => ({
+        ...prev,
+        [company]: false
+      }));
+    }
+  };
+
+  const handleAddCompany = async () => {
+    if (!newCompany.trim()) return;
+    
+    const company = newCompany.trim();
+    if (companies.includes(company)) {
+      toast({
+        title: "Company already added",
+        description: "This company is already in the comparison list.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setCompanies(prev => [...prev, company]);
+    setNewCompany("");
+    await analyzeCompany(company);
+  };
+
+  const handleRemoveCompany = (company: string) => {
+    setCompanies(companies.filter(c => c !== company));
+    setResults(prev => {
+      const newResults = { ...prev };
+      delete newResults[company];
+      return newResults;
+    });
+  };
+
+  const handleAnalyze = async () => {
+    if (companies.length === 0) {
+      toast({
+        title: "No companies selected",
+        description: "Please add at least one company to analyze.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await Promise.all(companies.map(analyzeCompany));
+    } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -69,8 +122,7 @@ export function SentimentDashboard() {
           />
           <Button
             onClick={handleAnalyze}
-            disabled={loading}
-            className="min-w-[100px] bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
+            disabled={loading || companies.length === 0}
           >
             {loading ? <LoadingSpinner className="w-4 h-4" /> : "analyze"}
           </Button>
@@ -108,7 +160,7 @@ export function SentimentDashboard() {
                       <Skeleton className="h-3 w-16 bg-white/20" />
                     </div>
                   </div>
-                ))}
+                </Card>
               </div>
             </Card>
           </div>
