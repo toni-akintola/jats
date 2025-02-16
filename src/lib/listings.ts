@@ -26,7 +26,7 @@ export const MOCK_LISTINGS: Listing[] = [
       projected: 22,
       timeframe: "3 years",
     },
-    imageUrl: "/belveron-partners.jpg",
+    imageUrl: "/aparts/31.jpg",
     isFavorite: false,
   },
   {
@@ -53,7 +53,7 @@ export const MOCK_LISTINGS: Listing[] = [
       projected: 18,
       timeframe: "5 years",
     },
-    imageUrl: "/belveron-partners.jpg",
+    imageUrl: "/aparts/32.jpg",  // High quality historic building image
     isFavorite: false,
   },
   {
@@ -81,7 +81,7 @@ export const MOCK_LISTINGS: Listing[] = [
       projected: 25,
       timeframe: "5 years",
     },
-    imageUrl: "/belveron-partners.jpg",
+    imageUrl: "/aparts/33.jpg",  // Modern tech campus style
     isFavorite: false,
   },
   {
@@ -100,15 +100,15 @@ export const MOCK_LISTINGS: Listing[] = [
     },
     price: 6800000,
     pricePerSqFt: 151,
-    zoning: "High-Density Residential",
-    potentialUse: ["Student Housing", "Multi-family", "Co-living"],
+    zoning: "Multi-Family Residential",
+    potentialUse: ["Student Housing", "Multi-Family"],
     status: "Under Contract",
-    timeline: "12-18 months",
+    timeline: "6-9 months",
     roi: {
-      projected: 18,
-      timeframe: "5 years",
+      projected: 15,
+      timeframe: "7 years",
     },
-    imageUrl: "/belveron-partners.jpg",
+    imageUrl: "/aparts/34.jpg",  // Multi-family residential building
     isFavorite: false,
   },
   {
@@ -135,7 +135,7 @@ export const MOCK_LISTINGS: Listing[] = [
       projected: 20,
       timeframe: "3 years",
     },
-    imageUrl: "/belveron-partners.jpg",
+    imageUrl: "/aparts/5.jpg",
     isFavorite: false,
   },
 ];

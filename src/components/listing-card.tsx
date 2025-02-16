@@ -34,7 +34,7 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
     >
       <div className="aspect-video relative overflow-hidden">
         <Image
-          src={"/belveron-partners.jpg"}
+          src={listing.imageUrl}
           alt={listing.location}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

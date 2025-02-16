@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import Image from "next/image";
+import Link from "next/link";
 const companies = [
   { name: "Urban Development Partners", logo: "/logos/udp.svg" },
   { name: "Blackstone Real Estate", logo: "/logos/blackstone.svg" },
@@ -63,16 +64,18 @@ export default function Home() {
           </h1>
           <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
             Turn market data into actionable insights with our intelligent
-            property analysis engine
+            property analysis platform.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
-            >
-              Start Free Trial
-            </Button>
+            <Link href="/map">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
+              >
+                Start Free Trial
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"
