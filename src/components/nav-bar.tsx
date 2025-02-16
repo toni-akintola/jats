@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Bot } from "lucide-react";
+import { Bot, Globe, Menu, User } from "lucide-react";
 
 interface NavLinkProps {
   href: string;
@@ -39,25 +39,29 @@ export function NavBar() {
           <span className="text-2xl font-bold text-white">PropAI</span>
         </Link>
 
-        <div className="hidden md:flex items-center space-x-8">
+        <div className="md:flex items-center space-x-8">
           <NavLink href="/about">About</NavLink>
           <NavLink href="/pricing">Pricing</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/portfolio">Portfolio</NavLink>
         </div>
 
-        <div className="hidden md:flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            className="text-white hover:text-[#f4ac7b] hover:bg-white/10"
-          >
-            Sign In
+        <div className="flex items-center gap-4 justify-end">
+          <Button variant="ghost" className="hidden md:flex">
+            PropAI your portfolio
           </Button>
-          <Button
-            className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
-            variant="ghost"
-          >
-            Try Now →
+          <Button variant="ghost" size="icon" className="hidden md:flex">
+            <Globe className="h-4 w-4" />
           </Button>
+          <Link href="/profile">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 rounded-full px-4 bg-blue-900/50 hover:bg-blue-800"
+            >
+              <Menu className="h-4 w-4 text-white" />
+              <User className="h-4 w-4 text-white" />
+            </Button>
+          </Link>
         </div>
       </div>
     </motion.nav>

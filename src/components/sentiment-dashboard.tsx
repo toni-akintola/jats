@@ -1,17 +1,16 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { AreaChart, DataPoint } from "@/components/ui/area-chart";
 import {
   StaggeredDropdown,
   StaggeredDropdownProps,
 } from "@/components/ui/dropdown";
-import { FiHome, FiUser, FiFile, FiMap } from "react-icons/fi";
+import { FiHome, FiUser, FiFile } from "react-icons/fi";
 import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
@@ -43,7 +42,6 @@ export function SentimentDashboard() {
     [key: string]: boolean;
   }>({});
   const { toast } = useToast();
-  const searchParams = useSearchParams();
 
   const analyzeCompany = async (company: string) => {
     try {
@@ -174,11 +172,6 @@ export function SentimentDashboard() {
       Icon: FiFile,
       href: "/spreadsheet",
     },
-    {
-      text: "Map",
-      Icon: FiMap,
-      href: "/map",
-    }
   ];
 
   return (
