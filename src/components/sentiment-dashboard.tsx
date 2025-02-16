@@ -213,12 +213,12 @@ export function SentimentDashboard({
                         Top Keywords
                       </h4>
                       <div className="flex gap-2 flex-wrap">
-                        {data.topKeywords.map((keyword) => (
+                        {[0,1,2].map((n) => (
                           <span
-                            key={keyword}
+                            key={n}
                             className="bg-white/20 text-white px-2 py-1 rounded-full text-sm"
                           >
-                            {keyword}
+                            {data.topKeywords[Math.floor(Math.random() * data.topKeywords.length)]}
                           </span>
                         ))}
                       </div>

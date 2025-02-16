@@ -45,7 +45,7 @@ export const redditSource: SentimentSource = {
       "urban",
       "living",
       location.toLowerCase(),
-      mentions[0].sentiment > 0.5 ? "positive" : "mixed",
+      mentions[0].sentiment > 0.2 ? "positive" : "mixed",
       mentions[0].sentiment > 0 ? "improvement" : "feedback",
     ];
 
@@ -56,7 +56,7 @@ export const redditSource: SentimentSource = {
     return {
       mentions,
       score: averageSentiment,
-      keywords: keywords,
+      keywords: [keywords[Math.floor(Math.random() * keywords.length)], keywords[Math.floor(Math.random() * keywords.length)], keywords[Math.floor(Math.random() * keywords.length)]],
     };
   },
 };
