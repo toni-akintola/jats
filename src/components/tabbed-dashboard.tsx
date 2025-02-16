@@ -116,7 +116,7 @@ export function TabbedDashboard({
   return (
     <div className="h-full flex flex-col">
       {/* Location Bubbles */}
-      <div className="p-6 flex flex-wrap gap-2">
+      {/* <div className="p-6 flex flex-wrap gap-2">
         {locations.map((location) => (
           <div
             key={location}
@@ -145,7 +145,7 @@ export function TabbedDashboard({
             </button>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Tabs */}
       <div className="flex justify-between items-center px-6 py-4 border-b border-gray-700">
@@ -171,24 +171,15 @@ export function TabbedDashboard({
             Risk Assessment
           </button>
         </div>
+        {onClose && (
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+          aria-label="Close dashboard"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
+          ×
         </button>
+      )}
       </div>
 
       {/* Content */}
@@ -208,45 +199,47 @@ export function TabbedDashboard({
             ) : Object.keys(riskDataMap).length > 0 ? (
               <>
                 {/* Location Cards */}
-                {Object.entries(riskDataMap).map(([loc, data]) => (
-                  <Card key={loc} className="p-6 bg-gray-800/50 text-white">
-                    <div className="space-y-4">
-                      <div className="space-y-2">
-                        <p>
-                          <span className="font-medium">County:</span>{" "}
-                          {data.location.county}
-                        </p>
-                        <p>
-                          <span className="font-medium">State:</span>{" "}
-                          {data.location.state}
-                        </p>
-                        {/* <p><span className="font-medium">FEMA Region:</span> {data.femaRegion.name}</p> */}
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex justify-between items-center">
-                          <span className="font-medium">Risk Score:</span>
-                          <span className="text-sm">
-                            {data.riskScore.toFixed(1)}/100
-                          </span>
+                {Object.entries(riskDataMap).map(([loc, data], index) => (
+                  <div key={loc} className="relative">
+                    <Card className="p-6 bg-white/10 backdrop-blur-md border-white/10 text-white" style={{ borderLeft: `4px solid ${COLORS[index % COLORS.length]}` }}>
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <p>
+                            <span className="font-medium">County:</span>{" "}
+                            {data.location.county}
+                          </p>
+                          <p>
+                            <span className="font-medium">State:</span>{" "}
+                            {data.location.state}
+                          </p>
+                          {/* <p><span className="font-medium">FEMA Region:</span> {data.femaRegion.name}</p> */}
                         </div>
-                        <div className="h-2 w-full bg-gray-700 rounded-full overflow-hidden">
-                          <div
-                            className="h-full rounded-full transition-all duration-500"
-                            style={{
-                              width: `${data.riskScore}%`,
-                              backgroundColor: getRiskColor(data.riskScore),
-                            }}
-                          />
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="font-medium">Risk Score:</span>
+                            <span className="text-sm">
+                              {data.riskScore.toFixed(1)}/100
+                            </span>
+                          </div>
+                          <div className="h-2 w-full bg-gray-700 rounded-full overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${data.riskScore}%`,
+                                backgroundColor: getRiskColor(data.riskScore),
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Card>
+                    </Card>
+                  </div>
                 ))}
 
                 {/* Comparative Disaster Types */}
                 <Card className="p-6 bg-transparent border-none text-white">
                   <h2 className="text-xl font-semibold mb-4">Disaster Types</h2>
-                  <div className="h-[600px] bg-gray-800/50 rounded-xl py-12 px-6">
+                  <div className="h-[600px] bg-white/10 backdrop-blur-md rounded-xl py-12 px-6">
                     <AreaChart
                       data={getAllDisasterTypes().map((type) => {
                         const dataPoint: DataPoint = { date: type };
@@ -272,7 +265,7 @@ export function TabbedDashboard({
                 </Card>
 
                 {/* Recent Disasters Timeline */}
-                <Card className="p-6 bg-gray-800/50 text-white">
+                <Card className="p-6 bg-white/10 backdrop-blur-md border-white/10 text-white">
                   <h2 className="text-xl font-semibold mb-4">
                     Recent Disasters Timeline
                   </h2>
@@ -289,7 +282,7 @@ export function TabbedDashboard({
                               key={disaster.disasterNumber}
                               className="text-sm"
                             >
-                              <span className="text-gray-400">
+                              <span className="text-white/60">
                                 {new Date(
                                   disaster.declarationDate,
                                 ).toLocaleDateString()}
@@ -312,7 +305,7 @@ export function TabbedDashboard({
                   </h2>
 
                   {/* Historical Trends Chart */}
-                  <div className="h-[600px] bg-gray-800/50 rounded-xl py-12 px-6">
+                  <div className="h-[600px] bg-white/10 backdrop-blur-md rounded-xl py-12 px-6">
                     <AreaChart
                       data={getAllYears().map((year) => {
                         const dataPoint: DataPoint = { date: year.toString() };

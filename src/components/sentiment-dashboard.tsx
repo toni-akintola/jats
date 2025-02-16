@@ -132,7 +132,7 @@ export function SentimentDashboard({
 
   return (
     <div className="h-full p-8 relative">
-      {onClose && (
+      {/* {onClose && (
         <button
           onClick={onClose}
           className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
@@ -140,7 +140,7 @@ export function SentimentDashboard({
         >
           ×
         </button>
-      )}
+      )} */}
       <div className="space-y-8">
         {/* <div className="space-y-4"> */}
         {/* <h2 className="text-2xl font-bold text-white">
@@ -159,7 +159,7 @@ export function SentimentDashboard({
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-4">
-                <h3 className="font-semibold text-white">Sentiment Scores</h3>
+                <h3 className="font-semibold text-white">Satisfaction Index</h3>
                 {Object.entries(results).map(([company, data], index) => (
                   <div
                     key={company}
@@ -169,6 +169,7 @@ export function SentimentDashboard({
                     style={{
                       borderLeft: `4px solid ${COLORS[index % COLORS.length]}`,
                     }}
+                    onClick={() => onRemoveLocation(company, locations.length === 1)}
                   >
                     <h4 className="font-medium text-white">{company}</h4>
                     <p className="text-2xl font-bold text-white">
@@ -198,7 +199,7 @@ export function SentimentDashboard({
             </div>
 
             <div className="space-y-2">
-              <h3 className="font-semibold text-white">Company Details</h3>
+              <h3 className="font-semibold text-white">Location Details</h3>
               <div className="flex gap-4 overflow-x-auto pb-4">
                 {Object.entries(results).map(([company, data]) => (
                   <Card
