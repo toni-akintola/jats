@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import { usePropertySearch } from "@/hooks/use-property-search";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -10,20 +10,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
 
-export function PropertySearch() {
-  const { searchProperties, isLoading, thoughts, error } = usePropertySearch();
+interface PropertySearchProps {
+  onSearch: (params: {
+    location: string;
+    propertyType?: string;
+    priceRange?: string;
+  }) => void;
+  isLoading: boolean;
+  error: string | null;
+}
+
+export function PropertySearch({
+  onSearch,
+  isLoading,
+  error,
+}: PropertySearchProps) {
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState<string>();
   const [priceRange, setPriceRange] = useState<string>();
 
   const handleSearch = () => {
-    searchProperties({
-      location,
-      propertyType,
-      priceRange,
-    });
+    onSearch({ location, propertyType, priceRange });
   };
 
   return (
@@ -85,19 +93,6 @@ export function PropertySearch() {
 
         {error && <p className="text-red-400 text-sm">{error}</p>}
       </div>
-
-      {thoughts.length > 0 && (
-        <div className="mt-6 p-4 bg-white/5 rounded-lg border border-white/10">
-          <h3 className="text-white font-medium mb-3">Analysis Progress</h3>
-          <div className="space-y-2">
-            {thoughts.map((thought, index) => (
-              <p key={index} className="text-white/80 text-sm">
-                {thought}
-              </p>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
