@@ -55,7 +55,7 @@ export default function MapPage() {
     try {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: "mapbox://styles/mapbox/dark-v11",
+        style: "mapbox://styles/mapbox/outdoors-v12",
         center: [-98, 39],
         zoom: 3,
       });
