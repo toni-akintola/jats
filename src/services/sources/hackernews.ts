@@ -1,6 +1,7 @@
 import { DataSource } from "@/services/types";
 import { HackerNewsHit } from "@/services/types/hackernews";
-import { SentimentSource, SentimentResult } from "../types";
+import { SentimentSource, SentimentResult, Mention } from "../types";
+import { generateMentionText } from "../sentiment-service";
 
 interface HNItem {
   text: string;
@@ -52,34 +53,49 @@ export class HackerNewsSource implements DataSource {
 
 export const hackernewsSource: SentimentSource = {
   name: "Hacker News",
-  async fetchSentiment(company: string): Promise<SentimentResult> {
-    const response = await fetch("/api/hackernews-sentiment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ company }),
-    });
+  async fetchSentiment(location: string): Promise<SentimentResult> {
+    // Generate random sentiment data
+    const mentionCount = Math.floor(Math.random() * 10) + 3; // 3-13 mentions (HN typically has fewer)
+    const mentions: Mention[] = [];
+    const baseScore = Math.random() * 2 - 1; // Base sentiment between -1 and 1
 
-    if (!response.ok) throw new Error("Failed to fetch Hacker News sentiment");
+    for (let i = 0; i < mentionCount; i++) {
+      const sentiment = baseScore + (Math.random() * 1.0 - 0.5); // More extreme variations for HN
+      const daysAgo = Math.floor(Math.random() * 60); // Random date within last 2 months
+      const date = new Date();
+      date.setDate(date.getDate() - daysAgo);
 
-    const data = await response.json();
+      const itemId = Math.floor(Math.random() * 1000000) + 30000000;
+
+      mentions.push({
+        text: generateMentionText(location, sentiment, "Hacker News"),
+        sentiment,
+        source: "Hacker News",
+        date: date.toISOString(),
+        url: `https://news.ycombinator.com/item?id=${itemId}`,
+      });
+    }
+
+    // Generate keywords based on sentiment
+    const keywords = [
+      "technology",
+      "startup",
+      "innovation",
+      "development",
+      "community",
+      location.toLowerCase(),
+      mentions[0].sentiment > 0.5 ? "growth" : "challenges",
+      mentions[0].sentiment > 0 ? "opportunity" : "concern",
+    ];
+
+    // Calculate average sentiment
+    const averageSentiment =
+      mentions.reduce((sum, m) => sum + m.sentiment, 0) / mentions.length;
 
     return {
-      mentions: data.recentMentions.map(
-        (mention: {
-          text: string;
-          sentiment: number;
-          date: string;
-          url?: string;
-        }) => ({
-          text: mention.text,
-          sentiment: mention.sentiment,
-          source: "Hacker News",
-          date: mention.date,
-          url: mention.url,
-        }),
-      ),
-      score: data.score,
-      keywords: data.topKeywords,
+      mentions,
+      score: averageSentiment,
+      keywords: keywords,
     };
   },
 };

@@ -48,7 +48,7 @@ interface AreaChartProps {
     [key: string]: {
       label: string;
       color: string;
-      type?: 'line' | 'bar';
+      type?: "line" | "bar";
     };
   };
   dateRange?: string;
@@ -71,7 +71,7 @@ export function AreaChart({
   xAxisFormatter = (value) => value,
 }: AreaChartProps) {
   // Check if we're using any bar type configs
-  const hasBarType = Object.values(config).some(c => c.type === 'bar');
+  const hasBarType = Object.values(config).some((c) => c.type === "bar");
 
   const ChartComponent = hasBarType ? BarChart : RechartsAreaChart;
 
@@ -93,7 +93,11 @@ export function AreaChart({
                 bottom: 5,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} stroke="rgba(255,255,255,0.2)" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                strokeOpacity={0.1}
+                stroke="rgba(255,255,255,0.2)"
+              />
               <XAxis
                 dataKey={xAxisKey}
                 tickLine={false}
@@ -103,14 +107,14 @@ export function AreaChart({
                 stroke="rgba(255,255,255,0.4)"
               />
               <YAxis
-                domain={[0, 'auto']}
+                domain={[0, "auto"]}
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 stroke="rgba(255,255,255,0.4)"
               />
               <Tooltip
-                cursor={hasBarType ? { fill: 'rgba(255,255,255,0.1)' } : false}
+                cursor={hasBarType ? { fill: "rgba(255,255,255,0.1)" } : false}
                 content={({ active, payload, label }) => {
                   if (!active || !payload) return null;
                   return (
@@ -138,8 +142,8 @@ export function AreaChart({
                 }}
               />
               <Legend wrapperStyle={{ color: "white" }} />
-              {Object.entries(config).map(([key, value]) => (
-                value.type === 'bar' ? (
+              {Object.entries(config).map(([key, value]) =>
+                value.type === "bar" ? (
                   <Bar
                     key={key}
                     dataKey={key}
@@ -159,8 +163,8 @@ export function AreaChart({
                     strokeWidth={2}
                     connectNulls
                   />
-                )
-              ))}
+                ),
+              )}
             </ChartComponent>
           </ResponsiveContainer>
         </div>

@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fredoka.variable} font-fredoka antialiased min-h-screen`}
+        className={`${fredoka.variable} font-fredoka antialiased min-h-screen h-screen max-h-screen w-full`}
         style={{
           background: `linear-gradient(135deg, 
             #0e3b5c 0%,
@@ -35,10 +35,13 @@ export default function RootLayout({
         }}
       >
         <div className="absolute inset-0 bg-black/5" />
-        <HeaderProvider>
-          <Header />
+
+        <div className="relative pt-16 h-full min-h-screen">
+          {/* <HeaderProvider>
+            <Header /> */}
           {children}
-        </HeaderProvider>
+          {/* </HeaderProvider> */}
+        </div>
       </body>
     </html>
   );

@@ -16,7 +16,7 @@ export function ListingsGrid({
   const isSearch = pathname === "/search";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 auto-rows-fr">
+    <div className="grid grid-cols-1 gap-8 w-full sm:grid-cols-[repeat(auto-fit,minmax(450px,1fr))]">
       {listings.map((listing) => (
         <Link
           href={

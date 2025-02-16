@@ -3,6 +3,7 @@ import { useState } from "react";
 import { PropertySearch } from "@/components/property-search";
 import Listings from "@/components/listings";
 import { Listing } from "@/types/listing";
+import { NavBar } from "@/components/nav-bar";
 
 // Move the skeleton component here since it's specific to this page
 function ListingSkeleton() {
@@ -52,7 +53,8 @@ export default function SearchPage() {
   };
 
   return (
-    <main className="min-h-screen py-8">
+    <main className="py-8 min-h-screen">
+      <NavBar />
       <div className="container space-y-8">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-2">
@@ -69,8 +71,8 @@ export default function SearchPage() {
           />
         </div>
 
-        {/* Align with search component width */}
-        <div className="max-w-4xl mx-auto w-full flex ">
+        {/* Listings Section */}
+        <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-white mb-6">
             {listings.length > 0 ? "Potential Opportunities" : "Your Listings"}
           </h2>
