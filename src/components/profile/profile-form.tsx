@@ -85,7 +85,7 @@ const formSchema = z.object({
 
 export function ProfileForm() {
   const { profile, updateProfile } = useProfileStore();
-
+  console.log(profile);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

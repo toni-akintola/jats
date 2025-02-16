@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { DeveloperProfile } from "@/types/profile";
 
 interface ProfileStore {
@@ -33,11 +34,19 @@ const defaultProfile: DeveloperProfile = {
   exitStrategy: ["Hold Long-term", "Refinance and Hold"],
 };
 
-export const useProfileStore = create<ProfileStore>((set) => ({
-  profile: defaultProfile,
-  setProfile: (profile) => set({ profile }),
-  updateProfile: (updates) =>
-    set((state) => ({
-      profile: state.profile ? { ...state.profile, ...updates } : null,
-    })),
-}));
+export const useProfileStore = create<ProfileStore>()(
+  persist(
+    (set) => ({
+      profile: defaultProfile,
+      setProfile: (profile) => set({ profile }),
+      updateProfile: (updates) =>
+        set((state) => ({
+          profile: state.profile ? { ...state.profile, ...updates } : null,
+        })),
+    }),
+    {
+      name: "profile-storage", // unique name for localStorage key
+      partialize: (state) => ({ profile: state.profile }), // only persist the profile
+    },
+  ),
+);
