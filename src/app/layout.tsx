@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
+import { HeaderProvider } from "@/contexts/header-context";
+import { Header } from "@/components/header";
 
 const fredoka = Fredoka({
   subsets: ["latin"],
@@ -32,7 +34,12 @@ export default function RootLayout({
           ) fixed`,
         }}
       >
-        <div className="relative pt-16">{children}</div>
+        <div className="relative pt-16">
+          <HeaderProvider>
+            <Header />
+            {children}
+          </HeaderProvider>
+        </div>
       </body>
     </html>
   );
