@@ -2,6 +2,7 @@ export interface DeveloperProfile {
   name: string;
   title: string;
   company: string;
+  imageUrl: string;
   location: string;
   experience: number;
   specialization: string[];

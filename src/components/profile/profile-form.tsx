@@ -27,12 +27,14 @@ import {
   developmentTypeOptions,
   exitStrategyOptions,
 } from "@/types/profile";
+import { useProfileStore } from "@/store/profile-store";
 
 const formSchema = z.object({
   name: z.string().min(2),
   title: z.string().min(2),
   company: z.string().min(2),
   location: z.string().min(2),
+  imageUrl: z.string(),
   experience: z.string(),
   specialization: z.string(),
   investmentThesis: z.string().min(10),
@@ -48,30 +50,60 @@ const formSchema = z.object({
 });
 
 export function ProfileForm() {
+  const { profile, updateProfile } = useProfileStore();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      title: "",
-      company: "",
-      location: "",
-      experience: "",
-      specialization: "",
-      investmentThesis: "",
-      riskProfile: "Moderate",
-      propertyTypes: "",
-      marketTypes: "",
-      dealSizeMin: "",
-      dealSizeMax: "",
-      developmentTypes: "",
-      exitStrategy: "",
-      preferredStructure: "",
-      sustainabilityFocus: false,
+      name: profile?.name || "",
+      title: profile?.title || "",
+      company: profile?.company || "",
+      location: profile?.location || "",
+      imageUrl: profile?.imageUrl || "",
+      experience: profile?.experience?.toString() || "",
+      specialization: profile?.specialization[0] || "",
+      investmentThesis: profile?.investmentThesis || "",
+      riskProfile: profile?.riskProfile || "Moderate",
+      propertyTypes: profile?.investmentPreferences.propertyTypes[0] || "",
+      marketTypes: profile?.investmentPreferences.marketTypes[0] || "",
+      dealSizeMin:
+        profile?.investmentPreferences.dealSize.min?.toString() || "",
+      dealSizeMax:
+        profile?.investmentPreferences.dealSize.max?.toString() || "",
+      developmentTypes: profile?.developmentTypes[0] || "",
+      exitStrategy: profile?.exitStrategy[0] || "",
+      preferredStructure: profile?.preferredStructure[0] || "",
+      sustainabilityFocus: profile?.sustainabilityFocus || false,
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    updateProfile({
+      name: values.name,
+      title: values.title,
+      company: values.company,
+      location: values.location,
+      experience: parseInt(values.experience),
+      specialization: [values.specialization],
+      investmentThesis: values.investmentThesis,
+      riskProfile: values.riskProfile as
+        | "Conservative"
+        | "Moderate"
+        | "Aggressive",
+      investmentPreferences: {
+        propertyTypes: [values.propertyTypes],
+        marketTypes: [values.marketTypes],
+        dealSize: {
+          min: parseInt(values.dealSizeMin),
+          max: parseInt(values.dealSizeMax),
+        },
+        targetMarkets: profile?.investmentPreferences.targetMarkets || [],
+      },
+      developmentTypes: [values.developmentTypes],
+      exitStrategy: [values.exitStrategy],
+      preferredStructure: [values.preferredStructure],
+      sustainabilityFocus: values.sustainabilityFocus,
+    });
   }
 
   return (
@@ -82,6 +114,81 @@ export function ProfileForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white/80">
+                Personal Information
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John Developer"
+                          {...field}
+                          className="bg-white/5"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Principal Developer"
+                          {...field}
+                          className="bg-white/5"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Company</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Urban Development Partners"
+                          {...field}
+                          className="bg-white/5"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Location</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="San Francisco Bay Area"
+                          {...field}
+                          className="bg-white/5"
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}
