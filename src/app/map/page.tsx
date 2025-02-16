@@ -1,12 +1,102 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useSearchParams } from "next/navigation";
+import { DetailedListing } from "@/types/listing";
+import Image from "next/image";
+
+const ListingSidePanel = ({ listing }: { listing: DetailedListing | null }) => {
+  if (!listing) return null;
+
+  return (
+    <div className="absolute right-0 top-0 bottom-0 w-96 bg-white shadow-lg overflow-y-auto p-4">
+      <div className="relative h-48 w-full mb-4">
+        <Image
+          src={listing.imageUrl}
+          alt={listing.location}
+          fill
+          className="object-cover rounded-lg"
+        />
+      </div>
+      <h2 className="text-xl font-bold mb-2">{listing.location}</h2>
+      <p className="text-gray-600 mb-4">{listing.subtitle}</p>
+      <div className="flex justify-between mb-4">
+        <span className="text-lg font-semibold">${listing.price.toLocaleString()}</span>
+        <span className="text-yellow-500">★ {listing.rating}</span>
+      </div>
+      {listing.description && (
+        <p className="text-gray-700 mb-4">{listing.description}</p>
+      )}
+      {listing.amenities && (
+        <div className="mb-4">
+          <h3 className="font-semibold mb-2">Amenities</h3>
+          <ul className="list-disc list-inside">
+            {listing.amenities.map((amenity, index) => (
+              <li key={index} className="text-gray-600">{amenity}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-4">
+        {listing.bedrooms && (
+          <div className="text-gray-600">
+            <span className="font-semibold">Bedrooms:</span> {listing.bedrooms}
+          </div>
+        )}
+        {listing.bathrooms && (
+          <div className="text-gray-600">
+            <span className="font-semibold">Bathrooms:</span> {listing.bathrooms}
+          </div>
+        )}
+        {listing.squareFeet && (
+          <div className="text-gray-600">
+            <span className="font-semibold">Sq Ft:</span> {listing.squareFeet.toLocaleString()}
+          </div>
+        )}
+        {listing.yearBuilt && (
+          <div className="text-gray-600">
+            <span className="font-semibold">Year Built:</span> {listing.yearBuilt}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default function MapPage() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const searchParams = useSearchParams();
+  const [selectedListing, setSelectedListing] = useState<DetailedListing | null>(null);
+
+  // Mock data for demonstration - replace with actual API call
+  useEffect(() => {
+    const selectedId = searchParams.get('selectedListingId');
+    if (selectedId) {
+      // Mock listing data - replace with actual API call
+      setSelectedListing({
+        id: parseInt(selectedId),
+        location: "123 Example St, San Francisco, CA",
+        subtitle: "Beautiful Modern Home",
+        dates: "Available Now",
+        price: 1250000,
+        rating: 4.8,
+        isFavorite: false,
+        imageUrl: "/moss-beach.png",
+        description: "Stunning modern home with panoramic views of the city. Recently renovated with high-end finishes throughout.",
+        amenities: ["Hardwood Floors", "Granite Countertops", "Smart Home Features", "2-Car Garage"],
+        squareFeet: 2500,
+        bedrooms: 4,
+        bathrooms: 3,
+        propertyType: "single-family",
+        yearBuilt: 2020
+      });
+    } else {
+      setSelectedListing(null);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     console.log("Map container:", mapContainerRef.current);
@@ -189,6 +279,7 @@ export default function MapPage() {
           right: 0,
         }}
       />
+      <ListingSidePanel listing={selectedListing} />
     </main>
   );
 }
