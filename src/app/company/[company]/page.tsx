@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/card";
 import { TypewriterText } from "@/components/ui/typewriter-text";
 
-interface CompanyData {
-  company: string;
+interface PropertyData {
+  location: string;
   researchModules: {
     moduleName: string;
     moduleDescription: string;
@@ -22,26 +22,23 @@ interface CompanyData {
   }[];
 }
 
-export default function CompanyPage() {
+export default function PropertyPage() {
   const params = useParams();
-  const companySlug = params.company as string;
+  const locationSlug = params.company as string; // We'll update the route later
 
-  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
+  const [propertyData, setPropertyData] = useState<PropertyData | null>(null);
   const [researchModules, setResearchModules] = useState<
-    CompanyData["researchModules"]
+    PropertyData["researchModules"]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const [activeTab, setActiveTab] = useState<string>("");
   const [viewedTabs, setViewedTabs] = useState<string[]>([]);
   const [animatingTab, setAnimatingTab] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchCompanyData() {
+    async function fetchPropertyData() {
       try {
         setIsLoading(true);
-        setError(null);
         setResearchModules([]);
 
         const response = await fetch("/api/company-research", {
@@ -49,32 +46,33 @@ export default function CompanyPage() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ company: companySlug }),
+          body: JSON.stringify({ location: locationSlug }),
         });
 
         if (!response.ok) {
-          throw new Error("Failed to fetch company data");
+          throw new Error("Failed to fetch property data");
         }
 
         const reader = response.body?.getReader();
         if (!reader) throw new Error("No reader available");
 
-        // Read the streaming data
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
 
-          // Convert the Uint8Array to text
           const chunk = new TextDecoder().decode(value);
           const lines = chunk.split("\n");
 
-          // Process each SSE message
           for (const line of lines) {
             if (line.startsWith("data: ")) {
               const data = JSON.parse(line.slice(6));
 
-              if ("company" in data) {
-                setCompanyData((prev) => ({ ...prev, company: data.company }));
+              if ("location" in data) {
+                setPropertyData((prev) => ({
+                  ...prev,
+                  location: data.location,
+                  researchModules: prev?.researchModules || [],
+                }));
               } else {
                 setResearchModules((prev) => {
                   const newModules = [...prev];
@@ -88,7 +86,6 @@ export default function CompanyPage() {
                     newModules.push(data);
                   }
 
-                  // Set active tab to first module when it arrives
                   if (newModules.length === 1) {
                     setActiveTab(data.moduleName);
                   }
@@ -100,14 +97,14 @@ export default function CompanyPage() {
           }
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        console.error("Error fetching property data:", err);
       } finally {
         setIsLoading(false);
       }
     }
 
-    fetchCompanyData();
-  }, [companySlug]);
+    fetchPropertyData();
+  }, [locationSlug]);
 
   const handleTabChange = (tab: string) => {
     setViewedTabs((prev) => [...prev, activeTab]);
@@ -124,7 +121,7 @@ export default function CompanyPage() {
     }
   };
 
-  if (!companyData?.company) {
+  if (!propertyData?.location) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
@@ -138,16 +135,16 @@ export default function CompanyPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Head>
-        <title>{companyData.company} Research | AI Insights</title>
+        <title>{propertyData.location} Market Analysis | PropAI</title>
         <meta
           name="description"
-          content={`Comprehensive research on ${companyData.company}`}
+          content={`Comprehensive property analysis for ${propertyData.location}`}
         />
       </Head>
 
       <h1 className="text-4xl font-bold mb-8">
         <TypewriterText
-          text={`${companyData.company} Research`}
+          text={`${propertyData.location} Market Analysis`}
           speed={50}
           startDelay={0}
         />

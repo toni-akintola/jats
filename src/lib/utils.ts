@@ -13,6 +13,7 @@ export function convertLangChainMessageToVercelMessage(message: BaseMessage) {
     return {
       content: message.content,
       role: "assistant",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       tool_calls: (message as any).tool_calls,
     };
   } else {
@@ -20,6 +21,7 @@ export function convertLangChainMessageToVercelMessage(message: BaseMessage) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parseAgentResult(result: { messages: BaseMessage[] }): any {
   try {
     // Convert messages to Vercel-compatible format
@@ -36,7 +38,11 @@ export function parseAgentResult(result: { messages: BaseMessage[] }): any {
       console.error("No assistant message found");
       return null;
     }
-    const lastAssistantMessageContent = lastAssistantMessage.content as string;
+    let lastAssistantMessageContent = lastAssistantMessage.content as string;
+    lastAssistantMessageContent = lastAssistantMessageContent
+      .replace("```json", "")
+      .replace("```", "")
+      .trim();
     // Attempt to parse the content as JSON
     try {
       return JSON.parse(lastAssistantMessageContent);

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
+import { NavBar } from "@/components/nav-bar";
 
 const fredoka = Fredoka({
   subsets: ["latin"],
@@ -9,9 +10,8 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "Feels - Company Sentiment Analysis",
-  description:
-    "Analyze market sentiment in real-time using AI swarm intelligence",
+  title: "PropAI - Property Analysis Intelligence",
+  description: "AI-powered property analysis and development opportunities",
 };
 
 export default function RootLayout({
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fredoka.variable} font-fredoka antialiased min-h-screen normal-case`}
+        className={`${fredoka.variable} font-fredoka antialiased min-h-screen`}
         style={{
           background: `linear-gradient(135deg, 
             #0e3b5c 0%,
@@ -34,7 +34,8 @@ export default function RootLayout({
         }}
       >
         <div className="absolute inset-0 bg-black/5" />
-        <div className="relative">{children}</div>
+        <NavBar />
+        <div className="relative pt-16">{children}</div>
       </body>
     </html>
   );
