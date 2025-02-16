@@ -2,59 +2,58 @@
 import { useEffect, useState } from "react";
 
 interface TypewriterTextProps {
-  messages: string[];
-  typingSpeed?: number;
-  delayBetweenMessages?: number;
+  text: string;
+  speed?: number;
+  startDelay?: number;
+  onComplete?: () => void;
 }
 
 export function TypewriterText({
-  messages,
-  typingSpeed = 50,
-  delayBetweenMessages = 1000,
+  text,
+  speed = 30,
+  startDelay = 0,
+  onComplete,
 }: TypewriterTextProps) {
-  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-  const [currentText, setCurrentText] = useState("");
-  const [isTyping, setIsTyping] = useState(true);
+  const [displayedText, setDisplayedText] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [hasStarted, setHasStarted] = useState(false);
 
   useEffect(() => {
-    if (currentMessageIndex >= messages.length) return;
+    setDisplayedText("");
+    setCurrentIndex(0);
+    setHasStarted(false);
+  }, [text]);
 
-    const message = messages[currentMessageIndex];
-    if (isTyping && currentText.length < message.length) {
-      const timeoutId = setTimeout(() => {
-        setCurrentText(message.slice(0, currentText.length + 1));
-      }, typingSpeed);
-      return () => clearTimeout(timeoutId);
+  useEffect(() => {
+    if (!hasStarted) {
+      const timeout = setTimeout(() => {
+        setHasStarted(true);
+      }, startDelay);
+      return () => clearTimeout(timeout);
     }
+  }, [hasStarted, startDelay]);
 
-    if (isTyping && currentText.length === message.length) {
-      const timeoutId = setTimeout(() => {
-        setIsTyping(false);
-      }, delayBetweenMessages);
-      return () => clearTimeout(timeoutId);
-    }
+  useEffect(() => {
+    if (!hasStarted) return;
 
-    if (!isTyping) {
-      const timeoutId = setTimeout(() => {
-        setCurrentMessageIndex((i) => i + 1);
-        setCurrentText("");
-        setIsTyping(true);
-      }, typingSpeed);
-      return () => clearTimeout(timeoutId);
+    if (currentIndex < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayedText((prev) => prev + text[currentIndex]);
+        setCurrentIndex((prev) => prev + 1);
+      }, speed);
+
+      return () => clearTimeout(timeout);
+    } else if (currentIndex === text.length && onComplete) {
+      onComplete();
     }
-  }, [
-    currentText,
-    currentMessageIndex,
-    isTyping,
-    messages,
-    typingSpeed,
-    delayBetweenMessages,
-  ]);
+  }, [currentIndex, text, speed, hasStarted, onComplete]);
 
   return (
-    <div className="font-mono">
-      {currentText}
-      <span className="animate-pulse">▋</span>
-    </div>
+    <span>
+      {displayedText}
+      {currentIndex < text.length && (
+        <span className="inline-block w-1 h-4 bg-primary animate-pulse" />
+      )}
+    </span>
   );
 }
