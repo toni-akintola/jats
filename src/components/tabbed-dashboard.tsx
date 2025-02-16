@@ -9,13 +9,20 @@ interface TabbedDashboardProps {
   address: string;
   onClose: () => void;
   onRemoveLocation: (location: string, isLast: boolean) => void;
+  onRiskDataLoaded?: (address: string, riskScore: number) => void;
 }
 
 type RiskDataMap = Record<string, RiskAssessment>;
 
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDashboardProps) {
+export const getRiskColor = (score: number) => {
+  if (score < 33) return '#10b981';  // green
+  if (score < 66) return '#f59e0b';  // yellow
+  return '#ef4444';                  // red
+};
+
+export function TabbedDashboard({ address, onClose, onRemoveLocation, onRiskDataLoaded }: TabbedDashboardProps) {
   const [activeTab, setActiveTab] = useState<'sentiment' | 'risk'>('sentiment');
   const [riskDataMap, setRiskDataMap] = useState<RiskDataMap>({});
   const [locations, setLocations] = useState<string[]>([address]);
@@ -51,6 +58,9 @@ export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDa
         ...prev,
         [locationToFetch]: assessment
       }));
+      
+      // Notify parent component about the risk score
+      onRiskDataLoaded?.(locationToFetch, assessment.riskScore);
     } catch (error) {
       toast({
         title: "Error",
@@ -198,11 +208,7 @@ export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDa
                             className="h-full rounded-full transition-all duration-500"
                             style={{
                               width: `${data.riskScore}%`,
-                              backgroundColor: `${
-                                data.riskScore < 33 ? '#10b981' :  // green
-                                data.riskScore < 66 ? '#f59e0b' :  // yellow
-                                '#ef4444'                          // red
-                              }`
+                              backgroundColor: getRiskColor(data.riskScore)
                             }}
                           />
                         </div>

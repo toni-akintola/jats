@@ -4,12 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { hideHeader } from "@/contexts/header-context";
-import { TabbedDashboard } from "@/components/tabbed-dashboard";
+import { TabbedDashboard, getRiskColor } from "@/components/tabbed-dashboard";
 
 type ClickedLocation = {
   lng: number;
   lat: number;
-  address?: string;
+  address: string;
+  marker: mapboxgl.Marker;
+};
+
+type LocationsMap = {
+  [address: string]: ClickedLocation;
 };
 
 const MAPBOX_TOKEN = 'pk.eyJ1IjoiamcyMzY4IiwiYSI6ImNtNzcwYnE1aTEzbDMyaW9sNDRhZHNjOTQifQ.1v5AL-rjwGQC5_jd3pSJHQ';
@@ -21,7 +26,7 @@ interface LocationFeature {
   center: [number, number];
   place_type: string[];
   text: string;
-  context?: any[];
+  context?: Record<string, unknown>[];
 }
 
 export default function MapPage() {
@@ -34,30 +39,48 @@ export default function MapPage() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  const [clickedLocation, setClickedLocation] = useState<ClickedLocation | null>(null);
-  const [companies, setCompanies] = useState<string[]>([]);
-  const [results, setResults] = useState<Record<string, any>>({});
+  const [locationsMap, setLocationsMap] = useState<LocationsMap>({});
+  const [activeLocation, setActiveLocation] = useState<string | null>(null);
 
-  const handleRemoveCompany = (company: string, isLast: boolean) => {
-    setCompanies((prev) => prev.filter((c: string) => c !== company));
-    setResults((prev) => {
-      const newResults = { ...prev };
-      delete newResults[company];
-      return newResults;
+  const handleRemoveLocation = (address: string, isLast: boolean) => {
+    setLocationsMap(prev => {
+      const newLocations = { ...prev };
+      // Remove the marker from the map
+      newLocations[address]?.marker.remove();
+      delete newLocations[address];
+      return newLocations;
     });
-
-    // Remove the marker for this company if it exists
-    const marker = markersRef.current.get(company);
-    if (marker) {
-      marker.remove();
-      markersRef.current.delete(company);
-    }
 
     // Close sidebar if this was the last location
     if (isLast) {
-      setClickedLocation(null);
+      setActiveLocation(null);
     }
+  };
+
+  const handleRiskDataLoaded = (address: string, riskScore: number) => {
+    setLocationsMap(prev => {
+      const location = prev[address];
+      if (!location) return prev;
+
+      // Create a new marker with the risk color
+      const newMarker = new mapboxgl.Marker({
+        color: getRiskColor(riskScore)
+      })
+        .setLngLat([location.lng, location.lat])
+        .addTo(mapRef.current!);
+      
+      // Remove the old marker
+      location.marker.remove();
+      
+      // Update the locations map with the new marker
+      return {
+        ...prev,
+        [address]: {
+          ...location,
+          marker: newMarker
+        }
+      };
+    });
   };
 
   useEffect(() => {
@@ -66,10 +89,10 @@ export default function MapPage() {
         mapRef.current?.resize();
       }, 300);
     }
-  }, [clickedLocation]);
+  }, [activeLocation]);
+
   const [searchInput, setSearchInput] = useState('');
   const [searchResults, setSearchResults] = useState<LocationFeature[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<LocationFeature | null>(null);
 
   // Initialize map
   useEffect(() => {
@@ -90,9 +113,7 @@ export default function MapPage() {
       // Add click event handler
       const handleClick = async (e: mapboxgl.MapMouseEvent) => {
         const { lng, lat } = e.lngLat;
-        console.log('Clicked coordinates:', { lng, lat });
-        setClickedLocation({ lng, lat });
-
+        
         try {
           // Reverse geocode the clicked location
           const response = await fetch(
@@ -101,15 +122,25 @@ export default function MapPage() {
           const data = await response.json();
           if (data.features && data.features.length > 0) {
             const address = data.features[0].place_name;
-            console.log('Address:', address);
-            setClickedLocation(prev => prev ? { ...prev, address } : null);
-
+            
             // Create and add new marker
-            const newMarker = new mapboxgl.Marker({ color: '#FF0000' })
+            const newMarker = new mapboxgl.Marker({ color: '#FFFFFF' })
               .setLngLat([lng, lat])
               .addTo(map);
             
-            markersRef.current.set(address, newMarker);
+            // Add to locations map
+            setLocationsMap(prev => ({
+              ...prev,
+              [address]: {
+                lng,
+                lat,
+                address,
+                marker: newMarker
+              }
+            }));
+            
+            // Set as active location
+            setActiveLocation(address);
           }
         } catch (error) {
           console.error('Error reverse geocoding:', error);
@@ -282,7 +313,7 @@ export default function MapPage() {
       const data = await response.json();
       
       if (data.features) {
-        setSearchResults(data.features.map((feature: any) => ({
+        setSearchResults(data.features.map((feature: LocationFeature) => ({
           id: feature.id,
           place_name: feature.place_name,
           center: feature.center,
@@ -300,7 +331,6 @@ export default function MapPage() {
     if (!mapRef.current) return;
     
     try {
-      setSelectedLocation(location);
       setSearchInput(location.place_name);
       setSearchResults([]);
 
@@ -346,9 +376,9 @@ export default function MapPage() {
       <div className="absolute inset-0 flex">
         <div
           ref={mapContainerRef}
-          className={`flex-grow transition-all duration-300 ease-in-out ${clickedLocation ? 'mr-[45%]' : ''}`}
+          className={`flex-grow transition-all duration-300 ease-in-out ${activeLocation ? 'mr-[45%]' : ''}`}
         />
-      {clickedLocation && (
+        {activeLocation && (
           <div 
             className="absolute right-8 top-8 bottom-8 w-[45%] overflow-y-auto z-10 backdrop-blur-md rounded-3xl shadow-2xl"
             style={{
@@ -361,13 +391,14 @@ export default function MapPage() {
               )`
             }}>
             <TabbedDashboard 
-              address={clickedLocation.address || ''} 
-              onClose={() => setClickedLocation(null)}
-              onRemoveLocation={(location, isLast) => handleRemoveCompany(location, isLast)}
+              address={activeLocation} 
+              onClose={() => setActiveLocation(null)}
+              onRemoveLocation={handleRemoveLocation}
+              onRiskDataLoaded={handleRiskDataLoaded}
             />
           </div>
         )}
       </div>
     </main>
- );
+  );
 }
