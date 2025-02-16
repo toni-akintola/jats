@@ -79,7 +79,7 @@ export default function MapPage() {
     try {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: "mapbox://styles/mapbox/outdoors-v12",
+        style: "mapbox://styles/mapbox/streets-v12",
         center: [-98, 39],
         zoom: 3,
       });
@@ -166,17 +166,17 @@ export default function MapPage() {
                 ["linear"],
                 ["heatmap-density"],
                 0,
-                "rgba(33,102,172,0)",
+                "rgba(0,0,255,0)",
                 0.2,
-                "rgb(103,169,207)",
+                "rgb(173,216,230)",
                 0.4,
-                "rgb(209,229,240)",
+                "rgb(135,206,235)",
                 0.6,
-                "rgb(253,219,199)",
+                "rgb(65,105,225)",
                 0.8,
-                "rgb(239,138,98)",
+                "rgb(0,0,205)",
                 1,
-                "rgb(178,24,43)",
+                "rgb(0,0,139)",
               ],
               // Adjust the heatmap radius by zoom level
               "heatmap-radius": [
@@ -226,17 +226,17 @@ export default function MapPage() {
                 ["linear"],
                 ["get", "mag"],
                 1,
-                "rgba(33,102,172,0)",
+                "rgba(0,0,255,0)",
                 2,
-                "rgb(103,169,207)",
+                "rgb(173,216,230)",
                 3,
-                "rgb(209,229,240)",
+                "rgb(135,206,235)",
                 4,
-                "rgb(253,219,199)",
+                "rgb(65,105,225)",
                 5,
-                "rgb(239,138,98)",
+                "rgb(0,0,205)",
                 6,
-                "rgb(178,24,43)",
+                "rgb(0,0,139)",
               ],
               "circle-stroke-color": "white",
               "circle-stroke-width": 1,
@@ -318,7 +318,7 @@ export default function MapPage() {
   };
 
   return (
-    <main className="min-h-screen w-full relative bg-black">
+    <main className="min-h-screen w-full relative bg-[#2e4c6c] backdrop-blur-md">
       <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-lg shadow-lg min-w-[300px]">
         <div className="relative">
           <input
