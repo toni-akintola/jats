@@ -47,7 +47,7 @@ export function NavBar() {
           <div className="flex items-center space-x-8">
             <NavLink href="/about">About</NavLink>
             <NavLink href="/pricing">Pricing</NavLink>
-            <NavLink href="/dashboard">Search</NavLink>
+            <NavLink href="/search">Search</NavLink>
             <NavLink href="/portfolio">Portfolio</NavLink>
           </div>
         </div>

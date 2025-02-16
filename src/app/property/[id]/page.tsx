@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
+import { ListingsControls } from "@/components/listings-controls";
 
 export default function PropertyPage() {
   const { id } = useParams();
@@ -48,6 +49,18 @@ export default function PropertyPage() {
             Back to Listings
           </Button>
         </Link>
+
+        {/* Controls Bar */}
+        <div className="mb-8">
+          <ListingsControls
+            filters={{}}
+            onFilterChange={() => {}}
+            sortBy="price"
+            onSortChange={() => {}}
+            sortDirection="asc"
+            onSortDirectionChange={() => {}}
+          />
+        </div>
 
         <div className="space-y-8">
           {/* Hero Section */}

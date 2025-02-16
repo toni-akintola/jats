@@ -71,7 +71,7 @@ export default function DashboardPage() {
 
         <div>
           <h2 className="text-2xl font-bold text-white mb-6">
-            {listings.length > 0 ? "Search Results" : "Your Listings"}
+            {listings.length > 0 ? "Search Results" : "Potential Opportunities"}
           </h2>
 
           {isLoading ? (

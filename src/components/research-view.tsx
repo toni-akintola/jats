@@ -250,7 +250,7 @@ export function ResearchView({ location }: ResearchViewProps) {
             {location}
           </div>
         </div>
-        <Link href="/dashboard">
+        <Link href="/search">
           <Button variant="outline" size="sm">
             <ChevronLeft className="h-4 w-4 mr-2" />
             Back to Search

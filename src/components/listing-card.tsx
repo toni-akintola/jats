@@ -14,10 +14,10 @@ interface ListingCardProps {
 export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const isDashboard = pathname === "/dashboard";
+  const isSearch = pathname === "/search";
 
   const handleClick = () => {
-    if (isDashboard) {
+    if (isSearch) {
       // If on dashboard, go to research page with location
       router.push(`/listing/${encodeURIComponent(listing.location)}`);
     } else {
