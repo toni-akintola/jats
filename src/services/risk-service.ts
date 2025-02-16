@@ -90,10 +90,11 @@ export class RiskService {
 //     );
     console.log("state is ", state);
     console.log("county is ", county);
+    const raw_county = county.split(" County")[0];
     const baseUrl =
       "https://www.fema.gov/api/open/v2/DisasterDeclarationsSummaries";
     const params = new URLSearchParams({
-      $filter: "state eq 'WA' and designatedArea eq 'King (County)'",
+      $filter: `state eq '${state}' and designatedArea eq '${raw_county} (County)'`,
       $format: "json",
     });
     const url = `${baseUrl}?${params.toString()}`;
