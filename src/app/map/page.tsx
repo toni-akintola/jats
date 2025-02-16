@@ -8,11 +8,33 @@ import { DetailedListing } from "@/types/listing";
 import Image from "next/image";
 import { hideHeader } from "@/contexts/header-context";
 
-const ListingSidePanel = ({ listing }: { listing: DetailedListing | null }) => {
+type ClickedLocation = {
+  lng: number;
+  lat: number;
+  address?: string;
+};
+
+const ListingSidePanel = ({
+  listing,
+  clickedLocation
+}: {
+  listing: DetailedListing | null;
+  clickedLocation: ClickedLocation | null;
+}) => {
   if (!listing) return null;
 
   return (
-    <div className="absolute right-0 top-0 bottom-0 w-96 bg-white shadow-lg overflow-y-auto p-4">
+    <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-white shadow-lg overflow-y-auto p-4 z-10">
+      {clickedLocation && (
+        <div className="mb-4 p-3 bg-gray-100 rounded-lg">
+          <h3 className="text-lg font-semibold mb-2">Clicked Location</h3>
+          <p className="text-sm text-gray-600 mb-1">Longitude: {clickedLocation.lng.toFixed(6)}</p>
+          <p className="text-sm text-gray-600 mb-1">Latitude: {clickedLocation.lat.toFixed(6)}</p>
+          {clickedLocation.address && (
+            <p className="text-sm text-gray-600">Address: {clickedLocation.address}</p>
+          )}
+        </div>
+      )}
       <div className="relative h-48 w-full mb-4">
         <Image
           src={listing.imageUrl}
@@ -73,16 +95,24 @@ export default function MapPage() {
     setHideHeader(true);
     return () => setHideHeader(false);
   }, [setHideHeader]);
+
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const searchParams = useSearchParams();
   const [selectedListing, setSelectedListing] = useState<DetailedListing | null>(null);
+  const [clickedLocation, setClickedLocation] = useState<ClickedLocation | null>(null);
 
-  // Mock data for demonstration - replace with actual API call
+  useEffect(() => {
+    if (mapRef.current) {
+      setTimeout(() => {
+        mapRef.current?.resize();
+      }, 300);
+    }
+  }, [selectedListing]);
+
   useEffect(() => {
     const selectedId = searchParams.get('selectedListingId');
     if (selectedId) {
-      // Mock listing data - replace with actual API call
       setSelectedListing({
         id: parseInt(selectedId),
         location: "123 Example St, San Francisco, CA",
@@ -127,6 +157,31 @@ export default function MapPage() {
 
       const map = mapRef.current;
       console.log("Map created successfully");
+
+      // Add click event handler
+      map.on('click', async (e) => {
+        const { lng, lat } = e.lngLat;
+        console.log('Clicked coordinates:', { lng, lat });
+        setClickedLocation({ lng, lat });
+
+        try {
+          // Reverse geocode the clicked location
+          const response = await fetch(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${mapboxgl.accessToken}`
+          );
+          const data = await response.json();
+          if (data.features && data.features.length > 0) {
+            const address = data.features[0].place_name;
+            console.log('Address:', address);
+            setClickedLocation(prev => prev ? { ...prev, address } : null);
+          }
+        } catch (error) {
+          console.error('Error reverse geocoding:', error);
+        }
+      });
+
+      // Add a pointer cursor when hovering over the map
+      map.getCanvas().style.cursor = 'pointer';
 
       map.on("load", () => {
         console.log("Map loaded");
@@ -276,17 +331,13 @@ export default function MapPage() {
 
   return (
     <main className="min-h-screen w-full relative">
-      <div
-        ref={mapContainerRef}
-        style={{
-          position: "absolute",
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-        }}
-      />
-      <ListingSidePanel listing={selectedListing} />
+      <div className="absolute inset-0 flex">
+        <div
+          ref={mapContainerRef}
+          className={`flex-grow transition-all duration-300 ease-in-out ${selectedListing ? 'mr-[50vw]' : ''}`}
+        />
+        <ListingSidePanel listing={selectedListing} clickedLocation={clickedLocation} />
+      </div>
     </main>
   );
 }
