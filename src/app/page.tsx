@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import Link from "next/link";
 const companies = [
   { name: "Urban Development Partners", logo: "/logos/udp.svg" },
   { name: "Blackstone Real Estate", logo: "/logos/blackstone.svg" },
@@ -62,13 +63,15 @@ export default function Home() {
             property analysis engine
           </p>
           <div className="flex gap-4 justify-center">
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
-            >
-              Start Free Trial
-            </Button>
+            <Link href="/map">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
+              >
+                Start Free Trial
+              </Button>
+            </Link>
             <Button
               size="lg"
               variant="outline"

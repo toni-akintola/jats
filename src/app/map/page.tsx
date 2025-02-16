@@ -5,7 +5,6 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useProfileStore } from "@/store/profile-store";
 import { TabbedDashboard, getRiskColor } from "@/components/tabbed-dashboard";
-import { hideHeader } from "@/contexts/header-context";
 
 type ClickedLocation = {
   lng: number;
@@ -32,13 +31,7 @@ interface LocationFeature {
 }
 
 export default function MapPage() {
-  const { setHideHeader } = hideHeader();
   const profile = useProfileStore((state) => state.profile);
-
-  useEffect(() => {
-    setHideHeader(true);
-    return () => setHideHeader(false);
-  }, [setHideHeader]);
 
   // Function to geocode profile location
   const geocodeLocation = async (location: string) => {
@@ -72,6 +65,8 @@ export default function MapPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [locationsMap, setLocationsMap] = useState<LocationsMap>({});
   const [activeLocation, setActiveLocation] = useState<string | null>(null);
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState<LocationFeature[]>([]);
 
   const handleRemoveLocation = (address: string, isLast: boolean) => {
     setLocationsMap((prev) => {
@@ -115,18 +110,6 @@ export default function MapPage() {
   };
 
   useEffect(() => {
-    if (mapRef.current) {
-      setTimeout(() => {
-        mapRef.current?.resize();
-      }, 300);
-    }
-  }, [activeLocation]);
-
-  const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<LocationFeature[]>([]);
-
-  // Initialize map
-  useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
     console.log("Initializing map...");
@@ -137,6 +120,11 @@ export default function MapPage() {
         center: [-119.4179, 36.7783], // California center coordinates
         zoom: 6,
       });
+
+      // Force a resize after map initialization
+      setTimeout(() => {
+        mapRef.current?.resize();
+      }, 100);
 
       const map = mapRef.current;
       console.log("Map created successfully");
@@ -531,8 +519,10 @@ export default function MapPage() {
       console.error("Error initializing map:", error);
     }
 
+    // Clean up on unmount
     return () => {
       mapRef.current?.remove();
+      mapRef.current = null;
     };
   }, []);
 
@@ -651,7 +641,7 @@ export default function MapPage() {
 
   return (
     <main className="min-h-screen w-full relative bg-[#2e4c6c] backdrop-blur-md">
-      <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-lg shadow-lg min-w-[300px]">
+      <div className="absolute top-20 left-4 z-10 bg-white p-4 rounded-lg shadow-lg min-w-[300px]">
         <div className="relative">
           <input
             type="text"

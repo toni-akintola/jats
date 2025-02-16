@@ -34,12 +34,14 @@ export default function RootLayout({
           ) fixed`,
         }}
       >
-        <div className="relative pt-16">
-          <HeaderProvider>
+        <HeaderProvider>
+          <div className="relative min-h-screen">
             <Header />
-            {children}
-          </HeaderProvider>
-        </div>
+            <main className="relative">
+              {children}
+            </main>
+          </div>
+        </HeaderProvider>
       </body>
     </html>
   );
