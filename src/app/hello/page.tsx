@@ -16,8 +16,8 @@ export default function HelloPage() {
     });
 
     if (response.ok) {
-      router.push('/');
-      router.refresh();
+      const { result } = await response.json();
+      router.push(`/loading?name=${encodeURIComponent(result)}`);
     }
   };
 
