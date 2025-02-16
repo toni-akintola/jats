@@ -9,7 +9,7 @@ interface PropertyOpportunity {
 
 const systemPrompt = `
 You are a real estate development analyst. Find specific properties or development sites.
-Respond with a JSON array of opportunities in this format:
+Respond with JUST a JSON array of opportunities in this format:
 [{
   "address": "Full property address",
   "type": "Current property type (vacant land, existing building, etc.)"
@@ -65,11 +65,14 @@ export async function POST(req: NextRequest) {
 
     const data = await response.json();
     const content = data.choices[0].message.content;
-    console.log(content);
 
     try {
       // Try to parse the content as JSON
-      const opportunities: PropertyOpportunity[] = JSON.parse(content);
+      const parsedContent = content
+        .replace("```json", "")
+        .replace("```", "")
+        .trim();
+      const opportunities: PropertyOpportunity[] = JSON.parse(parsedContent);
 
       return new Response(JSON.stringify({ opportunities }), {
         status: 200,
