@@ -1,41 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Message as VercelChatMessage } from "ai";
-
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { Calculator } from "@langchain/community/tools/calculator";
-import {
-  AIMessage,
-  BaseMessage,
-  SystemMessage,
-} from "@langchain/core/messages";
-
+import { SystemMessage } from "@langchain/core/messages";
+import { convertLangChainMessageToVercelMessage } from "@/lib/utils";
 export const runtime = "edge";
-
-// const convertVercelMessageToLangChainMessage = (message: VercelChatMessage) => {
-//   if (message.role === "user") {
-//     return new HumanMessage(message.content);
-//   } else if (message.role === "assistant") {
-//     return new AIMessage(message.content);
-//   } else {
-//     return new ChatMessage(message.content, message.role);
-//   }
-// };
-
-const convertLangChainMessageToVercelMessage = (message: BaseMessage) => {
-  if (message._getType() === "human") {
-    return { content: message.content, role: "user" };
-  } else if (message._getType() === "ai") {
-    return {
-      content: message.content,
-      role: "assistant",
-      tool_calls: (message as AIMessage).tool_calls,
-    };
-  } else {
-    return { content: message.content, role: message._getType() };
-  }
-};
 
 const AGENT_SYSTEM_TEMPLATE = `You are a talking parrot named Polly. All final responses must be how a talking parrot would respond. Squawk often!`;
 

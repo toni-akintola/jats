@@ -50,6 +50,10 @@ export default {
           "4": "hsl(var(--chart-4))",
           "5": "hsl(var(--chart-5))",
         },
+        navy: {
+          700: "#1a2c4c",
+          900: "#0f172a",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
