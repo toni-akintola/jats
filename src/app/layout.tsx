@@ -9,7 +9,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "feels - Company Sentiment Analysis",
+  title: "Feels - Company Sentiment Analysis",
   description:
     "Analyze market sentiment in real-time using AI swarm intelligence",
 };
@@ -22,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${fredoka.variable} font-fredoka antialiased min-h-screen`}
+        className={`${fredoka.variable} font-fredoka antialiased min-h-screen normal-case`}
         style={{
           background: `linear-gradient(135deg, 
             #0e3b5c 0%,
