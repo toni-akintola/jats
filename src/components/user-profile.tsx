@@ -158,7 +158,7 @@ const dropdownOptions: StaggeredDropdownProps[] = [
   {
     text: "Analyzer",
     Icon: FiActivity,
-    href: "/dashboard",
+    href: "/search",
   },
   {
     text: "Profile",

@@ -56,7 +56,7 @@ export function SpreadsheetDashboard() {
     {
       text: "Dashboard",
       Icon: FiFile,
-      href: "/dashboard",
+      href: "/search",
     },
   ];
 
@@ -225,7 +225,7 @@ export function SpreadsheetDashboard() {
                             {rows[rowIndex].cells[0].value &&
                               !rows[rowIndex].cells[1].isLoading && (
                                 <Link
-                                  href={`/dashboard?company=${encodeURIComponent(rows[rowIndex].cells[0].value)}`}
+                                  href={`/search?company=${encodeURIComponent(rows[rowIndex].cells[0].value)}`}
                                 >
                                   <Button
                                     variant="outline"

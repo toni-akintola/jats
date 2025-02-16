@@ -212,7 +212,7 @@ class RegulatoryMonitor implements ResearchModule {
 export async function POST(req: NextRequest) {
   try {
     const { location } = await req.json();
-
+    console.log("location", location);
     if (!location) {
       return new Response(JSON.stringify({ error: "Location is required" }), {
         status: 400,
