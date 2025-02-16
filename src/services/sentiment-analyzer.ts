@@ -60,9 +60,9 @@ export class SentimentAnalyzer {
     const result: SentimentResult = {
       score: avgScore,
       mentions: flattenedTexts.length,
-      sentimentOverTime: sentimentOverTime.sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      ),
+      // sentimentOverTime: sentimentOverTime.sort(
+      //   (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      // ),
       topKeywords: keywords,
       recentMentions: sentiments.slice(0, 5).map((s) => ({
         text: s.text.text,
