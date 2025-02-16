@@ -33,20 +33,27 @@ export function NavBar() {
       animate={{ y: 0 }}
       className="fixed top-0 left-0 right-0 z-50 bg-white/10 backdrop-blur-md border-b border-white/10"
     >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center space-x-2">
-          <Bot className="w-8 h-8 text-[#f4ac7b]" />
-          <span className="text-2xl font-bold text-white">PropAI</span>
-        </Link>
-
-        <div className="md:flex items-center space-x-8">
-          <NavLink href="/about">About</NavLink>
-          <NavLink href="/pricing">Pricing</NavLink>
-          <NavLink href="/dashboard">Dashboard</NavLink>
-          <NavLink href="/portfolio">Portfolio</NavLink>
+      <div className="container mx-auto px-4 h-16 flex items-center">
+        {/* Left Section - Logo */}
+        <div className="w-1/4">
+          <Link href="/" className="flex items-center space-x-2">
+            <Bot className="w-8 h-8 text-[#f4ac7b]" />
+            <span className="text-2xl font-bold text-white">PropAI</span>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-4 justify-end">
+        {/* Middle Section - Navigation */}
+        <div className="flex-1 flex justify-center">
+          <div className="flex items-center space-x-8">
+            <NavLink href="/about">About</NavLink>
+            <NavLink href="/pricing">Pricing</NavLink>
+            <NavLink href="/search">Search</NavLink>
+            <NavLink href="/portfolio">Portfolio</NavLink>
+          </div>
+        </div>
+
+        {/* Right Section - Actions */}
+        <div className="w-1/4 flex items-center gap-4 justify-end">
           <Button variant="ghost" className="hidden md:flex">
             PropAI your portfolio
           </Button>

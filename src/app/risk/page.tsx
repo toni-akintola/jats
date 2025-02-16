@@ -72,7 +72,7 @@ export default function RiskPage() {
               <div className="space-y-2">
                 <p><span className="font-medium">County:</span> {riskData.location.county}</p>
                 <p><span className="font-medium">State:</span> {riskData.location.state}</p>
-                <p><span className="font-medium">FEMA Region:</span> {riskData.femaRegion.name}</p>
+                {/* <p><span className="font-medium">FEMA Region:</span> {riskData.femaRegion.name}</p> */}
                 <p><span className="font-medium">Risk Score:</span> {riskData.riskScore.toFixed(1)}/100</p>
               </div>
             </Card>
