@@ -34,10 +34,12 @@ type CompanyData = {
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export function SentimentDashboard({ 
-  address, 
-  onClose 
+  address,
+  onRemoveLocation,
+  onClose,
 }: { 
   address: string;
+  onRemoveLocation: (location: string, isLast: boolean) => void;
   onClose?: () => void;
 }) {
   const [companies, setCompanies] = useState<string[]>([]);
@@ -114,12 +116,16 @@ export function SentimentDashboard({
   // });
 
   const handleRemoveCompany = (company: string) => {
+    const isLastCompany = companies.length === 1;
     setCompanies(companies.filter((c) => c !== company));
     setResults((prev) => {
       const newResults = { ...prev };
       delete newResults[company];
       return newResults;
     });
+    if (onRemoveLocation) {
+      onRemoveLocation(company, isLastCompany);
+    }
   };
 
   const handleAnalyze = async () => {
