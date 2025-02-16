@@ -3,26 +3,26 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type HeaderContextType = {
-  hideHeader: boolean;
-  setHideHeader: (hide: boolean) => void;
+  hidden: boolean;
+  setHidden: (hide: boolean) => void;
 };
 
 const HeaderContext = createContext<HeaderContextType | undefined>(undefined);
 
 export function HeaderProvider({ children }: { children: ReactNode }) {
-  const [hideHeader, setHideHeader] = useState(false);
+  const [hidden, setHidden] = useState(false);
 
   return (
-    <HeaderContext.Provider value={{ hideHeader, setHideHeader }}>
+    <HeaderContext.Provider value={{ hidden, setHidden }}>
       {children}
     </HeaderContext.Provider>
   );
 }
 
-export function hideHeader() {
+export function useHeaderContext() {
   const context = useContext(HeaderContext);
   if (context === undefined) {
-    throw new Error("hideHeader must be used within a HeaderProvider");
+    throw new Error("useHeaderContext must be used within a HeaderProvider");
   }
   return context;
 }

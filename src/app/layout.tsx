@@ -20,7 +20,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isMapPage = typeof window !== 'undefined' && window.location.pathname.includes('/map');
+  const isMapPage =
+    typeof window !== "undefined" && window.location.pathname.includes("/map");
 
   return (
     <html lang="en">
@@ -40,10 +41,8 @@ export default function RootLayout({
           children
         ) : (
           <div className="relative pt-16">
-            <HeaderProvider>
-              <Header />
-              {children}
-            </HeaderProvider>
+            <Header />
+            {children}
           </div>
         )}
       </body>
