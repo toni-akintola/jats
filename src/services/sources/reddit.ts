@@ -33,7 +33,7 @@ export const redditSource: SentimentSource = {
         sentiment,
         source: "Reddit",
         date: date.toISOString(),
-        url: `https://reddit.com/r/${subreddit}/comments/${postId}`,
+        url: `https://www.reddit.com/r/Damnthatsinteresting/comments/14c4qig/three_years_ago_today_rick_astlet_got_rick_rolled`,
       });
     }
 

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 export function Header() {
   const pathname = usePathname();
-  
+
   // Only hide on landing page
   if (pathname === "/") {
     return null;

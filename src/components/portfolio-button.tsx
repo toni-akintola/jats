@@ -2,8 +2,9 @@
 import { Button } from "@/components/ui/button";
 import { useListingsStore } from "@/store/listings-store";
 import { Listing } from "@/types/listing";
-import { Plus, Check } from "lucide-react";
-import { useState } from "react";
+import { Plus, Check, Trash2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 interface PortfolioButtonProps {
   listing: Listing;
@@ -18,7 +19,19 @@ export function PortfolioButton({
 }: PortfolioButtonProps) {
   const { addToPortfolio, removeFromPortfolio, isInPortfolio } =
     useListingsStore();
+  const pathname = usePathname();
+  const isPropertyRoute = pathname.startsWith("/property/");
+  const isPortfolioRoute = pathname === "/portfolio";
+  const shouldBeInPortfolio = isPropertyRoute || isPortfolioRoute;
+
   const [isAdded, setIsAdded] = useState(isInPortfolio(listing.id));
+
+  useEffect(() => {
+    if (shouldBeInPortfolio && !isAdded) {
+      addToPortfolio(listing);
+      setIsAdded(true);
+    }
+  }, [shouldBeInPortfolio, isAdded, addToPortfolio, listing]);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent link navigation
@@ -38,13 +51,15 @@ export function PortfolioButton({
       size={size}
       onClick={handleClick}
       className={`${
-        isAdded ? "bg-green-600 hover:bg-green-700" : ""
+        isAdded
+          ? "bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c] border-[#f4ac7b]"
+          : ""
       } transition-colors`}
     >
       {isAdded ? (
         <>
-          <Check className="h-4 w-4 mr-2" />
-          In Portfolio
+          <Trash2 className="h-4 w-4 mr-2" />
+          Remove from Portfolio
         </>
       ) : (
         <>

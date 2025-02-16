@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
-import { Bot, Globe, Menu, User, Home, Map } from "lucide-react";
+import {
+  Bot,
+  Globe,
+  Menu,
+  User,
+  Home,
+  Map,
+  Search,
+  Briefcase,
+} from "lucide-react";
 import { usePathname } from "next/navigation";
 
 interface NavLinkProps {
@@ -20,13 +29,13 @@ function NavLink({ href, children, animationColor = "#f4ac7b" }: NavLinkProps) {
     <Link
       href={href}
       className={`text-white font-medium text-lg hover:text-white transition-colors relative group ${
-        isActive ? 'font-bold text-[#f4ac7b]' : ''
+        isActive ? "font-bold text-[#f4ac7b]" : ""
       }`}
     >
       {children}
       <span
         className={`absolute -bottom-1 left-0 h-0.5 transition-all ${
-          isActive ? 'w-full' : 'w-0 group-hover:w-full'
+          isActive ? "w-full" : "w-0 group-hover:w-full"
         }`}
         style={{ backgroundColor: animationColor }}
       />
@@ -57,7 +66,7 @@ export function NavBar() {
         {/* Middle Section - Navigation */}
         <div className="flex-1 flex justify-center">
           <div className="flex items-center space-x-8">
-            {!isLandingPage && !isProfilePage && (
+            {!isLandingPage && (
               <>
                 <NavLink href="/">
                   <div className="flex items-center gap-2">
@@ -71,13 +80,24 @@ export function NavBar() {
                     Maps
                   </div>
                 </NavLink>
-                <NavLink href="/portfolio">Portfolio</NavLink>
+                <NavLink href="/portfolio">
+                  <div className="flex items-center gap-2">
+                    <Briefcase className="w-4 h-4" />
+                    Portfolio
+                  </div>
+                </NavLink>
+                <NavLink href="/search">
+                  <div className="flex items-center gap-2">
+                    <Search className="w-4 h-4" />
+                    Search
+                  </div>
+                </NavLink>
               </>
             )}
             {isLandingPage && (
               <>
-                <NavLink href="/about">About</NavLink>
-                <NavLink href="/pricing">Pricing</NavLink>
+                <NavLink href="#">About</NavLink>
+                <NavLink href="#">Pricing</NavLink>
                 <NavLink href="/search">Search</NavLink>
                 <NavLink href="/portfolio">Portfolio</NavLink>
               </>

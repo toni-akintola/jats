@@ -26,7 +26,7 @@ export const twitterSource: SentimentSource = {
         sentiment,
         source: "Twitter",
         date: date.toISOString(),
-        url: `https://twitter.com/user/status/${tweetId}`,
+        url: `https://x.com/rickroll?lang=en`,
       });
     }
 

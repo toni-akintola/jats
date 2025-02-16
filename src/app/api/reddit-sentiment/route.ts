@@ -24,7 +24,7 @@ function generateMockRedditPost(company: string) {
     text,
     sentiment,
     created_utc: date.toISOString(),
-    permalink: `https://reddit.com/r/stocks/comments/${Math.random().toString(36).substring(7)}`,
+    permalink: `https://www.reddit.com/r/Damnthatsinteresting/comments/14c4qig/three_years_ago_today_rick_astlet_got_rick_rolled`,
   };
 }
 

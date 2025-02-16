@@ -3,9 +3,17 @@ import { usePathname, useRouter } from "next/navigation";
 import { Listing } from "@/types/listing";
 import Image from "next/image";
 import { Heart, Building2, Timer, TrendingUp } from "lucide-react";
-import { formatPrice, getRandomApartmentImage } from "@/lib/utils";
+import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { PortfolioButton } from "@/components/portfolio-button";
+
+// Array of apartment image paths
+const APARTMENT_IMAGES = Array.from({ length: 19 }, (_, i) => `/${i + 1}.jpg`);
+
+export function getRandomApartmentImage(): string {
+  const randomIndex = Math.floor(Math.random() * APARTMENT_IMAGES.length);
+  return APARTMENT_IMAGES[randomIndex];
+}
 
 interface ListingCardProps {
   listing: Listing;
