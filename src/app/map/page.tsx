@@ -140,7 +140,6 @@ export default function MapPage() {
       const map = mapRef.current;
       console.log("Map created successfully");
 
-      // Function to analyze a single point
       const analyzeSinglePoint = async (point: { lat: number; lng: number }) => {
         try {
           const response = await fetch('/api/sentiment-analysis', {
@@ -165,30 +164,6 @@ export default function MapPage() {
         }
       };
 
-      // Function to analyze sentiments
-      const analyzeSentiments = async () => {
-        setIsAnalyzing(true);
-        try {
-          // Generate random points around the current center
-          const center = map.getCenter();
-          const points = Array.from({ length: 20 }, () => ({
-            lat: center.lat + (Math.random() - 0.5) * 0.1,
-            lng: center.lng + (Math.random() - 0.5) * 0.1
-          }));
-
-          // Analyze points one by one
-          for (const point of points) {
-            await analyzeSinglePoint(point);
-            // Small delay to avoid overwhelming the API
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
-        } catch (error) {
-          console.error('Error analyzing sentiments:', error);
-        } finally {
-          setIsAnalyzing(false);
-        }
-      };
-
       map.on('load', async () => {
         // California state coordinates
         const coords = { lat: 36.7783, lng: -119.4179 };
@@ -208,61 +183,61 @@ export default function MapPage() {
             center: { lat: 37.7749, lng: -122.4194 }, // SF
             radius: 0.3,
             points: 25,
-            sentimentBias: 0.7  // Tech hub - positive
+            sentimentBias: 0.7
           },
           { 
             center: { lat: 34.0522, lng: -118.2437 }, // LA
             radius: 0.4,
             points: 30,
-            sentimentBias: 0.3  // Entertainment - slightly positive
+            sentimentBias: 0.3
           },
           { 
             center: { lat: 32.7157, lng: -117.1611 }, // San Diego
             radius: 0.25,
             points: 20,
-            sentimentBias: 0.5  // Military/Tech - moderately positive
+            sentimentBias: 0.5
           },
           { 
             center: { lat: 38.5816, lng: -121.4944 }, // Sacramento
             radius: 0.35,
             points: 25,
-            sentimentBias: -0.2  // Government - slightly negative
+            sentimentBias: -0.2
           },
           { 
             center: { lat: 36.7378, lng: -119.7871 }, // Fresno
             radius: 0.3,
             points: 20,
-            sentimentBias: 0.1  // Agriculture - neutral
+            sentimentBias: 0.1 
           },
           { 
             center: { lat: 39.5296, lng: -119.8138 }, // Reno/Tahoe
             radius: 0.4,
             points: 25,
-            sentimentBias: 0.6  // Tourism/Nature - positive
+            sentimentBias: 0.6
           },
           { 
             center: { lat: 35.3733, lng: -119.0187 }, // Bakersfield
             radius: 0.25,
             points: 20,
-            sentimentBias: -0.3  // Industry - slightly negative
+            sentimentBias: -0.3
           },
           { 
             center: { lat: 33.8366, lng: -117.9143 }, // Santa Ana/OC
             radius: 0.3,
             points: 25,
-            sentimentBias: 0.4  // Suburban/Tech - moderately positive
+            sentimentBias: 0.4
           },
           { 
             center: { lat: 36.3728, lng: -120.7210 }, // Central Valley
             radius: 0.5,
             points: 30,
-            sentimentBias: -0.1  // Agriculture/Industry - slightly negative
+            sentimentBias: -0.1
           },
           { 
             center: { lat: 40.7648, lng: -124.2026 }, // Eureka
             radius: 0.4,
             points: 20,
-            sentimentBias: 0.2  // Nature/Tourism - slightly positive
+            sentimentBias: 0.2
           }
         ];
 
@@ -536,14 +511,71 @@ export default function MapPage() {
       const data = await response.json();
       
       if (data.features) {
-        setSearchResults(data.features.map((feature: LocationFeature) => ({
+        const features = data.features.map((feature: LocationFeature) => ({
           id: feature.id,
           place_name: feature.place_name,
           center: feature.center,
           place_type: feature.place_type,
           text: feature.text,
           context: feature.context
-        })));
+        }));
+        
+        setSearchResults(features);
+
+        const analyzeSinglePoint = async (point: { lat: number; lng: number }) => {
+          try {
+            const response = await fetch('/api/sentiment-analysis', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ location: point }),
+            });
+  
+            const data = await response.json();
+            
+            // Update the map source by adding the new feature
+            if (mapRef.current?.getSource('sentiments')) {
+              const source = mapRef.current.getSource('sentiments') as mapboxgl.GeoJSONSource;
+              const currentData = (source as any)._data || { type: 'FeatureCollection', features: [] };
+              currentData.features.push(...data.features);
+              source.setData(currentData);
+            }
+          } catch (error) {
+            console.error('Error analyzing point:', error);
+          }
+        };
+
+        // Generate sentiment clusters for the first result
+        if (features.length > 0) {
+          const mainLocation = features[0];
+          const [lng, lat] = mainLocation.center;
+          
+          // Create clusters of points with different densities
+          const clusters = [
+            { radius: 0.1, points: 10, offset: 0 },    // Dense inner cluster
+            { radius: 0.2, points: 15, offset: 0.1 },   // Medium density middle ring
+            { radius: 0.3, points: 20, offset: 0.2 }    // Sparse outer ring
+          ];
+          
+          // Generate points for each cluster
+          for (const cluster of clusters) {
+            for (let i = 0; i < cluster.points; i++) {
+              // Generate points in a circular pattern
+              const angle = (i / cluster.points) * 2 * Math.PI;
+              const r = cluster.radius * Math.sqrt(Math.random()); // Square root for uniform distribution
+              
+              const point = {
+                lat: lat + (r * Math.cos(angle)) + cluster.offset,
+                lng: lng + (r * Math.sin(angle)) + cluster.offset
+              };
+              
+              // Analyze sentiment for this point
+              await analyzeSinglePoint(point);
+              await new Promise(resolve => setTimeout(resolve, 50)); // Small delay between points
+            }
+          }
+        }
       }
     } catch (error) {
       console.error('Error fetching locations:', error);
