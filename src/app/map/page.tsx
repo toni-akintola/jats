@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { hideHeader } from "@/contexts/header-context";
-import { SentimentDashboard } from "@/components/sentiment-dashboard";
 import { useProfileStore } from "@/store/profile-store";
 import { TabbedDashboard, getRiskColor } from "@/components/tabbed-dashboard";
+import { hideHeader } from "@/contexts/header-context";
 
 type ClickedLocation = {
   lng: number;

@@ -55,7 +55,7 @@ export default function SearchPage() {
   return (
     <main className="py-8 min-h-screen">
       <NavBar />
-      <div className="container space-y-8">
+      <div className="container space-y-8 min-h-screen">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-2">
             Property Search
