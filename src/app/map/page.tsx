@@ -329,7 +329,10 @@ export default function MapPage() {
                 rgba(244, 172, 123, 0.5) 100%
               )`
             }}>
-            <SentimentDashboard address={clickedLocation.address || ''} />
+            <SentimentDashboard 
+              address={clickedLocation.address || ''} 
+              onClose={() => setClickedLocation(null)}
+            />
           </div>
         )}
       </div>

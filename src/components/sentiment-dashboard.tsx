@@ -33,7 +33,13 @@ type CompanyData = {
 
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export function SentimentDashboard({ address }: { address: string }) {
+export function SentimentDashboard({ 
+  address, 
+  onClose 
+}: { 
+  address: string;
+  onClose?: () => void;
+}) {
   const [companies, setCompanies] = useState<string[]>([]);
   const [newCompany, setNewCompany] = useState("");
   const [results, setResults] = useState<Record<string, CompanyData>>({});
@@ -186,7 +192,16 @@ export function SentimentDashboard({ address }: { address: string }) {
   // ];
 
   return (
-    <div className="h-full p-8">
+    <div className="h-full p-8 relative">
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-colors"
+          aria-label="Close dashboard"
+        >
+          ×
+        </button>
+      )}
       <div className="space-y-8">
         <div className="space-y-4">
 
@@ -202,6 +217,12 @@ export function SentimentDashboard({ address }: { address: string }) {
               onKeyDown={(e) => e.key === "Enter" && handleAddCompany()}
               className="max-w-xs"
             />
+            <Button
+              onClick={handleAnalyze}
+              disabled={loading || companies.length === 0}
+            >
+              {loading ? "Analyzing..." : "Analyze Sentiment"}
+            </Button>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -220,13 +241,6 @@ export function SentimentDashboard({ address }: { address: string }) {
               </div>
             ))}
           </div>
-
-          <Button
-            onClick={handleAnalyze}
-            disabled={loading || companies.length === 0}
-          >
-            {loading ? "Analyzing..." : "Analyze Sentiment"}
-          </Button>
         </div>
 
         {Object.keys(results).length > 0 && (
