@@ -1,310 +1,276 @@
-import Link from "next/link";
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { NavBar } from "@/components/nav-bar";
+import { Input } from "@/components/ui/input";
+import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+
+const companies = [
+  { name: "Urban Development Partners", logo: "/logos/udp.svg" },
+  { name: "Blackstone Real Estate", logo: "/logos/blackstone.svg" },
+  { name: "CBRE Group", logo: "/logos/cbre.svg" },
+  { name: "JLL", logo: "/logos/jll.svg" },
+  { name: "Cushman & Wakefield", logo: "/logos/cw.svg" },
+];
+
+const features = [
+  {
+    title: "Market Intelligence",
+    description:
+      "Analyze property values, trends, and growth potential across markets using advanced AI algorithms",
+    icon: "📊",
+  },
+  {
+    title: "Opportunity Detection",
+    description:
+      "Automatically identify undervalued properties and emerging neighborhood trends",
+    icon: "🎯",
+  },
+  {
+    title: "Risk Assessment",
+    description:
+      "Evaluate investment risks using predictive modeling and historical data analysis",
+    icon: "🛡️",
+  },
+];
+
+const benefits = [
+  "Reduce research time by 75%",
+  "Identify opportunities before they hit the market",
+  "Make data-driven investment decisions",
+  "Automate property analysis workflows",
+];
 
 export default function Home() {
-  const dataSources = [
-    "Twitter",
-    "Reddit",
-    "HackerNews",
-    "Bloomberg",
-    "Reuters",
-    "Financial Times",
-    "Wall Street Journal",
-    "TechCrunch",
-    "Yahoo Finance",
-    "MarketWatch",
-    "Seeking Alpha",
-    "The Motley Fool",
-    "CNBC",
-    "Forbes",
-    "Business Insider",
-  ];
+  const [headerRef, headerInView] = useInView();
+
+  useEffect(() => {
+    document.documentElement.style.scrollBehavior = "smooth";
+  }, []);
 
   return (
-    <div
-      className="min-h-screen relative"
-      style={{
-        background: `linear-gradient(135deg, 
-          #0e3b5c 0%,
-          #5e4f6d 25%,
-          #9f6671 50%,
-          #d8897b 75%,
-          #f4ac7b 100%
-        )`,
-      }}
-    >
-      {/* Add a subtle overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/5" />
-
-      <div className="relative">
-        {" "}
-        {/* This wrapper keeps content above the overlay */}
-        <NavBar />
-        <div className="container mx-auto px-4">
-          {/* Hero Section */}
-          <section className="pt-32 pb-16">
-            <main className="max-w-4xl mx-auto text-center space-y-6">
-              <h1 className="text-6xl font-bold tracking-tight text-white">
-                <span className="text-white">sentiment analysis</span>
-                <br />
-                that actually works
-              </h1>
-
-              <p className="text-xl text-white/80 max-w-2xl mx-auto mt-6">
-                real-time market vibes powered by AI swarms. get instant
-                insights from thousands of data points across the web.
-              </p>
-
-              <div className="flex gap-4 justify-center mt-12">
-                <Link href="/dashboard">
-                  <Button
-                    size="lg"
-                    className="bg-[#0e3b5c] hover:bg-[#0e3b5c]/90 text-white"
-                  >
-                    start analyzing
-                  </Button>
-                </Link>
-              </div>
-            </main>
-          </section>
-
-          {/* Features Grid */}
-          <section className="py-20">
-            <div className="grid md:grid-cols-3 gap-8">
-              <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm">
-                <div className="w-12 h-12 rounded-lg bg-[#0e3b5c] text-white flex items-center justify-center mb-4 mx-auto">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">lightning fast</h3>
-                <p className="text-gray-600">
-                  get results in milliseconds with our distributed swarm
-                  architecture
-                </p>
-              </div>
-
-              <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm">
-                <div className="w-12 h-12 rounded-lg bg-[#0e3b5c] text-white flex items-center justify-center mb-4 mx-auto">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">clean data viz</h3>
-                <p className="text-gray-600">
-                  beautiful visualizations that make complex sentiment data easy
-                  to understand
-                </p>
-              </div>
-
-              <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm">
-                <div className="w-12 h-12 rounded-lg bg-[#0e3b5c] text-white flex items-center justify-center mb-4 mx-auto">
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                    />
-                  </svg>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  multi-source data
-                </h3>
-                <p className="text-gray-600">
-                  aggregate insights from multiple sources using our intelligent
-                  swarm
-                </p>
-              </div>
+    <main className="min-h-screen text-white">
+      {/* Header */}
+      <header
+        className={`fixed top-0 w-full z-50 transition-all duration-200 ${
+          !headerInView ? "bg-[#0e3b5c]/80" : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center">
+              <span className="text-2xl font-bold text-white">PropAI</span>
             </div>
-          </section>
-
-          {/* Add Logo Carousel after Features Grid */}
-          <section className="py-16 overflow-hidden bg-white/5 backdrop-blur-sm">
-            <div className="container mx-auto px-4">
-              <h2 className="text-2xl font-semibold text-center text-white mb-8">
-                comprehensive data sources
-              </h2>
-              <div className="relative">
-                <div className="flex animate-scroll space-x-8 whitespace-nowrap">
-                  {[...dataSources, ...dataSources].map((source, i) => (
-                    <div
-                      key={`${source}-${i}`}
-                      className="inline-flex items-center justify-center min-w-[160px] h-12 px-6 
-                               bg-white/90 backdrop-blur-sm rounded-lg text-[#0e3b5c] font-medium"
-                    >
-                      {source}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* How It Works Section */}
-          <section className="py-20">
-            <div className="container mx-auto px-4">
-              <h2 className="text-3xl font-bold text-center text-white mb-16">
-                how it works
-              </h2>
-              <div className="grid md:grid-cols-4 gap-8">
-                <div className="relative">
-                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
-                    <div
-                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
-                                  text-white flex items-center justify-center font-bold"
-                    >
-                      1
-                    </div>
-                    <h3 className="text-lg font-semibold mb-3 mt-2">
-                      Input Company
-                    </h3>
-                    <p className="text-gray-600">
-                      Enter any publicly traded company or trending topic
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
-                    <div
-                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
-                                  text-white flex items-center justify-center font-bold"
-                    >
-                      2
-                    </div>
-                    <h3 className="text-lg font-semibold mb-3 mt-2">
-                      AI Swarm Activates
-                    </h3>
-                    <p className="text-gray-600">
-                      Our AI agents scan multiple sources simultaneously
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
-                    <div
-                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
-                                  text-white flex items-center justify-center font-bold"
-                    >
-                      3
-                    </div>
-                    <h3 className="text-lg font-semibold mb-3 mt-2">
-                      Data Analysis
-                    </h3>
-                    <p className="text-gray-600">
-                      Advanced sentiment analysis processes thousands of data
-                      points
-                    </p>
-                  </div>
-                </div>
-
-                <div className="relative">
-                  <div className="p-6 rounded-xl bg-white/90 backdrop-blur-sm shadow-sm h-full">
-                    <div
-                      className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-[#0e3b5c] 
-                                  text-white flex items-center justify-center font-bold"
-                    >
-                      4
-                    </div>
-                    <h3 className="text-lg font-semibold mb-3 mt-2">
-                      Instant Insights
-                    </h3>
-                    <p className="text-gray-600">
-                      Get clear, actionable sentiment data in real-time
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Stats Section */}
-          <section className="py-20 bg-white/5 backdrop-blur-sm">
-            <div className="container mx-auto px-4">
-              <div className="grid md:grid-cols-3 gap-8 text-center">
-                <div className="p-6">
-                  <div className="text-5xl font-bold text-white mb-2">15+</div>
-                  <div className="text-white/80">Data Sources</div>
-                </div>
-                <div className="p-6">
-                  <div className="text-5xl font-bold text-white mb-2">
-                    500ms
-                  </div>
-                  <div className="text-white/80">Average Response Time</div>
-                </div>
-                <div className="p-6">
-                  <div className="text-5xl font-bold text-white mb-2">
-                    99.9%
-                  </div>
-                  <div className="text-white/80">Uptime</div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Social Proof Section */}
-          <section className="py-20 text-center">
-            <h2 className="text-3xl font-bold mb-12 text-white">
-              trusted by data-driven teams
-            </h2>
-            <div className="grid md:grid-cols-4 gap-8">
-              <div className="h-12 bg-white/80 rounded-lg"></div>
-              <div className="h-12 bg-white/80 rounded-lg"></div>
-              <div className="h-12 bg-white/80 rounded-lg"></div>
-              <div className="h-12 bg-white/80 rounded-lg"></div>
-            </div>
-          </section>
-
-          {/* CTA Section */}
-          <section className="py-20 text-center">
-            <div className="max-w-3xl mx-auto">
-              <h2 className="text-4xl font-bold mb-6 text-white">
-                ready to get started?
-              </h2>
-              <p className="text-xl text-white/80 mb-8">
-                join thousands of teams using feels to understand market
-                sentiment
-              </p>
-              <Link href="/dashboard">
-                <Button
-                  size="lg"
-                  className="bg-[#0e3b5c] hover:bg-[#0e3b5c]/90 text-white"
-                >
-                  try for free →
-                </Button>
-              </Link>
-            </div>
-          </section>
+            <nav className="hidden md:flex space-x-8">
+              <a
+                href="#features"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Features
+              </a>
+              <a
+                href="#use-cases"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Use Cases
+              </a>
+              <a
+                href="#pricing"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Pricing
+              </a>
+              <a
+                href="#contact"
+                className="text-white/80 hover:text-white transition-colors"
+              >
+                Contact
+              </a>
+            </nav>
+            <Button
+              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c] transition-colors"
+              variant="ghost"
+            >
+              Schedule Demo
+            </Button>
+          </div>
         </div>
-      </div>
-    </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 relative" ref={headerRef}>
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            AI-Powered Property Discovery for Modern Developers
+          </h1>
+          <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
+            Turn market data into actionable insights with our intelligent
+            property analysis engine
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
+            >
+              Start Free Trial
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
+            >
+              Watch Demo
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-3 gap-8">
+            {features.map((feature) => (
+              <div
+                key={feature.title}
+                className="p-6 bg-[#0e3b5c]/60 backdrop-blur-sm rounded-lg shadow-lg hover:shadow-xl transition-all border border-white/10"
+              >
+                <div className="text-4xl mb-4">{feature.icon}</div>
+                <h3 className="text-xl font-semibold text-[#f4ac7b] mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-white/80">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Social Proof Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-5 gap-8 items-center mb-16">
+            {companies.map((company) => (
+              <div
+                key={company.name}
+                className="opacity-70 hover:opacity-100 transition-all"
+              >
+                <img
+                  src={company.logo}
+                  alt={company.name}
+                  className="h-8 w-auto brightness-0 invert"
+                />
+              </div>
+            ))}
+          </div>
+          <blockquote className="text-center max-w-3xl mx-auto">
+            <p className="text-xl text-white/90 mb-4">
+              &ldquo;PropAI has transformed how we identify investment
+              opportunities. We&apos;ve increased our portfolio value by 32% in
+              just six months.&rdquo;
+            </p>
+            <footer className="text-white/70">
+              Sarah Chen, Director of Acquisitions at Urban Development Partners
+            </footer>
+          </blockquote>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h2 className="text-3xl font-bold text-[#f4ac7b] mb-6">
+                Why Choose PropAI?
+              </h2>
+              <ul className="space-y-4">
+                {benefits.map((benefit) => (
+                  <li key={benefit} className="flex items-center">
+                    <span className="text-[#f4ac7b] mr-2">✓</span>
+                    <span className="text-white/80">{benefit}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="bg-[#0e3b5c]/60 p-6 rounded-lg shadow-lg border border-white/10">
+              <div className="aspect-video bg-[#0e3b5c] rounded-md" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold text-[#f4ac7b] mb-4">
+            Start Discovering Premium Properties Today
+          </h2>
+          <p className="text-white/80 mb-8">
+            14-day free trial • No credit card required
+          </p>
+          <Button
+            size="lg"
+            className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]"
+          >
+            Get Started
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#0e3b5c] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <span className="text-2xl font-bold text-white">PropAI</span>
+              <p className="mt-2 text-white/70">
+                Transforming property discovery with artificial intelligence
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#f4ac7b] mb-3">Legal</h3>
+              <ul className="space-y-2">
+                <li>
+                  <a
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-white/70 hover:text-white transition-colors"
+                  >
+                    Terms of Service
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#f4ac7b] mb-3">Follow Us</h3>
+              <div className="flex space-x-4">
+                {/* Add social media icons here */}
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-[#f4ac7b] mb-3">Newsletter</h3>
+              <div className="flex gap-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
+                />
+                <Button className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c]">
+                  Subscribe
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
 }

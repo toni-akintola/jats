@@ -3,17 +3,14 @@ import { ChatMistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SystemMessage } from "@langchain/core/messages";
-import {
-  convertLangChainMessageToVercelMessage,
-  parseAgentResult,
-} from "@/lib/utils";
+import { parseAgentResult } from "@/lib/utils";
 
 // Define module interfaces
 interface ResearchModule {
   name: string;
   description: string;
-  agent: any; // Replace with proper type
-  execute: (company: string) => Promise<any>;
+  agent: unknown; // Replace with proper type
+  execute: (company: string) => Promise<unknown>;
 }
 
 // Financial Module Agents
@@ -267,26 +264,46 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Initialize modules
-    const modules = [
-      new FinancialModule(),
-      new MarketModule(),
-      new PeopleModule(),
-      new ProductModule(),
-    ];
+    // Create a new ReadableStream
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          // Initialize modules
+          const modules = [
+            new FinancialModule(),
+            new MarketModule(),
+            new PeopleModule(),
+            new ProductModule(),
+          ];
 
-    // Execute all modules in parallel
-    const results = await Promise.all(
-      modules.map(async (module) => ({
-        moduleName: module.name,
-        moduleDescription: module.description,
-        data: await module.execute(company),
-      })),
-    );
+          // Send initial company data
+          controller.enqueue(`data: ${JSON.stringify({ company })}\n\n`);
 
-    return NextResponse.json({
-      company,
-      researchModules: results,
+          // Execute modules one at a time and stream results
+          for (const m of modules) {
+            const result = await m.execute(company);
+            const moduleData = {
+              moduleName: m.name,
+              moduleDescription: m.description,
+              data: result,
+            };
+
+            controller.enqueue(`data: ${JSON.stringify(moduleData)}\n\n`);
+          }
+
+          controller.close();
+        } catch (error) {
+          controller.error(error);
+        }
+      },
+    });
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        Connection: "keep-alive",
+      },
     });
   } catch (error) {
     console.error("Company Research Error:", error);

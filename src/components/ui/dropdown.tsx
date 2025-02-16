@@ -44,7 +44,6 @@ export const StaggeredDropdown = ({
             </Link>
           ))}
         </motion.ul>
-
       </motion.div>
     </div>
   );

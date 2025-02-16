@@ -92,11 +92,11 @@ export function SentimentDashboard() {
     await analyzeCompany(company);
   };
 
-      // const response = await fetch("/api/sentiment", {
-      //   method: "POST",
-      //   body: JSON.stringify({ company: companyToAnalyze }),
-      //   headers: { "Content-Type": "application/json" },
-      // });
+  // const response = await fetch("/api/sentiment", {
+  //   method: "POST",
+  //   body: JSON.stringify({ company: companyToAnalyze }),
+  //   headers: { "Content-Type": "application/json" },
+  // });
 
   const handleRemoveCompany = (company: string) => {
     setCompanies(companies.filter((c) => c !== company));

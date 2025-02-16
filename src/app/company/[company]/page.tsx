@@ -1,7 +1,8 @@
 "use client";
 
 import Head from "next/head";
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Card,
@@ -12,69 +13,101 @@ import {
 } from "@/components/ui/card";
 import { TypewriterText } from "@/components/ui/typewriter-text";
 
-const CompanyData = {
-  company: "NVIDIA",
-  researchModules: [
-    {
-      moduleName: "Financial Research",
-      moduleDescription:
-        "Analyze financial health, stock performance, and funding",
-      data: {
-        stockPrice:
-          "NVIDIA's stock price is $129.84, reflecting a recent increase of 0.90%.",
-        fundingRounds:
-          "NVIDIA raised $5 million in their latest funding round on May 26, 2023. Investors include CPP Investments and Sutter Hill Ventures among 34 others. Additionally, NVIDIA invested $1 billion in AI companies in 2024, participating in 50 startup funding rounds.",
-        secFilings:
-          "NVIDIA's recent SEC filings include a Schedule 13G/A filed on February 14, 2025, and a 13F portfolio filing for Q4 2024 with a holdings value of $304,524,000.",
-      },
-    },
-    {
-      moduleName: "Market Research",
-      moduleDescription:
-        "Analyze market sentiment, news, and competitive landscape",
-      data: {
-        newsSentiment:
-          "The overall news sentiment for NVIDIA is mixed. While there is positive news regarding Morgan Stanley reaffirming NVIDIA as a top pick and highlighting its strong near-term business, there are also concerns about export controls and AI investment shifts. Additionally, there are reports of negative sentiment due to fears of a slowdown in AI spending and investor caution.",
-        socialSentiment:
-          "The aggregated social media sentiment for NVIDIA is generally positive, with a sentiment score of 75 out of 100 according to data from top investing forums. However, there is a divide in investor sentiment ahead of NVIDIA's earnings report, and there has been a significant increase in negative mentions on social media.",
-        competitorComparison:
-          "NVIDIA faces competition from several key players in the market. Top competitors include AMD, Intel, Qualcomm, Broadcom, Xilinx, Hewlett Packard, Asus, Ambarella, Renesas, and Texas Instruments. Additionally, tech giants like Google, Amazon, and Microsoft are developing their own AI chips, which could pose a significant challenge to NVIDIA's market share.",
-      },
-    },
-    {
-      moduleName: "People Research",
-      moduleDescription: "Analyze workforce, leadership, and talent dynamics",
-      data: {
-        leadershipChanges:
-          "Jensen Huang, the CEO of NVIDIA, continues to lead the company with a unique approach, emphasizing relentless dedication and high expectations from employees. His leadership has transformed NVIDIA into a powerhouse in accelerated computing and AI. Huang's philosophy focuses on pushing boundaries and fostering a culture of innovation and efficiency.",
-        jobPostings:
-          "NVIDIA currently has 504 open positions listed on Glassdoor, with roles including software engineers, data scientists, and solutions engineers. The company is actively hiring across various departments, reflecting its ongoing growth and expansion in the tech industry.",
-        employeeSentiment:
-          "Employee sentiment at NVIDIA is generally positive, with 88% of reviews being favorable. The company has an overall rating of 4.5 out of 5 on Glassdoor, with 92% of employees recommending it as a good place to work. However, there are reports of high stress and long work hours, driven by internal competition and high expectations.",
-      },
-    },
-    {
-      moduleName: "Product Research",
-      moduleDescription:
-        "Analyze product development, tech stack, and innovation",
-      data: {
-        githubActivity:
-          "NVIDIA Ingest is an early access set of microservices for parsing hundreds of thousands of complex, messy unstructured PDFs and other enterprise documents into metadata and text to embed into retrieval systems. NVIDIA/nv-ingest's past year of commit activity. Python 2,488 Apache-2.0 214 67",
-        apiChanges:
-          "The FP16 and BF16 scaled dot-product attention (SDPA) engine with variable sequence length has a regression from cuDNN version 9.3.0 where enabling zero-sequence-length values results in an illegal instruction error. In the backend API, convolution forward engine with CUDNN_ATTR_ENGINE_GLOBAL_INDEX=1 is not supported when the product (channels * height * width) of the input image exceeds 536,870,912 which is 2^29. Expanded support of FP16 and BF16 Fused Flash Attention by adding the sliding window attention feature on NVIDIA Ampere and Hopper GPUs.",
-        productInnovation:
-          "At CES 2025, Nvidia's CEO, Jensen Huang, unveiled a suite of AI innovations in his keynote speech that span consumer graphics, enterprise computing, specialised AI applications, high-end gaming, industrial robotics and autonomous vehicles - all in aim to significantly advance the frontier of consumer and enterprise computing. Jensen explained the complexity of building autonomous vehicles: \"Building autonomous vehicles, like all robots, requires three computers: Nvidia DGX to train AI models, Omniverse to test drive and generate synthetic data and DRIVE AGX, a supercomputer in the car.\" These innovations set the stage for Nvidia's latest project: a personal AI supercomputer called Project DIGITS, further solidifying the company's position at the forefront of AI technology.",
-      },
-    },
-  ],
-};
+interface CompanyData {
+  company: string;
+  researchModules: {
+    moduleName: string;
+    moduleDescription: string;
+    data: Record<string, string>;
+  }[];
+}
 
 export default function CompanyPage() {
-  const [activeTab, setActiveTab] = useState(
-    CompanyData.researchModules[0].moduleName,
-  );
+  const params = useParams();
+  const companySlug = params.company as string;
+
+  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
+  const [researchModules, setResearchModules] = useState<
+    CompanyData["researchModules"]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [activeTab, setActiveTab] = useState<string>("");
   const [viewedTabs, setViewedTabs] = useState<string[]>([]);
   const [animatingTab, setAnimatingTab] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchCompanyData() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        setResearchModules([]);
+
+        const response = await fetch("/api/company-research", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ company: companySlug }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch company data");
+        }
+
+        const reader = response.body?.getReader();
+        if (!reader) throw new Error("No reader available");
+
+        // Read the streaming data
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          // Convert the Uint8Array to text
+          const chunk = new TextDecoder().decode(value);
+          const lines = chunk.split("\n");
+
+          // Process each SSE message
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const data = JSON.parse(line.slice(6));
+
+              if ("company" in data) {
+                setCompanyData((prev) => ({ ...prev, company: data.company }));
+              } else {
+                setResearchModules((prev) => {
+                  const newModules = [...prev];
+                  const existingIndex = newModules.findIndex(
+                    (m) => m.moduleName === data.moduleName,
+                  );
+
+                  if (existingIndex >= 0) {
+                    newModules[existingIndex] = data;
+                  } else {
+                    newModules.push(data);
+                  }
+
+                  // Set active tab to first module when it arrives
+                  if (newModules.length === 1) {
+                    setActiveTab(data.moduleName);
+                  }
+
+                  return newModules;
+                });
+              }
+            }
+          }
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchCompanyData();
+  }, [companySlug]);
 
   const handleTabChange = (tab: string) => {
     setViewedTabs((prev) => [...prev, activeTab]);
@@ -91,19 +124,30 @@ export default function CompanyPage() {
     }
   };
 
+  if (!companyData?.company) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse">
+          <div className="h-8 w-64 bg-gray-200 rounded mb-8" />
+          <div className="h-96 bg-gray-100 rounded" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Head>
-        <title>{CompanyData.company} Research | AI Insights</title>
+        <title>{companyData.company} Research | AI Insights</title>
         <meta
           name="description"
-          content={`Comprehensive research on ${CompanyData.company}`}
+          content={`Comprehensive research on ${companyData.company}`}
         />
       </Head>
 
       <h1 className="text-4xl font-bold mb-8">
         <TypewriterText
-          text={`${CompanyData.company} Research`}
+          text={`${companyData.company} Research`}
           speed={50}
           startDelay={0}
         />
@@ -111,13 +155,17 @@ export default function CompanyPage() {
 
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-4">
-          {CompanyData.researchModules.map((module) => (
-            <TabsTrigger key={module.moduleName} value={module.moduleName}>
+          {researchModules.map((module) => (
+            <TabsTrigger
+              key={module.moduleName}
+              value={module.moduleName}
+              className={isLoading ? "animate-pulse" : ""}
+            >
               {module.moduleName}
             </TabsTrigger>
           ))}
         </TabsList>
-        {CompanyData.researchModules.map((module) => (
+        {researchModules.map((module) => (
           <TabsContent key={module.moduleName} value={module.moduleName}>
             <Card>
               <CardHeader>
@@ -136,7 +184,7 @@ export default function CompanyPage() {
                       <p>
                         {!viewedTabs.includes(module.moduleName) ? (
                           <TypewriterText
-                            text={value}
+                            text={value || "Loading..."}
                             speed={20}
                             startDelay={index * 1000 + 1500}
                             onComplete={
@@ -147,7 +195,7 @@ export default function CompanyPage() {
                             }
                           />
                         ) : (
-                          value
+                          value || "Loading..."
                         )}
                       </p>
                     </div>

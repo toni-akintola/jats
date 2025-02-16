@@ -8,7 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import Link from "next/link";
 import { analyzeSentiment } from "@/services/sentiment-service";
-import { StaggeredDropdown, StaggeredDropdownProps } from "@/components/ui/dropdown";
+import {
+  StaggeredDropdown,
+  StaggeredDropdownProps,
+} from "@/components/ui/dropdown";
 import { FiHome, FiUser, FiFile } from "react-icons/fi";
 
 interface Cell {
@@ -64,7 +67,11 @@ export function SpreadsheetDashboard() {
     }
   };
 
-  const handleCellChange = async (rowIndex: number, cellIndex: number, value: string) => {
+  const handleCellChange = async (
+    rowIndex: number,
+    cellIndex: number,
+    value: string,
+  ) => {
     setRows((prevRows) => {
       const newRows = [...prevRows];
       newRows[rowIndex].cells[cellIndex].value = value;
@@ -74,13 +81,13 @@ export function SpreadsheetDashboard() {
 
   const analyzeSentimentForRow = async (rowIndex: number) => {
     const companyName = rows[rowIndex].cells[0].value.trim();
-    
+
     if (!companyName) {
       return;
     }
 
     // Set loading state for the sentiment cell
-    setRows(prevRows => {
+    setRows((prevRows) => {
       const newRows = [...prevRows];
       newRows[rowIndex].cells[1].isLoading = true;
       return newRows;
@@ -88,8 +95,8 @@ export function SpreadsheetDashboard() {
 
     try {
       const data = await analyzeSentiment(companyName);
-      
-      setRows(prevRows => {
+
+      setRows((prevRows) => {
         const newRows = [...prevRows];
         newRows[rowIndex].cells[1].value = data.score.toFixed(2);
         newRows[rowIndex].cells[1].sentiment = data.score;
@@ -103,8 +110,8 @@ export function SpreadsheetDashboard() {
         description: `Failed to analyze sentiment for ${companyName}`,
         variant: "destructive",
       });
-      
-      setRows(prevRows => {
+
+      setRows((prevRows) => {
         const newRows = [...prevRows];
         newRows[rowIndex].cells[1].isLoading = false;
         return newRows;
@@ -177,24 +184,32 @@ export function SpreadsheetDashboard() {
                                   autoFocus
                                   value={cell.value}
                                   onChange={(e) =>
-                                    handleCellChange(rowIndex, cellIndex, e.target.value)
+                                    handleCellChange(
+                                      rowIndex,
+                                      cellIndex,
+                                      e.target.value,
+                                    )
                                   }
                                   onBlur={() => handleBlur(rowIndex)}
                                   className="w-full bg-white/10 border-white/20 text-white"
                                 />
                               ) : (
                                 <div
-                                  onClick={() => handleCellClick(cell.id, cellIndex)}
+                                  onClick={() =>
+                                    handleCellClick(cell.id, cellIndex)
+                                  }
                                   className={`min-h-[2rem] px-2 py-1 rounded ${
-                                    cellIndex === 0 ? 'cursor-pointer hover:bg-white/10 text-white' : ''
+                                    cellIndex === 0
+                                      ? "cursor-pointer hover:bg-white/10 text-white"
+                                      : ""
                                   } ${
-                                    cellIndex === 1 
-                                      ? cell.sentiment && cell.sentiment > 0 
-                                        ? 'text-green-400 font-medium'
+                                    cellIndex === 1
+                                      ? cell.sentiment && cell.sentiment > 0
+                                        ? "text-green-400 font-medium"
                                         : cell.sentiment && cell.sentiment < 0
-                                          ? 'text-red-400 font-medium'
-                                          : 'text-white/60'
-                                      : ''
+                                          ? "text-red-400 font-medium"
+                                          : "text-white/60"
+                                      : ""
                                   }`}
                                 >
                                   {cell.isLoading ? (
@@ -207,19 +222,20 @@ export function SpreadsheetDashboard() {
                             </td>
                           ))}
                           <td className="whitespace-nowrap px-3 py-2 text-sm">
-                            {rows[rowIndex].cells[0].value && !rows[rowIndex].cells[1].isLoading && (
-                              <Link 
-                                href={`/dashboard?company=${encodeURIComponent(rows[rowIndex].cells[0].value)}`}
-                              >
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                            {rows[rowIndex].cells[0].value &&
+                              !rows[rowIndex].cells[1].isLoading && (
+                                <Link
+                                  href={`/dashboard?company=${encodeURIComponent(rows[rowIndex].cells[0].value)}`}
                                 >
-                                  Go to Full Analysis
-                                </Button>
-                              </Link>
-                            )}
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                                  >
+                                    Go to Full Analysis
+                                  </Button>
+                                </Link>
+                              )}
                           </td>
                         </tr>
                       ))}
@@ -229,8 +245,8 @@ export function SpreadsheetDashboard() {
               </div>
             </div>
             <div className="mt-4">
-              <Button 
-                onClick={addRow} 
+              <Button
+                onClick={addRow}
                 variant="outline"
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
