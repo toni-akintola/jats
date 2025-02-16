@@ -11,7 +11,6 @@ export function Header() {
   return (
     <>
       <NavBar />
-      <div className="h-16" />
     </>
   );
 }
