@@ -5,7 +5,7 @@ export class GooglePlacesSource implements DataSource {
     const [lat, lng] = location.split(',').map(Number);
     
     const response = await fetch(
-      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=500&key=${process.env.GOOGLE_MAPS_API_KEY}`
+      `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=500&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`
     );
     
     const data = await response.json();
