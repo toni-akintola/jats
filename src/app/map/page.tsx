@@ -51,17 +51,13 @@ export default function MapPage() {
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    mapboxgl.accessToken =
-      "pk.eyJ1IjoiamcyMzY4IiwiYSI6ImNtNzcwYnE1aTEzbDMyaW9sNDRhZHNjOTQifQ.1v5AL-rjwGQC5_jd3pSJHQ";
-
     console.log("Initializing map...");
     try {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        // Choose from Mapbox's core styles, or make your own style with Mapbox Studio
         style: "mapbox://styles/mapbox/dark-v11",
-        center: [-120, 50],
-        zoom: 2,
+        center: [-98, 39],
+        zoom: 3,
       });
 
       const map = mapRef.current;
@@ -93,12 +89,6 @@ export default function MapPage() {
 
       // Add a pointer cursor when hovering over the map
       map.getCanvas().style.cursor = 'pointer';
-
-      // Return cleanup function
-      return () => {
-        map.off('click', handleClick);
-        map.remove();
-      };
 
       map.on("load", () => {
         console.log("Map loaded");
@@ -237,32 +227,6 @@ export default function MapPage() {
     } catch (error) {
       console.error("Error initializing map:", error);
     }
-    mapRef.current = new mapboxgl.Map({
-      container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/dark-v11',
-      center: [-98, 39],
-      zoom: 3
-    });
-
-    // Add click handler
-    mapRef.current.on('click', async (e) => {
-      try {
-        const { lng, lat } = e.lngLat;
-        const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?access_token=${MAPBOX_TOKEN}`
-        );
-        const data = await response.json();
-        const address = data.features[0]?.place_name;
-        
-        setClickedLocation({
-          lng,
-          lat,
-          address: address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`
-        });
-      } catch (error) {
-        console.error('Error getting location:', error);
-      }
-    });
 
     return () => {
       mapRef.current?.remove();
