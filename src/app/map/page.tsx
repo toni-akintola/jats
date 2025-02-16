@@ -6,6 +6,7 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useSearchParams } from "next/navigation";
 import { DetailedListing } from "@/types/listing";
 import Image from "next/image";
+import { hideHeader } from "@/contexts/header-context";
 
 const ListingSidePanel = ({ listing }: { listing: DetailedListing | null }) => {
   if (!listing) return null;
@@ -66,6 +67,12 @@ const ListingSidePanel = ({ listing }: { listing: DetailedListing | null }) => {
 };
 
 export default function MapPage() {
+  const { setHideHeader } = hideHeader();
+
+  useEffect(() => {
+    setHideHeader(true);
+    return () => setHideHeader(false);
+  }, [setHideHeader]);
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const searchParams = useSearchParams();
