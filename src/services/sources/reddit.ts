@@ -22,10 +22,12 @@ export const redditSource: SentimentSource = {
       const daysAgo = Math.floor(Math.random() * 30); // Random date within last month
       const date = new Date();
       date.setDate(date.getDate() - daysAgo);
-      
+
       const postId = Math.random().toString(36).substr(2, 6);
-      const subreddit = ['citydiscussion', 'urbanliving', 'localcommunity'][Math.floor(Math.random() * 3)];
-      
+      const subreddit = ["citydiscussion", "urbanliving", "localcommunity"][
+        Math.floor(Math.random() * 3)
+      ];
+
       mentions.push({
         text: generateMentionText(location, sentiment, "Reddit"),
         sentiment,
@@ -37,18 +39,19 @@ export const redditSource: SentimentSource = {
 
     // Generate keywords based on sentiment
     const keywords = [
-      'community',
-      'discussion',
-      'local',
-      'urban',
-      'living',
+      "community",
+      "discussion",
+      "local",
+      "urban",
+      "living",
       location.toLowerCase(),
-      mentions[0].sentiment > 0.5 ? 'positive' : 'mixed',
-      mentions[0].sentiment > 0 ? 'improvement' : 'feedback'
+      mentions[0].sentiment > 0.5 ? "positive" : "mixed",
+      mentions[0].sentiment > 0 ? "improvement" : "feedback",
     ];
 
     // Calculate average sentiment
-    const averageSentiment = mentions.reduce((sum, m) => sum + m.sentiment, 0) / mentions.length;
+    const averageSentiment =
+      mentions.reduce((sum, m) => sum + m.sentiment, 0) / mentions.length;
 
     return {
       mentions,

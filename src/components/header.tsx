@@ -1,10 +1,9 @@
-'use client';
+"use client";
 
 import { hideHeader } from "@/contexts/header-context";
 import { NavBar } from "./nav-bar";
 
 export function Header() {
-
   if (hideHeader()) {
     return null;
   }

@@ -13,27 +13,63 @@ function generateDataPoints(location: string): Array<{ sentiment: number }> {
   let baseScore = Math.random() * 6 - 3;
   const pointCount = Math.floor(Math.random() * 1000) + 1000;
   return Array.from({ length: pointCount }, () => ({
-    sentiment: generateRandomSentiment(baseScore)
+    sentiment: generateRandomSentiment(baseScore),
   }));
 }
 
 function generateKeywords(sentiment: number): string[] {
   const positiveKeywords = [
-    'excellent', 'amazing', 'wonderful', 'fantastic', 'great',
-    'innovative', 'efficient', 'reliable', 'friendly', 'beautiful',
-    'peaceful', 'progressive', 'sustainable', 'vibrant', 'safe'
+    "excellent",
+    "amazing",
+    "wonderful",
+    "fantastic",
+    "great",
+    "innovative",
+    "efficient",
+    "reliable",
+    "friendly",
+    "beautiful",
+    "peaceful",
+    "progressive",
+    "sustainable",
+    "vibrant",
+    "safe",
   ];
-  
+
   const neutralKeywords = [
-    'normal', 'average', 'typical', 'standard', 'moderate',
-    'usual', 'regular', 'common', 'ordinary', 'fair',
-    'balanced', 'neutral', 'steady', 'consistent', 'stable'
+    "normal",
+    "average",
+    "typical",
+    "standard",
+    "moderate",
+    "usual",
+    "regular",
+    "common",
+    "ordinary",
+    "fair",
+    "balanced",
+    "neutral",
+    "steady",
+    "consistent",
+    "stable",
   ];
-  
+
   const negativeKeywords = [
-    'challenging', 'difficult', 'problematic', 'concerning', 'troubled',
-    'expensive', 'crowded', 'noisy', 'polluted', 'congested',
-    'unsafe', 'unreliable', 'slow', 'outdated', 'inefficient'
+    "challenging",
+    "difficult",
+    "problematic",
+    "concerning",
+    "troubled",
+    "expensive",
+    "crowded",
+    "noisy",
+    "polluted",
+    "congested",
+    "unsafe",
+    "unreliable",
+    "slow",
+    "outdated",
+    "inefficient",
   ];
 
   let keywords: string[] = [];
@@ -47,90 +83,214 @@ function generateKeywords(sentiment: number): string[] {
     keywords = [...neutralKeywords];
   }
 
-  return keywords
-    .sort(() => Math.random() - 0.5)
-    .slice(0, keywordCount);
+  return keywords.sort(() => Math.random() - 0.5).slice(0, keywordCount);
 }
 
 const speechVariety = {
   interjections: [
-    "Wow,", "Hey,", "Oh man,", "Honestly,", "Listen up -", "Y'all,", "Folks,", 
-    "Real talk:", "Not gonna lie,", "Let me tell you,", "Get this -", "Check it out:",
-    "Here's the thing:", "Fun fact:", "PSA:", "Hot take:", "FWIW,", "IMO,", "Unpopular opinion:",
-    "Just saying,", "True story:", "Plot twist:", "Spoiler alert:", "Alright,", "Well well well,",
-    "Breaking news:", "Quick update:", "Heads up:", "Friendly reminder:", "PSA!"
+    "Wow,",
+    "Hey,",
+    "Oh man,",
+    "Honestly,",
+    "Listen up -",
+    "Y'all,",
+    "Folks,",
+    "Real talk:",
+    "Not gonna lie,",
+    "Let me tell you,",
+    "Get this -",
+    "Check it out:",
+    "Here's the thing:",
+    "Fun fact:",
+    "PSA:",
+    "Hot take:",
+    "FWIW,",
+    "IMO,",
+    "Unpopular opinion:",
+    "Just saying,",
+    "True story:",
+    "Plot twist:",
+    "Spoiler alert:",
+    "Alright,",
+    "Well well well,",
+    "Breaking news:",
+    "Quick update:",
+    "Heads up:",
+    "Friendly reminder:",
+    "PSA!",
   ],
   emphasis: [
-    "absolutely", "literally", "seriously", "totally", "completely", "100%",
-    "lowkey", "highkey", "kinda", "sorta", "basically", "actually", "straight up",
-    "no joke", "for real", "deadass", "ngl", "tbh", "fr fr", "without a doubt",
-    "hands down", "undeniably", "genuinely", "honestly", "truly", "legitimately"
+    "absolutely",
+    "literally",
+    "seriously",
+    "totally",
+    "completely",
+    "100%",
+    "lowkey",
+    "highkey",
+    "kinda",
+    "sorta",
+    "basically",
+    "actually",
+    "straight up",
+    "no joke",
+    "for real",
+    "deadass",
+    "ngl",
+    "tbh",
+    "fr fr",
+    "without a doubt",
+    "hands down",
+    "undeniably",
+    "genuinely",
+    "honestly",
+    "truly",
+    "legitimately",
   ],
   transitions: [
-    "Plus,", "Also,", "Moreover,", "On top of that,", "What's more,", "Additionally,",
-    "Not to mention,", "Furthermore,", "And get this -", "But wait, there's more:",
-    "Speaking of which,", "That reminds me,", "Oh, and by the way,", "Interestingly enough,",
-    "As if that wasn't enough,", "Here's another thing:", "And you know what else?",
-    "But here's the kicker:", "And here's the best part:", "Now here's something cool:"
+    "Plus,",
+    "Also,",
+    "Moreover,",
+    "On top of that,",
+    "What's more,",
+    "Additionally,",
+    "Not to mention,",
+    "Furthermore,",
+    "And get this -",
+    "But wait, there's more:",
+    "Speaking of which,",
+    "That reminds me,",
+    "Oh, and by the way,",
+    "Interestingly enough,",
+    "As if that wasn't enough,",
+    "Here's another thing:",
+    "And you know what else?",
+    "But here's the kicker:",
+    "And here's the best part:",
+    "Now here's something cool:",
   ],
   reactions: [
-    "💯", "🙌", "👏", "🔥", "🤔", "😤", "🚫", "⚠️", "🎯", "💪",
-    "🌟", "✨", "🎉", "👌", "💁‍♂️", "💁‍♀️", "🤷‍♂️", "🤷‍♀️",
-    "🎨", "🌿", "🌺", "🍜", "🎭", "🎪", "🎡", "🏛️", "🏢", "🌆",
-    "🌃", "🌉", "🌅", "🌄", "🎪", "🎭", "🎨", "🎬", "🎼", "🎹",
-    "🎸", "🎺", "🎷", "🥁", "🎤", "🎧", "🎵", "🎶", "🎪", "🎭",
-    "🎨", "🖼️", "🎰", "🎲", "🎮", "🎯", "🎳", "🎪"
-  ]
+    "💯",
+    "🙌",
+    "👏",
+    "🔥",
+    "🤔",
+    "😤",
+    "🚫",
+    "⚠️",
+    "🎯",
+    "💪",
+    "🌟",
+    "✨",
+    "🎉",
+    "👌",
+    "💁‍♂️",
+    "💁‍♀️",
+    "🤷‍♂️",
+    "🤷‍♀️",
+    "🎨",
+    "🌿",
+    "🌺",
+    "🍜",
+    "🎭",
+    "🎪",
+    "🎡",
+    "🏛️",
+    "🏢",
+    "🌆",
+    "🌃",
+    "🌉",
+    "🌅",
+    "🌄",
+    "🎪",
+    "🎭",
+    "🎨",
+    "🎬",
+    "🎼",
+    "🎹",
+    "🎸",
+    "🎺",
+    "🎷",
+    "🥁",
+    "🎤",
+    "🎧",
+    "🎵",
+    "🎶",
+    "🎪",
+    "🎭",
+    "🎨",
+    "🖼️",
+    "🎰",
+    "🎲",
+    "🎮",
+    "🎯",
+    "🎳",
+    "🎪",
+  ],
 };
 
-function addSpeechVariety(text: string, source: string, sentiment: number): string {
-  if (source === 'Hacker News') return text;
+function addSpeechVariety(
+  text: string,
+  source: string,
+  sentiment: number,
+): string {
+  if (source === "Hacker News") return text;
 
   if (Math.random() > 0.7) return text;
 
   const addInterjection = Math.random() > 0.5;
   const addEmphasis = Math.random() > 0.6;
   const addTransition = Math.random() > 0.7;
-  const addReaction = source === 'Twitter' && Math.random() > 0.6;
+  const addReaction = source === "Twitter" && Math.random() > 0.6;
 
   let modifiedText = text;
 
   if (addInterjection) {
-    const interjection = speechVariety.interjections[
-      Math.floor(Math.random() * speechVariety.interjections.length)
-    ];
+    const interjection =
+      speechVariety.interjections[
+        Math.floor(Math.random() * speechVariety.interjections.length)
+      ];
     modifiedText = `${interjection} ${modifiedText}`;
   }
 
   if (addEmphasis) {
-    const emphasis = speechVariety.emphasis[
-      Math.floor(Math.random() * speechVariety.emphasis.length)
-    ];
+    const emphasis =
+      speechVariety.emphasis[
+        Math.floor(Math.random() * speechVariety.emphasis.length)
+      ];
     const insertPoints = [
-      "is", "has", "needs", "getting", "becoming", "seems", "feels"
+      "is",
+      "has",
+      "needs",
+      "getting",
+      "becoming",
+      "seems",
+      "feels",
     ];
     for (const point of insertPoints) {
       if (modifiedText.includes(` ${point} `)) {
         modifiedText = modifiedText.replace(
           ` ${point} `,
-          ` ${emphasis} ${point} `
+          ` ${emphasis} ${point} `,
         );
         break;
       }
     }
   }
 
-  if (addTransition && modifiedText.includes('. ')) {
-    const transition = speechVariety.transitions[
-      Math.floor(Math.random() * speechVariety.transitions.length)
-    ];
-    modifiedText = modifiedText.replace('. ', `. ${transition} `);
+  if (addTransition && modifiedText.includes(". ")) {
+    const transition =
+      speechVariety.transitions[
+        Math.floor(Math.random() * speechVariety.transitions.length)
+      ];
+    modifiedText = modifiedText.replace(". ", `. ${transition} `);
   }
 
   if (addReaction) {
-    const reaction = speechVariety.reactions[
-      Math.floor(Math.random() * speechVariety.reactions.length)
-    ];
+    const reaction =
+      speechVariety.reactions[
+        Math.floor(Math.random() * speechVariety.reactions.length)
+      ];
     modifiedText = `${modifiedText} ${reaction}`;
   }
 
@@ -138,12 +298,14 @@ function addSpeechVariety(text: string, source: string, sentiment: number): stri
 }
 
 function extractCity(location: string): string {
-  const parts = location.split(',');
+  const parts = location.split(",");
   const city = parts[1]?.trim();
   const state = parts[2]?.trim();
-  const cityName = city?.replace(/\d+/g, '');
-  const stateName = state?.replace(/\d+/g, '').split(' ')[0];
-  return Math.random() > 0.5 && stateName ? `${cityName}, ${stateName}` : cityName;
+  const cityName = city?.replace(/\d+/g, "");
+  const stateName = state?.replace(/\d+/g, "").split(" ")[0];
+  return Math.random() > 0.5 && stateName
+    ? `${cityName}, ${stateName}`
+    : cityName;
 }
 
 function containsUsedPhrases(text: string): boolean {
@@ -168,7 +330,7 @@ function containsUsedPhrases(text: string): boolean {
     "let me tell you",
     "get this",
     "check it out",
-    "here's the thing"
+    "here's the thing",
   ];
 
   for (const phrase of commonPhrases) {
@@ -182,44 +344,59 @@ function containsUsedPhrases(text: string): boolean {
   return false;
 }
 
-export function generateMentionText(location: string, sentiment: number, source: string): string {
-  if (usedTemplates.size >= templates.positive.length + templates.neutral.length + templates.negative.length) {
+export function generateMentionText(
+  location: string,
+  sentiment: number,
+  source: string,
+): string {
+  if (
+    usedTemplates.size >=
+    templates.positive.length +
+      templates.neutral.length +
+      templates.negative.length
+  ) {
     resetTracking();
   }
 
   let templateCategory: keyof typeof templates;
   if (sentiment > 0.3) {
-    templateCategory = 'positive';
+    templateCategory = "positive";
   } else if (sentiment < -0.3) {
-    templateCategory = 'negative';
+    templateCategory = "negative";
   } else {
-    templateCategory = 'neutral';
+    templateCategory = "neutral";
   }
 
-  const availableTemplates = templates[templateCategory].filter(t => !usedTemplates.has(t));
-  
+  const availableTemplates = templates[templateCategory].filter(
+    (t) => !usedTemplates.has(t),
+  );
+
   if (availableTemplates.length === 0) {
     resetTracking();
     return generateMentionText(location, sentiment, source);
   }
 
-  let text = '';
+  let text = "";
   let attempts = 0;
   const maxAttempts = 10;
 
   while (attempts < maxAttempts) {
-    const template = availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
+    const template =
+      availableTemplates[Math.floor(Math.random() * availableTemplates.length)];
     text = template.replace(/{location}/g, extractCity(location));
 
     Object.entries(context).forEach(([key, values]) => {
       if (text.includes(`{${key}}`)) {
-        const unusedValues = values.filter(v => !usedPhrases.has(v.toLowerCase()));
+        const unusedValues = values.filter(
+          (v) => !usedPhrases.has(v.toLowerCase()),
+        );
         if (unusedValues.length === 0) {
           usedPhrases.clear();
         }
-        const value = unusedValues.length > 0 ? 
-          unusedValues[Math.floor(Math.random() * unusedValues.length)] :
-          values[Math.floor(Math.random() * values.length)];
+        const value =
+          unusedValues.length > 0
+            ? unusedValues[Math.floor(Math.random() * unusedValues.length)]
+            : values[Math.floor(Math.random() * values.length)];
         text = text.replace(`{${key}}`, value);
         usedPhrases.add(value.toLowerCase());
       }
@@ -241,33 +418,39 @@ export function generateMentionText(location: string, sentiment: number, source:
   text = addSpeechVariety(text, source, sentiment);
 
   if (Math.random() > 0.8) {
-    const words = text.split(' ');
+    const words = text.split(" ");
     const emojiIndex = Math.floor(Math.random() * words.length);
-    const emoji = speechVariety.reactions[Math.floor(Math.random() * speechVariety.reactions.length)];
+    const emoji =
+      speechVariety.reactions[
+        Math.floor(Math.random() * speechVariety.reactions.length)
+      ];
     words.splice(emojiIndex, 0, emoji);
-    text = words.join(' ');
+    text = words.join(" ");
   }
 
   switch (source) {
-    case 'Twitter':
+    case "Twitter":
       const maxLength = Math.floor(Math.random() * 41) + 240;
-      return text.length > maxLength ? text.substring(0, maxLength - 3) + '...' : text;
-    case 'Reddit':
+      return text.length > maxLength
+        ? text.substring(0, maxLength - 3) + "..."
+        : text;
+    case "Reddit":
       // Add extra context occasionally
       if (Math.random() > 0.7) {
-        const contextCategory = sentiment > 0 ? 'positive' : 'negative';
+        const contextCategory = sentiment > 0 ? "positive" : "negative";
         const aspects = context[`${contextCategory}_aspect`];
         if (aspects && aspects.length > 0) {
-          const extraContext = aspects[Math.floor(Math.random() * aspects.length)];
+          const extraContext =
+            aspects[Math.floor(Math.random() * aspects.length)];
           text += ` And another thing: ${extraContext}`;
         }
       }
       return text;
-    case 'Hacker News':
+    case "Hacker News":
       text = text
-        .replace(/(!+|emoji)/g, '.')
-        .replace(/(rn|tbh|ngl|fr|lowkey|highkey)/g, '')
-        .replace(/\s+/g, ' ')
+        .replace(/(!+|emoji)/g, ".")
+        .replace(/(rn|tbh|ngl|fr|lowkey|highkey)/g, "")
+        .replace(/\s+/g, " ")
         .trim();
       if (Math.random() > 0.8) {
         text += ` This observation is based on ${Math.floor(Math.random() * 5) + 1} years of data analysis.`;
@@ -301,7 +484,7 @@ const templates = {
     "Moved to {location} {timeframe} ago - best decision ever! {positive_aspect} and {positive_secondary_aspect}",
     "My experience in {location} has been incredible. {positive_aspect} Not to mention {positive_development}",
     "Professional opinion on {location}: exceptional progress in {positive_development}. {positive_aspect} stands out particularly",
-    "Market analysis of {location} shows promising trends: {positive_aspect} combined with {positive_development}"
+    "Market analysis of {location} shows promising trends: {positive_aspect} combined with {positive_development}",
   ],
   neutral: [
     "Quick thoughts on {location}: {neutral_observation}",
@@ -313,7 +496,7 @@ const templates = {
     "Comparing {location} to similar areas: {neutral_observation}. {neutral_development}",
     "Interesting contrasts in {location}: {positive_aspect} versus {negative_aspect}. {neutral_observation}",
     "Recent data from {location} indicates: {neutral_observation}. {neutral_development}",
-    "Statistical analysis of {location} shows: {neutral_observation} with {neutral_development}"
+    "Statistical analysis of {location} shows: {neutral_observation} with {neutral_development}",
   ],
   negative: [
     "Concerned about {location}'s {negative_aspect}",
@@ -325,8 +508,8 @@ const templates = {
     "Suggestions for {location}: address {negative_aspect}. {suggestion_for_improvement}",
     "{location} has potential, but {negative_aspect} needs work. {suggestion_for_improvement}",
     "How {location}'s {negative_aspect} affects residents: {negative_detail}",
-    "Community perspective on {location}: {negative_aspect} is causing {negative_detail}"
-  ]
+    "Community perspective on {location}: {negative_aspect} is causing {negative_detail}",
+  ],
 };
 
 const context = {
@@ -340,7 +523,7 @@ const context = {
     "the sense of community is stronger than ever",
     "the balance between development and preservation is perfect",
     "the food scene is incredibly diverse and exciting",
-    "the city planning has been exceptional"
+    "the city planning has been exceptional",
   ],
   positive_secondary_aspect: [
     "the community events are bringing everyone together",
@@ -348,7 +531,7 @@ const context = {
     "the arts scene is flourishing",
     "public spaces are well-maintained",
     "educational opportunities are expanding",
-    "healthcare facilities are top-notch"
+    "healthcare facilities are top-notch",
   ],
   positive_development: [
     "revitalized its downtown area",
@@ -359,7 +542,7 @@ const context = {
     "improved public services",
     "enhanced community spaces",
     "upgraded transportation systems",
-    "preserved historical landmarks while modernizing"
+    "preserved historical landmarks while modernizing",
   ],
   positive_characteristic: [
     "maintains its unique character while evolving",
@@ -369,7 +552,7 @@ const context = {
     "invests in future generations",
     "preserves its cultural heritage",
     "adapts to changing needs",
-    "fosters innovation and creativity"
+    "fosters innovation and creativity",
   ],
   neutral_state: [
     "going through typical changes",
@@ -378,7 +561,7 @@ const context = {
     "experiencing expected growth",
     "following regional trends",
     "showing mixed progress",
-    "evolving gradually"
+    "evolving gradually",
   ],
   neutral_observation: [
     "some areas are improving while others need work",
@@ -387,7 +570,7 @@ const context = {
     "residents have varying opinions",
     "development is proceeding as expected",
     "there's a mix of positive and negative trends",
-    "time will tell if changes are effective"
+    "time will tell if changes are effective",
   ],
   neutral_development: [
     "balances various priorities",
@@ -395,7 +578,7 @@ const context = {
     "manages growth steadily",
     "responds to changing demographics",
     "adjusts to market conditions",
-    "implements gradual improvements"
+    "implements gradual improvements",
   ],
   negative_aspect: [
     "rising living costs",
@@ -407,14 +590,14 @@ const context = {
     "increasing noise pollution",
     "parking problems",
     "overcrowding issues",
-    "poor urban planning"
+    "poor urban planning",
   ],
   negative_secondary_aspect: [
     "lack of community engagement",
     "insufficient green spaces",
     "limited cultural activities",
     "poor maintenance of public areas",
-    "inadequate school funding"
+    "inadequate school funding",
   ],
   negative_detail: [
     "infrastructure is struggling to keep up with growth",
@@ -424,7 +607,7 @@ const context = {
     "environmental issues are being ignored",
     "community feedback is often overlooked",
     "development is too aggressive",
-    "public spaces are poorly maintained"
+    "public spaces are poorly maintained",
   ],
   suggestion_for_improvement: [
     "officials should focus on sustainable development",
@@ -432,7 +615,7 @@ const context = {
     "investment in public transportation is crucial",
     "more affordable housing options are needed",
     "environmental protection should be prioritized",
-    "better urban planning could solve many issues"
+    "better urban planning could solve many issues",
   ],
   timeframe: [
     "six months",
@@ -440,11 +623,15 @@ const context = {
     "two years",
     "several years",
     "a decade",
-    "many years"
+    "many years",
   ],
   colloquial_positive: [
-    "awesome", "amazing", "incredible", "unbelievable", "exceptional"
-  ]
+    "awesome",
+    "amazing",
+    "incredible",
+    "unbelievable",
+    "exceptional",
+  ],
 };
 
 export async function analyzeSentiment(

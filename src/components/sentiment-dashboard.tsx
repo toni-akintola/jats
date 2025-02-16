@@ -27,11 +27,11 @@ type CompanyData = {
 
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export function SentimentDashboard({ 
+export function SentimentDashboard({
   locations,
   onClose,
   onRemoveLocation,
-}: { 
+}: {
   locations: string[];
   onClose?: () => void;
   onRemoveLocation: (location: string, isLast: boolean) => void;
@@ -44,41 +44,44 @@ export function SentimentDashboard({
   }>({});
   const { toast } = useToast();
 
-  const analyzeCompany = useCallback(async (company: string) => {
-    try {
-      setLoadingSources((prev) => ({
-        ...prev,
-        [company]: true,
-      }));
+  const analyzeCompany = useCallback(
+    async (company: string) => {
+      try {
+        setLoadingSources((prev) => ({
+          ...prev,
+          [company]: true,
+        }));
 
-      const data = await analyzeSentiment(company);
+        const data = await analyzeSentiment(company);
 
-      setResults((prev) => ({
-        ...prev,
-        [company]: { ...data, company },
-      }));
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: `Error analyzing ${company}`,
-        description: "Failed to analyze sentiment. Please try again.",
-        variant: "destructive",
-      });
-      setCompanies((prev) => prev.filter((c) => c !== company));
-    } finally {
-      setLoadingSources((prev) => ({
-        ...prev,
-        [company]: false,
-      }));
-    }
-  }, [toast]);
+        setResults((prev) => ({
+          ...prev,
+          [company]: { ...data, company },
+        }));
+      } catch (error) {
+        console.error(error);
+        toast({
+          title: `Error analyzing ${company}`,
+          description: "Failed to analyze sentiment. Please try again.",
+          variant: "destructive",
+        });
+        setCompanies((prev) => prev.filter((c) => c !== company));
+      } finally {
+        setLoadingSources((prev) => ({
+          ...prev,
+          [company]: false,
+        }));
+      }
+    },
+    [toast],
+  );
 
   // Auto-analyze locations when provided
   useEffect(() => {
-    const newLocations = locations.filter(loc => !companies.includes(loc));
+    const newLocations = locations.filter((loc) => !companies.includes(loc));
     if (newLocations.length > 0) {
-      setCompanies(prev => [...prev, ...newLocations]);
-      newLocations.forEach(loc => {
+      setCompanies((prev) => [...prev, ...newLocations]);
+      newLocations.forEach((loc) => {
         analyzeCompany(loc);
       });
     }
@@ -140,11 +143,11 @@ export function SentimentDashboard({
       )}
       <div className="space-y-8">
         {/* <div className="space-y-4"> */}
-          {/* <h2 className="text-2xl font-bold text-white">
+        {/* <h2 className="text-2xl font-bold text-white">
             Sentiment Analysis
           </h2> */}
 
-          {/* <Button
+        {/* <Button
             onClick={handleAnalyze}
             disabled={loading || companies.length === 0}
           >

@@ -64,9 +64,9 @@ export const hackernewsSource: SentimentSource = {
       const daysAgo = Math.floor(Math.random() * 60); // Random date within last 2 months
       const date = new Date();
       date.setDate(date.getDate() - daysAgo);
-      
+
       const itemId = Math.floor(Math.random() * 1000000) + 30000000;
-      
+
       mentions.push({
         text: generateMentionText(location, sentiment, "Hacker News"),
         sentiment,
@@ -78,18 +78,19 @@ export const hackernewsSource: SentimentSource = {
 
     // Generate keywords based on sentiment
     const keywords = [
-      'technology',
-      'startup',
-      'innovation',
-      'development',
-      'community',
+      "technology",
+      "startup",
+      "innovation",
+      "development",
+      "community",
       location.toLowerCase(),
-      mentions[0].sentiment > 0.5 ? 'growth' : 'challenges',
-      mentions[0].sentiment > 0 ? 'opportunity' : 'concern'
+      mentions[0].sentiment > 0.5 ? "growth" : "challenges",
+      mentions[0].sentiment > 0 ? "opportunity" : "concern",
     ];
 
     // Calculate average sentiment
-    const averageSentiment = mentions.reduce((sum, m) => sum + m.sentiment, 0) / mentions.length;
+    const averageSentiment =
+      mentions.reduce((sum, m) => sum + m.sentiment, 0) / mentions.length;
 
     return {
       mentions,
