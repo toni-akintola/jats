@@ -33,7 +33,7 @@ export default function RootLayout({
           )`,
         }}
       >
-        <div className="absolute inset-0 bg-black/5" />
+        {/* <div className="absolute inset-0 bg-black/5" /> */}
         <NavBar />
         <div className="relative pt-16">{children}</div>
       </body>
