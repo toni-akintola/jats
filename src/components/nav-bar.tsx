@@ -39,15 +39,16 @@ export function NavBar() {
           <span className="text-2xl font-bold text-white">PropAI</span>
         </Link>
 
-        <div className="hidden md:flex items-center space-x-8">
+        <div className="md:flex items-center space-x-8">
           <NavLink href="/about">About</NavLink>
           <NavLink href="/pricing">Pricing</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
+          <NavLink href="/contact">Portfolio</NavLink>
         </div>
 
         <div className="flex items-center gap-4 justify-end">
           <Button variant="ghost" className="hidden md:flex">
-            Airbnb your home
+            PropAI your portfolio
           </Button>
           <Button variant="ghost" size="icon" className="hidden md:flex">
             <Globe className="h-4 w-4" />
