@@ -1,22 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { ChatMistralAI } from "@langchain/mistralai";
 import { TavilySearchResults } from "@langchain/community/tools/tavily_search";
 import { createReactAgent } from "@langchain/langgraph/prebuilt";
 import { SystemMessage } from "@langchain/core/messages";
 import { parseAgentResult } from "@/lib/utils";
 
-// Define module interfaces
+// Base Module Interface
 interface ResearchModule {
   name: string;
   description: string;
-  agent: unknown; // Replace with proper type
-  execute: (company: string) => Promise<unknown>;
+  agent: unknown;
+  execute: (location: string) => Promise<unknown>;
 }
 
-// Financial Module Agents
-class FinancialModule implements ResearchModule {
-  name = "Financial Research";
-  description = "Analyze financial health, stock performance, and funding";
+// Location Analysis Module
+class LocationAnalyzer implements ResearchModule {
+  name = "Location Analysis";
+  description =
+    "Analyze demographic trends, development activity, and local amenities";
 
   private chat = new ChatMistralAI({
     model: "mistral-large-latest",
@@ -24,61 +25,47 @@ class FinancialModule implements ResearchModule {
   });
 
   private tools = [
-    new TavilySearchResults({
-      searchDepth: "deep",
-      maxResults: 5,
-    }),
+    new TavilySearchResults({ searchDepth: "deep", maxResults: 5 }),
   ];
 
   agent = createReactAgent({
     llm: this.chat,
     tools: this.tools,
     messageModifier: new SystemMessage(`
-      You are a financial research specialist. 
+      You are a location analysis specialist.
       Provide a STRUCTURED JSON response with the following format:
       {
-        "stockPrice": "Current stock price and recent trend",
-        "fundingRounds": "Recent funding details (amount, investors, date)",
-        "secFilings": "Key insights from recent SEC filings"
+        "demographicTrends": "Population growth, income levels, and demographic shifts",
+        "developmentActivity": "New construction projects and urban planning initiatives",
+        "localAmenities": "Proximity to schools, transit, retail, and other key amenities"
       }
 
       IMPORTANT RULES:
       - Always return a valid JSON object
-      - If information is unavailable, use null
-      - Focus on recent and most relevant financial information
-      - Provide concise, factual insights
+      - Focus on recent demographic and development trends
+      - Include specific metrics where available
+      - Highlight key amenities and accessibility factors
     `),
   });
 
-  async execute(company: string) {
+  async execute(location: string) {
     const result = await this.agent.invoke({
       messages: [
         {
           role: "user",
-          content: `Generate a comprehensive financial overview for ${company}. 
-                  Respond ONLY with the structured JSON format specified.`,
+          content: `Analyze the location characteristics and trends for ${location}.
+                 Respond ONLY with the structured JSON format specified.`,
         },
       ],
     });
-
-    // Use the new parsing utility
-    const parsedResult = parseAgentResult(result);
-
-    // If parsing fails, return default values
-    return (
-      parsedResult || {
-        stockPrice: null,
-        fundingRounds: null,
-        secFilings: null,
-      }
-    );
+    return parseAgentResult(result);
   }
 }
 
-// Market Module Agents
-class MarketModule implements ResearchModule {
-  name = "Market Research";
-  description = "Analyze market sentiment, news, and competitive landscape";
+// Market Conditions Module
+class MarketConditions implements ResearchModule {
+  name = "Market Conditions";
+  description = "Track property prices, inventory levels, and market trends";
 
   private chat = new ChatMistralAI({
     model: "mistral-large-latest",
@@ -86,58 +73,48 @@ class MarketModule implements ResearchModule {
   });
 
   private tools = [
-    new TavilySearchResults({
-      searchDepth: "deep",
-      maxResults: 5,
-    }),
+    new TavilySearchResults({ searchDepth: "deep", maxResults: 5 }),
   ];
 
   agent = createReactAgent({
     llm: this.chat,
     tools: this.tools,
     messageModifier: new SystemMessage(`
-      You are a market research specialist. 
+      You are a real estate market analyst.
       Provide a STRUCTURED JSON response with the following format:
       {
-        "newsSentiment": "Overall sentiment from recent news articles",
-        "socialSentiment": "Aggregated sentiment from social media platforms",
-        "competitorComparison": "Brief comparison with key market competitors"
+        "priceTrends": "Historical price movements and current market values",
+        "inventoryLevels": "Available properties and days on market metrics",
+        "marketTrends": "Price per square foot trends and absorption rates"
       }
 
       IMPORTANT RULES:
       - Always return a valid JSON object
-      - If information is unavailable, use null
-      - Focus on recent market dynamics
-      - Provide objective, data-driven insights
+      - Include specific price and inventory metrics
+      - Focus on recent market movements
+      - Highlight key market indicators
     `),
   });
 
-  async execute(company: string) {
+  async execute(location: string) {
     const result = await this.agent.invoke({
       messages: [
         {
           role: "user",
-          content: `Generate a comprehensive market analysis for ${company}. 
-                  Respond ONLY with the structured JSON format specified.`,
+          content: `Analyze current market conditions in ${location}.
+                 Respond ONLY with the structured JSON format specified.`,
         },
       ],
     });
-    const parsedResult = parseAgentResult(result);
-    // If parsing fails, return default values
-    return (
-      parsedResult || {
-        newsSentiment: null,
-        socialSentiment: null,
-        competitorComparison: null,
-      }
-    );
+    return parseAgentResult(result);
   }
 }
 
-// People Module Agents
-class PeopleModule implements ResearchModule {
-  name = "People Research";
-  description = "Analyze workforce, leadership, and talent dynamics";
+// Competitive Intelligence Module
+class CompetitiveIntel implements ResearchModule {
+  name = "Competitive Analysis";
+  description =
+    "Analyze comparable properties, rental markets, and property features";
 
   private chat = new ChatMistralAI({
     model: "mistral-large-latest",
@@ -145,58 +122,48 @@ class PeopleModule implements ResearchModule {
   });
 
   private tools = [
-    new TavilySearchResults({
-      searchDepth: "deep",
-      maxResults: 5,
-    }),
+    new TavilySearchResults({ searchDepth: "deep", maxResults: 5 }),
   ];
 
   agent = createReactAgent({
     llm: this.chat,
     tools: this.tools,
     messageModifier: new SystemMessage(`
-      You are a talent and workforce research specialist. 
+      You are a competitive intelligence analyst.
       Provide a STRUCTURED JSON response with the following format:
       {
-        "leadershipChanges": "Recent key leadership hires or departures",
-        "jobPostings": "Summary of current job openings and hiring trends",
-        "employeeSentiment": "Overall employee satisfaction and workplace culture insights"
+        "comparableProperties": "Recent sales and current listings of similar properties",
+        "rentalMarket": "Local rental rates and occupancy trends",
+        "propertyFeatures": "Common amenities and popular upgrades in the market"
       }
 
       IMPORTANT RULES:
       - Always return a valid JSON object
-      - If information is unavailable, use null
-      - Focus on recent workforce developments
-      - Provide factual, concise information
+      - Include specific comparable properties
+      - Focus on rental market dynamics
+      - Detail common property features
     `),
   });
 
-  async execute(company: string) {
+  async execute(location: string) {
     const result = await this.agent.invoke({
       messages: [
         {
           role: "user",
-          content: `Generate a comprehensive people and talent analysis for ${company}. 
-                  Respond ONLY with the structured JSON format specified.`,
+          content: `Analyze competitive landscape and rental market in ${location}.
+                 Respond ONLY with the structured JSON format specified.`,
         },
       ],
     });
-    const parsedResult = parseAgentResult(result);
-    // If parsing fails, return default values
-    return (
-      parsedResult || {
-        leadershipChanges: null, // Placeholder
-        jobPostings: null, // Placeholder
-        employeeSentiment: null, // Placeholder
-      }
-    );
+    return parseAgentResult(result);
   }
 }
 
-// Product Module Agents
-class ProductModule implements ResearchModule {
-  name = "Product Research";
-  description = "Analyze product development, tech stack, and innovation";
+// Regulatory Environment Module
+class RegulatoryMonitor implements ResearchModule {
+  name = "Regulatory Environment";
+  description =
+    "Track zoning regulations, building permits, and policy changes";
 
   private chat = new ChatMistralAI({
     model: "mistral-large-latest",
@@ -204,64 +171,52 @@ class ProductModule implements ResearchModule {
   });
 
   private tools = [
-    new TavilySearchResults({
-      searchDepth: "deep",
-      maxResults: 5,
-    }),
+    new TavilySearchResults({ searchDepth: "deep", maxResults: 5 }),
   ];
 
   agent = createReactAgent({
     llm: this.chat,
     tools: this.tools,
     messageModifier: new SystemMessage(`
-      You are a product and technology research specialist. 
+      You are a regulatory compliance specialist.
       Provide a STRUCTURED JSON response with the following format:
       {
-        "githubActivity": "Recent GitHub repository activity and key developments",
-        "apiChanges": "Notable API updates or changes",
-        "productInnovation": "Recent product innovations or technological advancements"
+        "zoningRegulations": "Current zoning laws and land use restrictions",
+        "buildingPermits": "Recent permit activity and construction approvals",
+        "policyChanges": "Recent or upcoming housing laws and tax policies"
       }
 
       IMPORTANT RULES:
       - Always return a valid JSON object
-      - If information is unavailable, use null
-      - Focus on recent technological developments
-      - Provide objective, technical insights
+      - Focus on current regulations and recent changes
+      - Include specific permit activity
+      - Highlight important policy developments
     `),
   });
 
-  async execute(company: string) {
+  async execute(location: string) {
     const result = await this.agent.invoke({
       messages: [
         {
           role: "user",
-          content: `Generate a comprehensive product and technology analysis for ${company}. 
-                  Respond ONLY with the structured JSON format specified.`,
+          content: `Analyze regulatory environment and policy landscape in ${location}.
+                 Respond ONLY with the structured JSON format specified.`,
         },
       ],
     });
-    const parsedResult = parseAgentResult(result);
-    // If parsing fails, return default values
-    return (
-      parsedResult || {
-        githubActivity: null, // Placeholder
-        apiChanges: null, // Placeholder
-        productInnovation: null, // Placeholder
-      }
-    );
+    return parseAgentResult(result);
   }
 }
 
 // Main Research Orchestrator
 export async function POST(req: NextRequest) {
   try {
-    const { company } = await req.json();
+    const { location } = await req.json();
 
-    if (!company) {
-      return NextResponse.json(
-        { error: "Company name is required" },
-        { status: 400 },
-      );
+    if (!location) {
+      return new Response(JSON.stringify({ error: "Location is required" }), {
+        status: 400,
+      });
     }
 
     // Create a new ReadableStream
@@ -270,18 +225,18 @@ export async function POST(req: NextRequest) {
         try {
           // Initialize modules
           const modules = [
-            new FinancialModule(),
-            new MarketModule(),
-            new PeopleModule(),
-            new ProductModule(),
+            new LocationAnalyzer(),
+            new MarketConditions(),
+            new CompetitiveIntel(),
+            new RegulatoryMonitor(),
           ];
 
-          // Send initial company data
-          controller.enqueue(`data: ${JSON.stringify({ company })}\n\n`);
+          // Send initial location data
+          controller.enqueue(`data: ${JSON.stringify({ location })}\n\n`);
 
           // Execute modules one at a time and stream results
           for (const m of modules) {
-            const result = await m.execute(company);
+            const result = await m.execute(location);
             const moduleData = {
               moduleName: m.name,
               moduleDescription: m.description,
@@ -306,9 +261,9 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error("Company Research Error:", error);
-    return NextResponse.json(
-      { error: "Failed to complete company research" },
+    console.error("Property Research Error:", error);
+    return new Response(
+      JSON.stringify({ error: "Failed to complete property research" }),
       { status: 500 },
     );
   }
