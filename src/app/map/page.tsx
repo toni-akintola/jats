@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { hideHeader } from "@/contexts/header-context";
-import { SentimentDashboard } from "@/components/sentiment-dashboard";
+import { TabbedDashboard } from "@/components/tabbed-dashboard";
 
 type ClickedLocation = {
   lng: number;
@@ -360,7 +360,7 @@ export default function MapPage() {
                 rgba(244, 172, 123, 0.5) 100%
               )`
             }}>
-            <SentimentDashboard 
+            <TabbedDashboard 
               address={clickedLocation.address || ''} 
               onClose={() => setClickedLocation(null)}
               onRemoveLocation={(location, isLast) => handleRemoveCompany(location, isLast)}

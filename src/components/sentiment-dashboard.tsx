@@ -2,15 +2,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { AreaChart, DataPoint } from "@/components/ui/area-chart";
-// import {
-//   StaggeredDropdown,
-//   StaggeredDropdownProps,
-// } from "@/components/ui/dropdown";
-// import { FiHome, FiUser, FiFile } from "react-icons/fi";
 import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
@@ -34,16 +28,15 @@ type CompanyData = {
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
 export function SentimentDashboard({ 
-  address,
-  onRemoveLocation,
+  locations,
   onClose,
+  onRemoveLocation,
 }: { 
-  address: string;
-  onRemoveLocation: (location: string, isLast: boolean) => void;
+  locations: string[];
   onClose?: () => void;
+  onRemoveLocation: (location: string, isLast: boolean) => void;
 }) {
   const [companies, setCompanies] = useState<string[]>([]);
-  const [newCompany, setNewCompany] = useState("");
   const [results, setResults] = useState<Record<string, CompanyData>>({});
   const [loading, setLoading] = useState(false);
   const [loadingSources, setLoadingSources] = useState<{
@@ -80,53 +73,16 @@ export function SentimentDashboard({
     }
   }, [toast]);
 
-  const handleAddCompany = useCallback(async (companyName?: string) => {
-    const company = (companyName || newCompany).trim();
-    if (!company) return;
-
-    if (companies.includes(company)) {
-      toast({
-        title: "Location already added",
-        description: "This location is already in the analysis list.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setCompanies((prev) => [...prev, company]);
-    // Only clear the input if it's not the address
-    if (!address || company !== address) {
-      setNewCompany("");
-    }
-    await analyzeCompany(company);
-  }, [address, companies, newCompany, toast, analyzeCompany]);
-
-  // Auto-analyze address when provided
+  // Auto-analyze locations when provided
   useEffect(() => {
-    if (address && !companies.includes(address)) {
-      setNewCompany(address);
-      handleAddCompany(address);
+    const newLocations = locations.filter(loc => !companies.includes(loc));
+    if (newLocations.length > 0) {
+      setCompanies(prev => [...prev, ...newLocations]);
+      newLocations.forEach(loc => {
+        analyzeCompany(loc);
+      });
     }
-  }, [address, companies, handleAddCompany]);
-
-  // const response = await fetch("/api/sentiment", {
-  //   method: "POST",
-  //   body: JSON.stringify({ company: companyToAnalyze }),
-  //   headers: { "Content-Type": "application/json" },
-  // });
-
-  const handleRemoveCompany = (company: string) => {
-    const isLastCompany = companies.length === 1;
-    setCompanies(companies.filter((c) => c !== company));
-    setResults((prev) => {
-      const newResults = { ...prev };
-      delete newResults[company];
-      return newResults;
-    });
-    if (onRemoveLocation) {
-      onRemoveLocation(company, isLastCompany);
-    }
-  };
+  }, [locations, analyzeCompany, companies]);
 
   const handleAnalyze = async () => {
     if (companies.length === 0) {
@@ -147,14 +103,6 @@ export function SentimentDashboard({
       setLoading(false);
     }
   };
-
-  // useEffect(() => {
-  //   const companyFromUrl = searchParams.get("company");
-  //   if (companyFromUrl) {
-  //     setCompany(companyFromUrl);
-  //     handleAnalyze(companyFromUrl);
-  //   }
-  // }, [searchParams]);
 
   const combinedSentimentData = (() => {
     const allDates = new Set(
@@ -179,24 +127,6 @@ export function SentimentDashboard({
     return dataPoints;
   })();
 
-  // const dropdownOptions: StaggeredDropdownProps[] = [
-  //   {
-  //     text: "Home",
-  //     Icon: FiHome,
-  //     href: "/",
-  //   },
-  //   {
-  //     text: "Profile",
-  //     Icon: FiUser,
-  //     href: "/profile",
-  //   },
-  //   {
-  //     text: "Spreadsheet",
-  //     Icon: FiFile,
-  //     href: "/spreadsheet",
-  //   },
-  // ];
-
   return (
     <div className="h-full p-8 relative">
       {onClose && (
@@ -210,43 +140,16 @@ export function SentimentDashboard({
       )}
       <div className="space-y-8">
         <div className="space-y-4">
-
           <h2 className="text-2xl font-bold text-white">
             Sentiment Analysis
           </h2>
 
-          <div className="flex gap-2">
-            <Input
-              placeholder="Enter company name..."
-              value={address ? address : newCompany}
-              onChange={(e) => setNewCompany(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleAddCompany()}
-              className="max-w-xs"
-            />
-            <Button
-              onClick={handleAnalyze}
-              disabled={loading || companies.length === 0}
-            >
-              {loading ? "Analyzing..." : "Analyze Sentiment"}
-            </Button>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {companies.map((company) => (
-              <div
-                key={company}
-                className="bg-white/20 text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/30 transition-colors"
-              >
-                <span>{company}</span>
-                <button
-                  onClick={() => handleRemoveCompany(company)}
-                  className="hover:text-red-400"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
+          <Button
+            onClick={handleAnalyze}
+            disabled={loading || companies.length === 0}
+          >
+            {loading ? "Analyzing..." : "Analyze Sentiment"}
+          </Button>
         </div>
 
         {Object.keys(results).length > 0 && (
