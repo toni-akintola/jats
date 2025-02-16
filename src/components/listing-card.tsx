@@ -19,7 +19,7 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
   const handleClick = () => {
     if (isDashboard) {
       // If on dashboard, go to research page with location
-      router.push(`/company/${encodeURIComponent(listing.location)}`);
+      router.push(`/listing/${encodeURIComponent(listing.location)}`);
     } else {
       // Otherwise go to property details
       router.push(`/property/${listing.id}`);

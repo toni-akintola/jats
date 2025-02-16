@@ -21,52 +21,14 @@ export function convertLangChainMessageToVercelMessage(message: BaseMessage) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function parseAgentResult(result: { messages: BaseMessage[] }): any {
+export function parseAgentResult(result: any) {
+  const regex = /{[\s\S]*}/;
+  const match = result.output.match(regex);
+  if (!match) return null;
   try {
-    // Convert messages to Vercel-compatible format
-    const messages = result.messages.map(
-      convertLangChainMessageToVercelMessage,
-    );
-
-    // Find the last assistant message
-    const lastAssistantMessage = messages
-      .reverse()
-      .find((m) => m.role === "assistant");
-
-    if (!lastAssistantMessage) {
-      console.error("No assistant message found");
-      return null;
-    }
-    let lastAssistantMessageContent = lastAssistantMessage.content as string;
-    lastAssistantMessageContent = lastAssistantMessageContent
-      .replace("```json", "")
-      .replace("```", "")
-      .trim();
-    // Attempt to parse the content as JSON
-    try {
-      return JSON.parse(lastAssistantMessageContent);
-    } catch (jsonError) {
-      // If JSON parsing fails, try to extract JSON from the text
-      const jsonMatch = lastAssistantMessageContent.match(/\{[\s\S]*\}/);
-      console.error(jsonError);
-      if (jsonMatch) {
-        try {
-          return JSON.parse(jsonMatch[0]);
-        } catch (nestedJsonError) {
-          console.error("Failed to parse nested JSON", nestedJsonError);
-          return null;
-        }
-      }
-
-      console.error(
-        "Failed to extract JSON from message",
-        lastAssistantMessageContent,
-      );
-      return null;
-    }
-  } catch (error) {
-    console.error("Error parsing agent result", error);
+    return JSON.parse(match[0]);
+  } catch (e) {
+    console.error("Failed to parse agent result:", e);
     return null;
   }
 }

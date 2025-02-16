@@ -21,7 +21,7 @@ export function ListingsGrid({
         <Link
           href={
             isDashboard
-              ? `/company/${encodeURIComponent(listing.location)}`
+              ? `/listing/${encodeURIComponent(listing.location)}`
               : `/property/${listing.id}`
           }
           key={listing.id}
