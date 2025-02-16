@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     if (!address) {
       return NextResponse.json(
         { error: "Address is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -17,8 +17,10 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error("Risk assessment error:", error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Failed to assess risk" },
-      { status: 500 }
+      {
+        error: error instanceof Error ? error.message : "Failed to assess risk",
+      },
+      { status: 500 },
     );
   }
-} 
+}

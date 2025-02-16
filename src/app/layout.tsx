@@ -31,14 +31,15 @@ export default function RootLayout({
             #9f6671 50%,
             #d8897b 75%,
             #f4ac7b 100%
-          )`,
+          ) fixed`,
         }}
       >
-        <div className="absolute inset-0 bg-black/5" />
-        <HeaderProvider>
-          <Header />
-          {children}
-        </HeaderProvider>
+        <div className="relative pt-16">
+          <HeaderProvider>
+            <Header />
+            {children}
+          </HeaderProvider>
+        </div>
       </body>
     </html>
   );

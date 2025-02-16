@@ -34,7 +34,8 @@ export default function RiskPage() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to assess risk",
+        description:
+          error instanceof Error ? error.message : "Failed to assess risk",
         variant: "destructive",
       });
     } finally {
@@ -70,22 +71,33 @@ export default function RiskPage() {
             <Card className="p-6 bg-gray-800 text-white">
               <h2 className="text-xl font-semibold mb-4">Location Details</h2>
               <div className="space-y-2">
-                <p><span className="font-medium">County:</span> {riskData.location.county}</p>
-                <p><span className="font-medium">State:</span> {riskData.location.state}</p>
+                <p>
+                  <span className="font-medium">County:</span>{" "}
+                  {riskData.location.county}
+                </p>
+                <p>
+                  <span className="font-medium">State:</span>{" "}
+                  {riskData.location.state}
+                </p>
                 {/* <p><span className="font-medium">FEMA Region:</span> {riskData.femaRegion.name}</p> */}
-                <p><span className="font-medium">Risk Score:</span> {riskData.riskScore.toFixed(1)}/100</p>
+                <p>
+                  <span className="font-medium">Risk Score:</span>{" "}
+                  {riskData.riskScore.toFixed(1)}/100
+                </p>
               </div>
             </Card>
 
             <Card className="p-6 bg-gray-800 text-white">
               <h2 className="text-xl font-semibold mb-4">Disaster Types</h2>
               <div className="space-y-2">
-                {Object.entries(riskData.disastersByType).map(([type, count]) => (
-                  <div key={type} className="flex justify-between">
-                    <span>{type}:</span>
-                    <span>{count} incidents</span>
-                  </div>
-                ))}
+                {Object.entries(riskData.disastersByType).map(
+                  ([type, count]) => (
+                    <div key={type} className="flex justify-between">
+                      <span>{type}:</span>
+                      <span>{count} incidents</span>
+                    </div>
+                  ),
+                )}
               </div>
             </Card>
 
@@ -93,10 +105,14 @@ export default function RiskPage() {
               <h2 className="text-xl font-semibold mb-4">Recent Disasters</h2>
               <div className="space-y-4">
                 {riskData.recentDisasters.map((disaster) => (
-                  <div key={disaster.disasterNumber} className="border-b border-gray-700 pb-4 last:border-0">
+                  <div
+                    key={disaster.disasterNumber}
+                    className="border-b border-gray-700 pb-4 last:border-0"
+                  >
                     <h3 className="font-medium">{disaster.title}</h3>
                     <p className="text-sm text-gray-400">
-                      {new Date(disaster.declarationDate).toLocaleDateString()} - {disaster.incidentType}
+                      {new Date(disaster.declarationDate).toLocaleDateString()}{" "}
+                      - {disaster.incidentType}
                     </p>
                   </div>
                 ))}

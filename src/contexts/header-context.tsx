@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 type HeaderContextType = {
   hideHeader: boolean;
@@ -22,7 +22,7 @@ export function HeaderProvider({ children }: { children: ReactNode }) {
 export function hideHeader() {
   const context = useContext(HeaderContext);
   if (context === undefined) {
-    throw new Error('hideHeader must be used within a HeaderProvider');
+    throw new Error("hideHeader must be used within a HeaderProvider");
   }
   return context;
 }

@@ -57,9 +57,11 @@ export function NavBar() {
           <Button variant="ghost" className="hidden md:flex">
             PropAI your portfolio
           </Button>
-          <Button variant="ghost" size="icon" className="hidden md:flex">
-            <Globe className="h-4 w-4" />
-          </Button>
+          <Link href="/map">
+            <Button variant="ghost" size="icon" className="hidden md:flex">
+              <Globe className="h-4 w-4" />
+            </Button>
+          </Link>
           <Link href="/profile">
             <Button
               variant="outline"

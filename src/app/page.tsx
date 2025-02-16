@@ -1,5 +1,6 @@
 "use client";
 
+import { NavBar } from "@/components/nav-bar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
@@ -49,6 +50,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen text-white">
+      <NavBar />
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 relative" ref={headerRef}>
         <div className="max-w-7xl mx-auto text-center">

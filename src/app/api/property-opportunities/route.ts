@@ -1,6 +1,5 @@
 // app/api/perplexity/route.ts
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { Listing } from "@/types/listing";
 
 const systemPrompt = `
@@ -21,11 +20,65 @@ Return a JSON array of 3-5 opportunities in this exact format:
   "potentialUse": ["Use 1", "Use 2", "Use 3"],
   "status": "Available",
   "timeline": "18-24 months",
+  "imageUrl": "URL of an image of the property or the area",
   "roi": { "projected": number, "timeframe": "3 years" }
 }]
 
 Focus on realistic opportunities with clear value-add potential in emerging or established markets.
 `;
+
+// async function getPropertyImage(propertyType: string, location: string): Promise<string> {
+//   try {
+//     // Create a search query based on property details
+//     const searchQuery = `${propertyType} building ${location}`;
+
+//     const response = await fetch(
+//       `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+//         searchQuery
+//       )}&per_page=1&orientation=landscape`,
+//       {
+//         headers: {
+//           Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`,
+//         },
+//       }
+//     );
+
+//     if (!response.ok) {
+//       throw new Error("Failed to fetch image");
+//     }
+
+//     const data = await response.json();
+
+//     // If we found a specific image, use it
+//     if (data.results && data.results.length > 0) {
+//       return data.results[0].urls.regular;
+//     }
+
+//     // Fallback to a random query from our predefined list
+//     const fallbackQuery = SEARCH_QUERIES[Math.floor(Math.random() * SEARCH_QUERIES.length)];
+//     const fallbackResponse = await fetch(
+//       `https://api.unsplash.com/search/photos?query=${encodeURIComponent(
+//         fallbackQuery
+//       )}&per_page=1&orientation=landscape`,
+//       {
+//         headers: {
+//           Authorization: `Client-ID ${process.env.UNSPLASH_ACCESS_KEY}`,
+//         },
+//       }
+//     );
+
+//     if (!fallbackResponse.ok) {
+//       throw new Error("Failed to fetch fallback image");
+//     }
+
+//     const fallbackData = await fallbackResponse.json();
+//     return fallbackData.results[0].urls.regular;
+//   } catch (error) {
+//     console.error("Error fetching image:", error);
+//     // Return a default image if all else fails
+//     return "/belveron-partners.jpg";
+//   }
+// }
 
 export async function POST(req: NextRequest) {
   try {
@@ -112,12 +165,14 @@ export async function POST(req: NextRequest) {
       throw new Error("No valid JSON array found in response");
     }
 
-    const opportunities: Listing[] = JSON.parse(jsonMatch[0]).map(
-      (opp: Listing, index: number) => ({
-        ...opp,
-        id: Date.now() + index,
-        imageUrl: "/belveron-partners.jpg",
-        isFavorite: false,
+    // Get images for each opportunity
+    const opportunities: Listing[] = await Promise.all(
+      JSON.parse(jsonMatch[0]).map(async (opp: Listing, index: number) => {
+        return {
+          ...opp,
+          id: Date.now() + index,
+          isFavorite: false,
+        };
       }),
     );
 
