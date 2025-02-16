@@ -182,32 +182,60 @@ export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDa
                 {/* Location Cards */}
                 {Object.entries(riskDataMap).map(([loc, data]) => (
                   <Card key={loc} className="p-6 bg-gray-800/50 text-white">
-                    <div className="space-y-2">
-                      <p><span className="font-medium">County:</span> {data.location.county}</p>
-                      <p><span className="font-medium">State:</span> {data.location.state}</p>
-                      <p><span className="font-medium">FEMA Region:</span> {data.femaRegion.name}</p>
-                      <p><span className="font-medium">Risk Score:</span> {data.riskScore.toFixed(1)}/100</p>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <p><span className="font-medium">County:</span> {data.location.county}</p>
+                        <p><span className="font-medium">State:</span> {data.location.state}</p>
+                        {/* <p><span className="font-medium">FEMA Region:</span> {data.femaRegion.name}</p> */}
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium">Risk Score:</span>
+                          <span className="text-sm">{data.riskScore.toFixed(1)}/100</span>
+                        </div>
+                        <div className="h-2 w-full bg-gray-700 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{
+                              width: `${data.riskScore}%`,
+                              backgroundColor: `${
+                                data.riskScore < 33 ? '#10b981' :  // green
+                                data.riskScore < 66 ? '#f59e0b' :  // yellow
+                                '#ef4444'                          // red
+                              }`
+                            }}
+                          />
+                        </div>
+                      </div>
                     </div>
                   </Card>
                 ))}
 
                 {/* Comparative Disaster Types */}
-                <Card className="p-6 bg-gray-800/50 text-white">
-                  <h2 className="text-xl font-semibold mb-4">Comparative Disaster Types</h2>
-                  <div className="space-y-2">
-                    {getAllDisasterTypes().map(type => (
-                      <div key={type} className="grid grid-cols-[1fr,auto] gap-4">
-                        <span className="font-medium">{type}:</span>
-                        <div className="flex gap-4">
-                          {Object.entries(riskDataMap).map(([loc, data]) => (
-                            <span key={loc} className="flex items-center gap-2">
-                              <span className="text-sm text-gray-400">{loc}:</span>
-                              <span>{data.disastersByType[type] || 0}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
+                <Card className="p-6 bg-transparent border-none text-white">
+                  <h2 className="text-xl font-semibold mb-4">Disaster Types</h2>
+                  <div className="h-[600px] bg-gray-800/50 rounded-xl py-12 px-6">
+                    <AreaChart
+                      data={getAllDisasterTypes().map(type => {
+                        const dataPoint: DataPoint = { date: type };
+                        Object.entries(riskDataMap).forEach(([loc, data]) => {
+                          dataPoint[loc] = data.disastersByType[type] || 0;
+                        });
+                        return dataPoint;
+                      })}
+                      title=""
+                      config={Object.fromEntries(
+                        Object.keys(riskDataMap).map((loc, index) => [
+                          loc,
+                          { 
+                            label: loc, 
+                            color: COLORS[index % COLORS.length],
+                            type: 'bar',
+                          },
+                        ])
+                      )}
+                      xAxisKey="date"
+                    />
                   </div>
                 </Card>
 
@@ -236,11 +264,11 @@ export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDa
                 </Card>
 
                 {/* Comparative Historical Trends */}
-                <Card className="p-6 bg-gray-800/50 text-white">
-                  <h2 className="text-xl font-semibold mb-4">Comparative Historical Trends</h2>
+                <Card className="p-6 bg-transparent border-none text-white">
+                  <h2 className="text-xl font-semibold mb-4">Natural Disasters over time</h2>
                   
                   {/* Historical Trends Chart */}
-                  <div className="h-[300px]">
+                  <div className="h-[600px] bg-gray-800/50 rounded-xl py-12 px-6">
                     <AreaChart
                       data={getAllYears().map(year => {
                         const dataPoint: DataPoint = { date: year.toString() };
@@ -250,7 +278,7 @@ export function TabbedDashboard({ address, onClose, onRemoveLocation }: TabbedDa
                         });
                         return dataPoint;
                       })}
-                      title="Disaster Frequency Over Time"
+                      title=""
                       config={Object.fromEntries(
                         Object.keys(riskDataMap).map((loc, index) => [
                           loc,

@@ -139,18 +139,18 @@ export function SentimentDashboard({
         </button>
       )}
       <div className="space-y-8">
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-white">
+        {/* <div className="space-y-4"> */}
+          {/* <h2 className="text-2xl font-bold text-white">
             Sentiment Analysis
-          </h2>
+          </h2> */}
 
-          <Button
+          {/* <Button
             onClick={handleAnalyze}
             disabled={loading || companies.length === 0}
           >
             {loading ? "Analyzing..." : "Analyze Sentiment"}
-          </Button>
-        </div>
+          </Button> */}
+        {/* </div> */}
 
         {Object.keys(results).length > 0 && (
           <div className="space-y-6">

@@ -4,6 +4,8 @@ import { TrendingDown, TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart as RechartsAreaChart,
+  Bar,
+  BarChart,
   CartesianGrid,
   XAxis,
   YAxis,
@@ -46,6 +48,7 @@ interface AreaChartProps {
     [key: string]: {
       label: string;
       color: string;
+      type?: 'line' | 'bar';
     };
   };
   dateRange?: string;
@@ -67,8 +70,13 @@ export function AreaChart({
   xAxisKey = "date",
   xAxisFormatter = (value) => value,
 }: AreaChartProps) {
+  // Check if we're using any bar type configs
+  const hasBarType = Object.values(config).some(c => c.type === 'bar');
+
+  const ChartComponent = hasBarType ? BarChart : RechartsAreaChart;
+
   return (
-    <Card className="bg-white/10 backdrop-blur-md border-white/10">
+    <Card className="bg-transparent border-none">
       <CardHeader>
         <CardTitle className="text-white">{title}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
@@ -76,7 +84,7 @@ export function AreaChart({
       <CardContent>
         <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <RechartsAreaChart
+            <ChartComponent
               data={data}
               margin={{
                 top: 5,
@@ -85,7 +93,7 @@ export function AreaChart({
                 bottom: 5,
               }}
             >
-              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.2} />
+              <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.1} stroke="rgba(255,255,255,0.2)" />
               <XAxis
                 dataKey={xAxisKey}
                 tickLine={false}
@@ -95,18 +103,18 @@ export function AreaChart({
                 stroke="rgba(255,255,255,0.4)"
               />
               <YAxis
-                domain={[-1, 1]}
+                domain={[0, 'auto']}
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
                 stroke="rgba(255,255,255,0.4)"
               />
               <Tooltip
-                cursor={false}
+                cursor={hasBarType ? { fill: 'rgba(255,255,255,0.1)' } : false}
                 content={({ active, payload, label }) => {
                   if (!active || !payload) return null;
                   return (
-                    <div className="rounded-lg border border-white/10 bg-white/10 p-2 shadow-md backdrop-blur-md">
+                    <div className="rounded-lg border border-white/10 bg-gray-800/90 p-2 shadow-md backdrop-blur-md">
                       <div className="text-sm text-white">
                         {xAxisFormatter(label)}
                       </div>
@@ -129,21 +137,31 @@ export function AreaChart({
                   );
                 }}
               />
-              <Legend />
+              <Legend wrapperStyle={{ color: "white" }} />
               {Object.entries(config).map(([key, value]) => (
-                <Area
-                  key={key}
-                  type="monotone"
-                  dataKey={key}
-                  name={value.label}
-                  stroke={value.color}
-                  fill={value.color}
-                  fillOpacity={0.1}
-                  strokeWidth={2}
-                  connectNulls
-                />
+                value.type === 'bar' ? (
+                  <Bar
+                    key={key}
+                    dataKey={key}
+                    name={value.label}
+                    fill={value.color}
+                    radius={[4, 4, 0, 0]}
+                  />
+                ) : (
+                  <Area
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    name={value.label}
+                    stroke={value.color}
+                    fill={value.color}
+                    fillOpacity={0.1}
+                    strokeWidth={2}
+                    connectNulls
+                  />
+                )
               ))}
-            </RechartsAreaChart>
+            </ChartComponent>
           </ResponsiveContainer>
         </div>
       </CardContent>
