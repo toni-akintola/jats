@@ -39,7 +39,7 @@ export default function PropertyPage() {
     <main className="min-h-screen py-8">
       <div className="container max-w-6xl">
         {/* Back Button */}
-        <Link href="/dashboard">
+        <Link href="/search">
           <Button
             variant="ghost"
             className="mb-6 text-white/60 hover:text-white"

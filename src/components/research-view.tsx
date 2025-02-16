@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Loader2, ChevronLeft, MapPin, AlertCircle } from "lucide-react";
+import { Loader2, ChevronLeft, MapPin, AlertCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -21,10 +21,31 @@ interface ResearchViewProps {
   location: string;
 }
 
+// Add this interface for tracking agent status
+interface AgentStatus {
+  id: string;
+  name: string;
+  status: "pending" | "active" | "complete";
+  startTime?: number;
+}
+
+const RESEARCH_AGENTS = [
+  { id: "location", name: "Location Analyzer" },
+  { id: "market", name: "Market Analyst" },
+  { id: "competitive", name: "Competitive Intel" },
+  { id: "regulatory", name: "Regulatory Monitor" },
+];
+
 export function ResearchView({ location }: ResearchViewProps) {
   const [modules, setModules] = useState<ResearchModule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [agents, setAgents] = useState<AgentStatus[]>(
+    RESEARCH_AGENTS.map((agent) => ({
+      ...agent,
+      status: "pending",
+    })),
+  );
 
   // Render different components based on module type
   const renderModuleData = (
@@ -104,6 +125,64 @@ export function ResearchView({ location }: ResearchViewProps) {
     return null;
   };
 
+  function ModuleSkeleton() {
+    return (
+      <div className="bg-white/5 rounded-xl p-6 border border-white/10 animate-pulse">
+        <div className="flex items-start justify-between mb-6">
+          <div className="space-y-3">
+            <div className="h-6 w-48 bg-white/10 rounded" />
+            <div className="h-4 w-64 bg-white/10 rounded" />
+          </div>
+          <div className="h-6 w-16 bg-white/10 rounded" />
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-white/5 rounded-lg p-4 border border-white/10"
+            >
+              <div className="h-4 w-32 bg-white/10 rounded mb-2" />
+              <div className="space-y-2">
+                <div className="h-4 w-full bg-white/10 rounded" />
+                <div className="h-4 w-5/6 bg-white/10 rounded" />
+                <div className="h-4 w-4/6 bg-white/10 rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function AgentStatus({ agent }: { agent: AgentStatus }) {
+    return (
+      <div className="flex items-center gap-3 text-sm">
+        <div className="relative">
+          <Bot
+            className={`h-5 w-5 ${
+              agent.status === "active"
+                ? "text-blue-400"
+                : agent.status === "complete"
+                  ? "text-green-400"
+                  : "text-white/40"
+            }`}
+          />
+          {agent.status === "active" && (
+            <span className="absolute top-0 right-0 h-2 w-2 bg-blue-400 rounded-full animate-ping" />
+          )}
+        </div>
+        <div className="flex-1">
+          <p className="text-white/80 font-medium">{agent.name}</p>
+          <p className="text-white/40 text-xs">
+            {agent.status === "pending" && "Waiting to start..."}
+            {agent.status === "active" && "Analyzing data..."}
+            {agent.status === "complete" && "Analysis complete"}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   useEffect(() => {
     const fetchResearch = async () => {
       try {
@@ -132,6 +211,17 @@ export function ResearchView({ location }: ResearchViewProps) {
             if (line.startsWith("data: ")) {
               const data = JSON.parse(line.slice(5));
               if (data.moduleName) {
+                // Update agent status
+                setAgents((current) =>
+                  current.map((agent) => {
+                    if (agent.name === data.moduleName) {
+                      return { ...agent, status: "complete" };
+                    } else if (agent.status === "pending") {
+                      return { ...agent, status: "active" };
+                    }
+                    return agent;
+                  }),
+                );
                 modules.push(data);
                 setModules([...modules]);
               }
@@ -168,13 +258,22 @@ export function ResearchView({ location }: ResearchViewProps) {
         </Link>
       </div>
 
+      {/* Agent Status Dashboard */}
+      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
+        <h3 className="text-white font-medium mb-4">Research Agents</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {agents.map((agent) => (
+            <AgentStatus key={agent.id} agent={agent} />
+          ))}
+        </div>
+      </div>
+
       {/* Loading State */}
       {isLoading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="text-center space-y-4">
-            <Loader2 className="h-8 w-8 animate-spin text-blue-500 mx-auto" />
-            <p className="text-white/60">Analyzing market data...</p>
-          </div>
+        <div className="space-y-6">
+          {[1, 2, 3, 4].map((i) => (
+            <ModuleSkeleton key={i} />
+          ))}
         </div>
       )}
 
