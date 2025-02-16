@@ -34,7 +34,31 @@ export default function MapPage() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
   const [clickedLocation, setClickedLocation] = useState<ClickedLocation | null>(null);
+  const [companies, setCompanies] = useState<string[]>([]);
+  const [results, setResults] = useState<Record<string, any>>({});
+
+  const handleRemoveCompany = (company: string, isLast: boolean) => {
+    setCompanies((prev) => prev.filter((c: string) => c !== company));
+    setResults((prev) => {
+      const newResults = { ...prev };
+      delete newResults[company];
+      return newResults;
+    });
+
+    // Remove the marker for this company if it exists
+    const marker = markersRef.current.get(company);
+    if (marker) {
+      marker.remove();
+      markersRef.current.delete(company);
+    }
+
+    // Close sidebar if this was the last location
+    if (isLast) {
+      setClickedLocation(null);
+    }
+  };
 
   useEffect(() => {
     if (mapRef.current) {
@@ -83,6 +107,13 @@ export default function MapPage() {
             const address = data.features[0].place_name;
             console.log('Address:', address);
             setClickedLocation(prev => prev ? { ...prev, address } : null);
+
+            // Create and add new marker
+            const newMarker = new mapboxgl.Marker({ color: '#FF0000' })
+              .setLngLat([lng, lat])
+              .addTo(map);
+            
+            markersRef.current.set(address, newMarker);
           }
         } catch (error) {
           console.error('Error reverse geocoding:', error);
@@ -97,6 +128,9 @@ export default function MapPage() {
       // Return cleanup function
       return () => {
         map.off('click', handleClick);
+        // Remove all markers when component unmounts
+        markersRef.current.forEach(marker => marker.remove());
+        markersRef.current.clear();
         map.remove();
       };
 
@@ -365,7 +399,10 @@ export default function MapPage() {
                 rgba(244, 172, 123, 0.5) 100%
               )`
             }}>
-            <SentimentDashboard address={clickedLocation.address || ''} />
+            <SentimentDashboard 
+              address={clickedLocation.address || ''} 
+              onRemoveLocation={handleRemoveCompany}
+            />
           </div>
         )}
       </div>

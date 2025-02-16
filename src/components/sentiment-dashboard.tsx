@@ -33,7 +33,13 @@ type CompanyData = {
 
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export function SentimentDashboard({ address }: { address: string }) {
+export function SentimentDashboard({ 
+  address,
+  onRemoveLocation
+}: { 
+  address: string;
+  onRemoveLocation: (location: string, isLast: boolean) => void;
+}) {
   const [companies, setCompanies] = useState<string[]>([]);
   const [newCompany, setNewCompany] = useState("");
   const [results, setResults] = useState<Record<string, CompanyData>>({});
@@ -108,12 +114,14 @@ export function SentimentDashboard({ address }: { address: string }) {
   // });
 
   const handleRemoveCompany = (company: string) => {
+    const isLastCompany = companies.length === 1;
     setCompanies(companies.filter((c) => c !== company));
     setResults((prev) => {
       const newResults = { ...prev };
       delete newResults[company];
       return newResults;
     });
+    onRemoveLocation(company, isLastCompany);
   };
 
   const handleAnalyze = async () => {
