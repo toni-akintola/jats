@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Listing } from "@/types/listing";
 import { ListingsGrid } from "./listings-grid";
 
@@ -9,7 +10,12 @@ interface ListingsProps {
 }
 
 export default function Listings({ initialListings }: ListingsProps) {
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>(initialListings);
+
+  useEffect(() => {
+    localStorage.setItem("propertyListings", JSON.stringify(initialListings));
+  }, [initialListings]);
 
   const handleFavoriteToggle = (id: number) => {
     setListings((current) =>

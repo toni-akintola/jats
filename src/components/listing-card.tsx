@@ -1,3 +1,5 @@
+"use client";
+import { usePathname, useRouter } from "next/navigation";
 import { Listing } from "@/types/listing";
 import Image from "next/image";
 import { Heart, Building2, Timer, TrendingUp } from "lucide-react";
@@ -10,8 +12,25 @@ interface ListingCardProps {
 }
 
 export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const isDashboard = pathname === "/dashboard";
+
+  const handleClick = () => {
+    if (isDashboard) {
+      // If on dashboard, go to research page with location
+      router.push(`/company/${encodeURIComponent(listing.location)}`);
+    } else {
+      // Otherwise go to property details
+      router.push(`/property/${listing.id}`);
+    }
+  };
+
   return (
-    <div className="group relative rounded-xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all h-full flex flex-col">
+    <div
+      onClick={handleClick}
+      className="group relative rounded-xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all h-full flex flex-col cursor-pointer"
+    >
       <div className="aspect-video relative overflow-hidden">
         <Image
           src={listing.imageUrl}
@@ -20,7 +39,10 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
           className="object-cover transition-transform group-hover:scale-105"
         />
         <button
-          onClick={() => onFavoriteToggle?.(listing.id)}
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent card click
+            onFavoriteToggle?.(listing.id);
+          }}
           className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors"
         >
           <Heart
