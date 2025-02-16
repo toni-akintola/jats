@@ -656,7 +656,7 @@ export default function MapPage() {
   };
 
   return (
-    <main className="min-h-screen w-full relative bg-[#2e4c6c] backdrop-blur-md">
+    <main className="min-h-screen w-full relative bg-[#c5e5be] -mt-16 backdrop-blur-md">
       <div className="absolute top-4 left-4 z-10 bg-white p-4 rounded-lg shadow-lg min-w-[300px]">
         <div className="relative">
           <input
