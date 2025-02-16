@@ -26,7 +26,7 @@ export default function HelloPage() {
       <div className="absolute inset-0 bg-black/5" />
       <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-lg shadow-lg border border-white/10 relative z-10">
         <h1 className="text-4xl font-bold mb-8 text-white text-center">
-          Welcome to PropAI
+          Welcome to Plot
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

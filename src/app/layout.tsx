@@ -11,7 +11,7 @@ const fredoka = Fredoka({
 });
 
 export const metadata: Metadata = {
-  title: "PropAI - Property Analysis Intelligence",
+  title: "Plot - Property Analysis Intelligence",
   description: "AI-powered property analysis and development opportunities",
 };
 

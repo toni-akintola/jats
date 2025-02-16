@@ -58,7 +58,7 @@ export function NavBar() {
         <div className="w-1/4">
           <Link href="/" className="flex items-center space-x-2">
             <Bot className="w-8 h-8 text-[#f4ac7b]" />
-            <span className="text-2xl font-bold text-white">PropAI</span>
+            <span className="text-2xl font-bold text-white">Plot</span>
           </Link>
         </div>
 

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import Image from "next/image";
 const companies = [
   { name: "Urban Development Partners", logo: "/logos/udp.svg" },
   { name: "Blackstone Real Estate", logo: "/logos/blackstone.svg" },
@@ -54,8 +55,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 relative" ref={headerRef}>
         <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-2xl text-white/80 mb-8 max-w-4xl mx-auto">
+            Great developments start with the right insights
+          </h2>
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            AI-Powered Property Discovery for Modern Developers
+            Plot delivers them instantly
           </h1>
           <p className="text-xl text-white/80 mb-8 max-w-3xl mx-auto">
             Turn market data into actionable insights with our intelligent
@@ -148,7 +152,14 @@ export default function Home() {
               </ul>
             </div>
             <div className="bg-[#0e3b5c]/60 p-6 rounded-lg shadow-lg border border-white/10">
-              <div className="aspect-video bg-[#0e3b5c] rounded-md" />
+              <Image
+                src="/aparts/21.jpg"
+                alt="Modern property visualization"
+                width={1920}
+                height={1080}
+                className="aspect-video object-cover rounded-md"
+                priority
+              />
             </div>
           </div>
         </div>
