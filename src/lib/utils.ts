@@ -23,12 +23,20 @@ export function convertLangChainMessageToVercelMessage(message: BaseMessage) {
 
 export function parseAgentResult(result: any) {
   const regex = /{[\s\S]*}/;
-  const match = result.output.match(regex);
-  if (!match) return null;
+  // For LangChain responses, the content is in result.content
+
+  let content = result.messages[result.messages.length - 1].content;
+  console.log("content", content);
+  content = content
+    .toString()
+    .replace(/^```json\s*/, "")
+    .replace(/```$/, "")
+    .trim();
+  console.log("content", content);
   try {
-    return JSON.parse(match[0]);
+    return JSON.parse(content);
   } catch (e) {
-    console.error("Failed to parse agent result:", e);
+    console.log("Failed to parse agent result:", e);
     return null;
   }
 }
