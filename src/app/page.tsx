@@ -50,53 +50,6 @@ export default function Home() {
 
   return (
     <main className="min-h-screen text-white">
-      {/* Header */}
-      <header
-        className={`fixed top-0 w-full z-50 transition-all duration-200 ${
-          !headerInView ? "bg-[#0e3b5c]/80" : "bg-transparent"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <span className="text-2xl font-bold text-white">PropAI</span>
-            </div>
-            <nav className="hidden md:flex space-x-8">
-              <a
-                href="#features"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Features
-              </a>
-              <a
-                href="#use-cases"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Use Cases
-              </a>
-              <a
-                href="#pricing"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Pricing
-              </a>
-              <a
-                href="#contact"
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Contact
-              </a>
-            </nav>
-            <Button
-              className="bg-[#f4ac7b] hover:bg-[#d8897b] text-[#0e3b5c] transition-colors"
-              variant="ghost"
-            >
-              Schedule Demo
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 relative" ref={headerRef}>
         <div className="max-w-7xl mx-auto text-center">
