@@ -178,7 +178,7 @@ export function SentimentDashboard() {
       text: "Map",
       Icon: FiMap,
       href: "/map",
-    }
+    },
   ];
 
   return (
