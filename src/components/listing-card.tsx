@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Listing } from "@/types/listing";
 import Image from "next/image";
 import { Heart, Building2, Timer, TrendingUp } from "lucide-react";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getRandomApartmentImage } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { PortfolioButton } from "@/components/portfolio-button";
 
@@ -34,7 +34,7 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
     >
       <div className="aspect-video relative overflow-hidden">
         <Image
-          src={"/belveron-partners.jpg"}
+          src={getRandomApartmentImage()}
           alt={listing.location}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

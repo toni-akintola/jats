@@ -56,3 +56,11 @@ export function formatPrice(price: number): string {
     maximumFractionDigits: 0,
   }).format(price);
 }
+
+// Array of apartment image paths
+const APARTMENT_IMAGES = Array.from({ length: 19 }, (_, i) => `/${i + 1}.jpg`);
+
+export function getRandomApartmentImage(): string {
+  const randomIndex = Math.floor(Math.random() * APARTMENT_IMAGES.length);
+  return APARTMENT_IMAGES[randomIndex];
+}
