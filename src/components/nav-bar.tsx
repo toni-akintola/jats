@@ -43,7 +43,7 @@ export function NavBar() {
           <NavLink href="/about">About</NavLink>
           <NavLink href="/pricing">Pricing</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
-          <NavLink href="/contact">Portfolio</NavLink>
+          <NavLink href="/portfolio">Portfolio</NavLink>
         </div>
 
         <div className="flex items-center gap-4 justify-end">
@@ -53,13 +53,15 @@ export function NavBar() {
           <Button variant="ghost" size="icon" className="hidden md:flex">
             <Globe className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="flex items-center gap-2 rounded-full px-4 bg-blue-900/50 hover:bg-blue-800"
-          >
-            <Menu className="h-4 w-4 text-white" />
-            <User className="h-4 w-4 text-white" />
-          </Button>
+          <Link href="/profile">
+            <Button
+              variant="outline"
+              className="flex items-center gap-2 rounded-full px-4 bg-blue-900/50 hover:bg-blue-800"
+            >
+              <Menu className="h-4 w-4 text-white" />
+              <User className="h-4 w-4 text-white" />
+            </Button>
+          </Link>
         </div>
       </div>
     </motion.nav>
