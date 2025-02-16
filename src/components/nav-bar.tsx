@@ -39,7 +39,7 @@ export function NavBar() {
           <span className="text-2xl font-bold text-white">PropAI</span>
         </Link>
 
-        <div className="md:flex items-center space-x-8">
+        <div className="md:flex items-center space-x-8 flex-1 justify-center">
           <NavLink href="/about">About</NavLink>
           <NavLink href="/pricing">Pricing</NavLink>
           <NavLink href="/dashboard">Dashboard</NavLink>
