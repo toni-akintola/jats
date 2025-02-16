@@ -22,22 +22,11 @@ export default function HelloPage() {
   };
 
   return (
-    <main
-      className="min-h-screen flex items-center justify-center relative"
-      style={{
-        background: `linear-gradient(135deg, 
-          #0e3b5c 0%,
-          #5e4f6d 25%,
-          #9f6671 50%,
-          #d8897b 75%,
-          #f4ac7b 100%
-        )`,
-      }}
-    >
+    <main className="flex items-center justify-center h-screen -mt-16">
       <div className="absolute inset-0 bg-black/5" />
       <div className="w-full max-w-md p-8 bg-white/10 backdrop-blur-md rounded-lg shadow-lg border border-white/10 relative z-10">
         <h1 className="text-4xl font-bold mb-8 text-white text-center">
-          Welcome to Feels!
+          Welcome to PropAI
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -54,6 +43,22 @@ export default function HelloPage() {
               required
               className="w-full bg-white/5 border-white/20 text-white text-lg placeholder:text-white/40 h-12"
               placeholder="Enter your name"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="location"
+              className="block text-lg font-medium text-white/90 mb-3"
+            >
+              Where are you located?
+            </label>
+            <Input
+              type="text"
+              name="location"
+              id="location"
+              required
+              className="w-full bg-white/5 border-white/20 text-white text-lg placeholder:text-white/40 h-12"
+              placeholder="Enter your location"
             />
           </div>
           <Button

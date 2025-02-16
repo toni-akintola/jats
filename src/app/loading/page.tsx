@@ -27,25 +27,14 @@ export default function LoadingPage() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push("/");
+      router.push("/map");
     }, 3000);
 
     return () => clearTimeout(timer);
   }, [router]);
 
   return (
-    <main
-      className="min-h-screen flex flex-col items-center justify-center relative"
-      style={{
-        background: `linear-gradient(135deg, 
-          #0e3b5c 0%,
-          #5e4f6d 25%,
-          #9f6671 50%,
-          #d8897b 75%,
-          #f4ac7b 100%
-        )`,
-      }}
-    >
+    <main>
       <div className="absolute inset-0 bg-black/5" />
       <div className="relative z-10 w-full max-w-xl text-center">
         <div className="w-96 h-32 mx-auto flex items-center justify-center">
