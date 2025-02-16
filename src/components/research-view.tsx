@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Loader2, ChevronLeft, MapPin, AlertCircle, Bot } from "lucide-react";
+import { ChevronLeft, MapPin, AlertCircle, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
@@ -38,15 +38,9 @@ const RESEARCH_AGENTS = [
 ];
 
 export function ResearchView({ location }: ResearchViewProps) {
-  const [modules, setModules] = useState<ResearchModule[]>([]);
+  const [modules] = useState<ResearchModule[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [agents, setAgents] = useState<AgentStatus[]>(
-    RESEARCH_AGENTS.map((agent) => ({
-      ...agent,
-      status: "pending",
-    })),
-  );
   const [completedModules, setCompletedModules] = useState<string[]>([]);
 
   // Render different components based on module type
@@ -274,25 +268,6 @@ export function ResearchView({ location }: ResearchViewProps) {
           </Button>
         </Link>
       </div>
-
-      {/* Agent Status Dashboard */}
-      <div className="bg-white/5 rounded-xl p-6 border border-white/10">
-        <h3 className="text-white font-medium mb-4">Research Agents</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {agents.map((agent) => (
-            <AgentStatus key={agent.id} agent={agent} />
-          ))}
-        </div>
-      </div>
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="space-y-6">
-          {[1, 2, 3, 4].map((i) => (
-            <ModuleSkeleton key={i} />
-          ))}
-        </div>
-      )}
 
       {/* Error State */}
       {error && (

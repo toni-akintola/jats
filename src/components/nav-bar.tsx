@@ -4,14 +4,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
-  Bot,
-  Globe,
-  Menu,
-  User,
   Home,
   Map,
-  Search,
   Briefcase,
+  Search,
+  Menu,
+  User,
+  Bot,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 

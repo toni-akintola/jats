@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
-import { HeaderProvider } from "@/contexts/header-context";
 import { Header } from "@/components/header";
 
 const fredoka = Fredoka({

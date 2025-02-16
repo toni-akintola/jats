@@ -42,7 +42,7 @@ const benefits = [
 ];
 
 export default function Home() {
-  const [headerRef, headerInView] = useInView();
+  const [headerRef] = useInView();
 
   useEffect(() => {
     document.documentElement.style.scrollBehavior = "smooth";

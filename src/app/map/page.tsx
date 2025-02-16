@@ -6,16 +6,28 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import { useProfileStore } from "@/store/profile-store";
 import { TabbedDashboard, getRiskColor } from "@/components/tabbed-dashboard";
 
-type ClickedLocation = {
-  lng: number;
+interface ClickedLocation {
   lat: number;
+  lng: number;
   address: string;
   marker: mapboxgl.Marker;
-};
+}
 
-type LocationsMap = {
+interface LocationsMap {
   [address: string]: ClickedLocation;
-};
+}
+
+interface SentimentData {
+  score: number;
+  analysis: string;
+}
+
+interface SearchResults {
+  [key: string]: {
+    sentiment: number;
+    analysis: string;
+  };
+}
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoiamcyMzY4IiwiYSI6ImNtNzcwYnE1aTEzbDMyaW9sNDRhZHNjOTQifQ.1v5AL-rjwGQC5_jd3pSJHQ";
@@ -30,46 +42,20 @@ interface LocationFeature {
   context?: Record<string, unknown>[];
 }
 
+interface GridPoint {
+  lat: number;
+  lng: number;
+  value: number;
+}
+
 export default function MapPage() {
-  const profile = useProfileStore((state) => state.profile);
-
-  // useEffect(() => {
-  //   setHideHeader(true);
-  //   return () => setHideHeader(false);
-  // }, [setHideHeader]);
-
-  // Function to geocode profile location
-  const geocodeLocation = async (location: string) => {
-    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
-      console.error("Google Maps API key is not set");
-      return null;
-    }
-    try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`,
-      );
-      const data = await response.json();
-      if (data.results && data.results.length > 0) {
-        const { lat, lng } = data.results[0].geometry.location;
-        return { lat, lng };
-      }
-    } catch (error) {
-      console.error("Error geocoding location:", error);
-    }
-    return null;
-  };
-
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<Map<string, mapboxgl.Marker>>(new Map());
-  const [clickedLocation, setClickedLocation] =
-    useState<ClickedLocation | null>(null);
-  const [companies, setCompanies] = useState<string[]>([]);
-  const [results, setResults] = useState<Record<string, any>>({});
-  const [sentimentData, setSentimentData] = useState<any>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [locationsMap, setLocationsMap] = useState<LocationsMap>({});
   const [activeLocation, setActiveLocation] = useState<string | null>(null);
+  const [locationsMap, setLocationsMap] = useState<LocationsMap>({});
+  const [searchInput, setSearchInput] = useState("");
+  const [searchResults, setSearchResults] = useState<LocationFeature[]>([]);
 
   const handleRemoveLocation = (address: string, isLast: boolean) => {
     setLocationsMap((prev) => {
@@ -119,9 +105,6 @@ export default function MapPage() {
       }, 300);
     }
   }, [activeLocation]);
-
-  const [searchInput, setSearchInput] = useState("");
-  const [searchResults, setSearchResults] = useState<LocationFeature[]>([]);
 
   // Initialize map
   useEffect(() => {
@@ -207,7 +190,7 @@ export default function MapPage() {
         });
 
         // Generate diverse clusters across California
-        const gridPoints = [];
+        const gridPoints: GridPoint[] = [];
 
         // Define cluster regions with sentiment biases
         const clusterRegions = [
@@ -294,7 +277,7 @@ export default function MapPage() {
             gridPoints.push({
               lat: region.center.lat + latOffset,
               lng: region.center.lng + lngOffset,
-              sentimentBias: sentiment,
+              value: sentiment,
             });
           }
         });
@@ -653,6 +636,11 @@ export default function MapPage() {
     } catch (error) {
       console.error("Error selecting location:", error);
     }
+  };
+
+  const generateHeatmapData = () => {
+    const gridPoints: GridPoint[] = [];
+    // ... rest of the function
   };
 
   return (
