@@ -43,7 +43,7 @@ export function parseAgentResult(result: { messages: BaseMessage[] }): any {
     } catch (jsonError) {
       // If JSON parsing fails, try to extract JSON from the text
       const jsonMatch = lastAssistantMessageContent.match(/\{[\s\S]*\}/);
-
+      console.error(jsonError);
       if (jsonMatch) {
         try {
           return JSON.parse(jsonMatch[0]);
@@ -55,7 +55,7 @@ export function parseAgentResult(result: { messages: BaseMessage[] }): any {
 
       console.error(
         "Failed to extract JSON from message",
-        lastAssistantMessage.content,
+        lastAssistantMessageContent,
       );
       return null;
     }
