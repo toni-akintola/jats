@@ -16,7 +16,7 @@ export function ListingsGrid({
   const isSearch = pathname === "/search";
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 auto-rows-fr">
       {listings.map((listing) => (
         <Link
           href={
@@ -25,6 +25,7 @@ export function ListingsGrid({
               : `/property/${listing.id}`
           }
           key={listing.id}
+          className="h-full"
         >
           <ListingCard listing={listing} onFavoriteToggle={onFavoriteToggle} />
         </Link>

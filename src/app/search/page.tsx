@@ -21,7 +21,7 @@ function ListingSkeleton() {
   );
 }
 
-export default function DashboardPage() {
+export default function SearchPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,14 +69,15 @@ export default function DashboardPage() {
           />
         </div>
 
-        <div>
+        {/* Align with search component width */}
+        <div className="max-w-4xl mx-auto w-full flex ">
           <h2 className="text-2xl font-bold text-white mb-6">
-            {listings.length > 0 ? "Search Results" : "Potential Opportunities"}
+            {listings.length > 0 ? "Potential Opportunities" : "Your Listings"}
           </h2>
 
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
                 <ListingSkeleton key={i} />
               ))}
             </div>

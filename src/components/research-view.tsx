@@ -16,6 +16,7 @@ import {
   isCompetitiveAnalysis,
   isRegulatoryEnvironment,
 } from "@/types/research";
+import { AgentSwarmLoading } from "@/components/agent-loading";
 
 interface ResearchViewProps {
   location: string;
@@ -46,6 +47,7 @@ export function ResearchView({ location }: ResearchViewProps) {
       status: "pending",
     })),
   );
+  const [completedModules, setCompletedModules] = useState<string[]>([]);
 
   // Render different components based on module type
   const renderModuleData = (
@@ -211,19 +213,9 @@ export function ResearchView({ location }: ResearchViewProps) {
             if (line.startsWith("data: ")) {
               const data = JSON.parse(line.slice(5));
               if (data.moduleName) {
-                // Update agent status
-                setAgents((current) =>
-                  current.map((agent) => {
-                    if (agent.name === data.moduleName) {
-                      return { ...agent, status: "complete" };
-                    } else if (agent.status === "pending") {
-                      return { ...agent, status: "active" };
-                    }
-                    return agent;
-                  }),
-                );
                 modules.push(data);
                 setModules([...modules]);
+                setCompletedModules((prev) => [...prev, data.moduleName]);
               }
             }
           }
@@ -238,6 +230,31 @@ export function ResearchView({ location }: ResearchViewProps) {
 
     fetchResearch();
   }, [location]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Market Research</h1>
+            <div className="flex items-center text-white/60 mt-2">
+              <MapPin className="h-4 w-4 mr-2" />
+              {location}
+            </div>
+          </div>
+          <Link href="/search">
+            <Button variant="outline" size="sm">
+              <ChevronLeft className="h-4 w-4 mr-2" />
+              Back to Search
+            </Button>
+          </Link>
+        </div>
+
+        <AgentSwarmLoading completedModules={completedModules} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Heart, Building2, Timer, TrendingUp } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { PortfolioButton } from "@/components/portfolio-button";
 
 interface ListingCardProps {
   listing: Listing;
@@ -141,6 +142,10 @@ export function ListingCard({ listing, onFavoriteToggle }: ListingCardProps) {
               </p>
             </div>
           </div>
+        </div>
+
+        <div className="mt-4 flex justify-between items-center">
+          <PortfolioButton listing={listing} size="sm" />
         </div>
       </div>
     </div>

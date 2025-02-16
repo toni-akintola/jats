@@ -31,7 +31,7 @@ export default function Listings({ initialListings }: ListingsProps) {
     <div className="max-w-[2520px] mx-auto p-4 sm:p-6">
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-white mb-2">
-          Featured Properties
+          Featured Opportunities
         </h2>
         <p className="text-white/60">
           Discover our handpicked selection of premium properties
