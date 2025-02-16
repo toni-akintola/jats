@@ -23,9 +23,14 @@ export interface Mention {
 }
 
 export interface SentimentResult {
-  mentions: Mention[];
   score: number;
-  keywords: string[];
+  mentions: number;
+  topKeywords: string[];
+  recentMentions: Array<{
+    sentiment: number;
+    date?: string;
+    keywords?: string[];
+  }>;
 }
 
 export interface SentimentSource {
