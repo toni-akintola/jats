@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
 import "./globals.css";
-import { NavBar } from "@/components/nav-bar";
+import { HeaderProvider } from "@/contexts/header-context";
+import { Header } from "@/components/header";
 
 const fredoka = Fredoka({
   subsets: ["latin"],
@@ -33,9 +34,11 @@ export default function RootLayout({
           )`,
         }}
       >
-        {/* <div className="absolute inset-0 bg-black/5" /> */}
-        <NavBar />
-        <div className="relative pt-16">{children}</div>
+        <div className="absolute inset-0 bg-black/5" />
+        <HeaderProvider>
+          <Header />
+          {children}
+        </HeaderProvider>
       </body>
     </html>
   );
