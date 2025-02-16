@@ -5,6 +5,59 @@ import { SentimentResult, Mention } from "./types";
 
 const sources = [twitterSource, redditSource, hackernewsSource];
 
+function generateRandomSentiment(baseScore: number): number {
+  // Add random variation while maintaining the general sentiment direction
+  return baseScore + (Math.random() * 4 - 2);
+}
+
+function generateDataPoints(location: string): Array<{ sentiment: number }> {
+  // Base sentiment score based on location characteristics
+  let baseScore = Math.random() * 6 - 3; // Between -3 and 3
+  
+  // Generate many more points for better visualization
+  const pointCount = Math.floor(Math.random() * 1000) + 1000; // Generate 1000-2000 points
+  
+  return Array.from({ length: pointCount }, () => ({
+    sentiment: generateRandomSentiment(baseScore)
+  }));
+}
+
+function generateKeywords(sentiment: number): string[] {
+  const positiveKeywords = [
+    'excellent', 'amazing', 'wonderful', 'fantastic', 'great',
+    'innovative', 'efficient', 'reliable', 'friendly', 'beautiful',
+    'peaceful', 'progressive', 'sustainable', 'vibrant', 'safe'
+  ];
+  
+  const neutralKeywords = [
+    'normal', 'average', 'typical', 'standard', 'moderate',
+    'usual', 'regular', 'common', 'ordinary', 'fair',
+    'balanced', 'neutral', 'steady', 'consistent', 'stable'
+  ];
+  
+  const negativeKeywords = [
+    'challenging', 'difficult', 'problematic', 'concerning', 'troubled',
+    'expensive', 'crowded', 'noisy', 'polluted', 'congested',
+    'unsafe', 'unreliable', 'slow', 'outdated', 'inefficient'
+  ];
+
+  let keywords: string[] = [];
+  const keywordCount = Math.floor(Math.random() * 5) + 5; // 5-10 keywords
+
+  if (sentiment > 0.01) {
+    keywords = [...positiveKeywords];
+  } else if (sentiment < -0.01) {
+    keywords = [...negativeKeywords];
+  } else {
+    keywords = [...neutralKeywords];
+  }
+
+  // Shuffle and take random selection
+  return keywords
+    .sort(() => Math.random() - 0.5)
+    .slice(0, keywordCount);
+}
+
 export interface AggregatedSentiment {
   score: number;
   mentions: number;
