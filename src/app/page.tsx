@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-
+import Image from "next/image";
 const companies = [
   { name: "Urban Development Partners", logo: "/logos/udp.svg" },
   { name: "Blackstone Real Estate", logo: "/logos/blackstone.svg" },
@@ -108,7 +108,7 @@ export default function Home() {
                 key={company.name}
                 className="opacity-70 hover:opacity-100 transition-all"
               >
-                <img
+                <Image
                   src={company.logo}
                   alt={company.name}
                   className="h-8 w-auto brightness-0 invert"
