@@ -108,11 +108,11 @@ export default function Home() {
                 key={company.name}
                 className="opacity-70 hover:opacity-100 transition-all"
               >
-                <Image
+                {/* <Image
                   src={company.logo}
                   alt={company.name}
                   className="h-8 w-auto brightness-0 invert"
-                />
+                /> */}
               </div>
             ))}
           </div>
