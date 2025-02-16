@@ -363,6 +363,7 @@ export default function MapPage() {
             <SentimentDashboard 
               address={clickedLocation.address || ''} 
               onClose={() => setClickedLocation(null)}
+              onRemoveLocation={(location, isLast) => handleRemoveCompany(location, isLast)}
             />
           </div>
         )}
