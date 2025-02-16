@@ -3,10 +3,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useSearchParams } from "next/navigation";
-import { DetailedListing } from "@/types/listing";
-import Image from "next/image";
 import { hideHeader } from "@/contexts/header-context";
+import { SentimentDashboard } from "@/components/sentiment-dashboard";
 
 type ClickedLocation = {
   lng: number;
@@ -14,7 +12,8 @@ type ClickedLocation = {
   address?: string;
 };
 
-const ListingSidePanel = ({
+// Commented out ListingSidePanel component
+/* const ListingSidePanel = ({
   listing,
   clickedLocation
 }: {
@@ -22,71 +21,8 @@ const ListingSidePanel = ({
   clickedLocation: ClickedLocation | null;
 }) => {
   if (!listing) return null;
-
-  return (
-    <div className="absolute right-0 top-0 bottom-0 w-1/2 bg-white shadow-lg overflow-y-auto p-4 z-10">
-      {clickedLocation && (
-        <div className="mb-4 p-3 bg-gray-100 rounded-lg">
-          <h3 className="text-lg font-semibold mb-2">Clicked Location</h3>
-          <p className="text-sm text-gray-600 mb-1">Longitude: {clickedLocation.lng.toFixed(6)}</p>
-          <p className="text-sm text-gray-600 mb-1">Latitude: {clickedLocation.lat.toFixed(6)}</p>
-          {clickedLocation.address && (
-            <p className="text-sm text-gray-600">Address: {clickedLocation.address}</p>
-          )}
-        </div>
-      )}
-      <div className="relative h-48 w-full mb-4">
-        <Image
-          src={listing.imageUrl}
-          alt={listing.location}
-          fill
-          className="object-cover rounded-lg"
-        />
-      </div>
-      <h2 className="text-xl font-bold mb-2">{listing.location}</h2>
-      <p className="text-gray-600 mb-4">{listing.subtitle}</p>
-      <div className="flex justify-between mb-4">
-        <span className="text-lg font-semibold">${listing.price.toLocaleString()}</span>
-        <span className="text-yellow-500">★ {listing.rating}</span>
-      </div>
-      {listing.description && (
-        <p className="text-gray-700 mb-4">{listing.description}</p>
-      )}
-      {listing.amenities && (
-        <div className="mb-4">
-          <h3 className="font-semibold mb-2">Amenities</h3>
-          <ul className="list-disc list-inside">
-            {listing.amenities.map((amenity, index) => (
-              <li key={index} className="text-gray-600">{amenity}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-      <div className="grid grid-cols-2 gap-4">
-        {listing.bedrooms && (
-          <div className="text-gray-600">
-            <span className="font-semibold">Bedrooms:</span> {listing.bedrooms}
-          </div>
-        )}
-        {listing.bathrooms && (
-          <div className="text-gray-600">
-            <span className="font-semibold">Bathrooms:</span> {listing.bathrooms}
-          </div>
-        )}
-        {listing.squareFeet && (
-          <div className="text-gray-600">
-            <span className="font-semibold">Sq Ft:</span> {listing.squareFeet.toLocaleString()}
-          </div>
-        )}
-        {listing.yearBuilt && (
-          <div className="text-gray-600">
-            <span className="font-semibold">Year Built:</span> {listing.yearBuilt}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+  return null;
+}; */
 
 export default function MapPage() {
   const { setHideHeader } = hideHeader();
@@ -98,8 +34,6 @@ export default function MapPage() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const searchParams = useSearchParams();
-  const [selectedListing, setSelectedListing] = useState<DetailedListing | null>(null);
   const [clickedLocation, setClickedLocation] = useState<ClickedLocation | null>(null);
 
   useEffect(() => {
@@ -108,32 +42,7 @@ export default function MapPage() {
         mapRef.current?.resize();
       }, 300);
     }
-  }, [selectedListing]);
-
-  useEffect(() => {
-    const selectedId = searchParams.get('selectedListingId');
-    if (selectedId) {
-      setSelectedListing({
-        id: parseInt(selectedId),
-        location: "123 Example St, San Francisco, CA",
-        subtitle: "Beautiful Modern Home",
-        dates: "Available Now",
-        price: 1250000,
-        rating: 4.8,
-        isFavorite: false,
-        imageUrl: "/moss-beach.png",
-        description: "Stunning modern home with panoramic views of the city. Recently renovated with high-end finishes throughout.",
-        amenities: ["Hardwood Floors", "Granite Countertops", "Smart Home Features", "2-Car Garage"],
-        squareFeet: 2500,
-        bedrooms: 4,
-        bathrooms: 3,
-        propertyType: "single-family",
-        yearBuilt: 2020
-      });
-    } else {
-      setSelectedListing(null);
-    }
-  }, [searchParams]);
+  }, [clickedLocation]);
 
   useEffect(() => {
     console.log("Map container:", mapContainerRef.current);
@@ -330,13 +239,27 @@ export default function MapPage() {
   }, []);
 
   return (
-    <main className="min-h-screen w-full relative">
+    <main className="min-h-screen w-full relative bg-black">
       <div className="absolute inset-0 flex">
         <div
           ref={mapContainerRef}
-          className={`flex-grow transition-all duration-300 ease-in-out ${selectedListing ? 'mr-[50vw]' : ''}`}
+          className={`flex-grow transition-all duration-300 ease-in-out ${clickedLocation ? 'mr-[45%]' : ''}`}
         />
-        <ListingSidePanel listing={selectedListing} clickedLocation={clickedLocation} />
+      {clickedLocation && (
+          <div 
+            className="absolute right-8 top-8 bottom-8 w-[45%] overflow-y-auto z-10 backdrop-blur-md rounded-3xl shadow-2xl"
+            style={{
+              background: `linear-gradient(135deg, 
+                rgba(14, 59, 92, 0.5) 0%,
+                rgba(94, 79, 109, 0.5) 25%,
+                rgba(159, 102, 113, 0.5) 50%,
+                rgba(216, 137, 123, 0.5) 75%,
+                rgba(244, 172, 123, 0.5) 100%
+              )`
+            }}>
+            <SentimentDashboard address={clickedLocation.address || ''} />
+          </div>
+        )}
       </div>
     </main>
   );

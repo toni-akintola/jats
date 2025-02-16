@@ -1,16 +1,16 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import Link from "next/link";
 import { AreaChart, DataPoint } from "@/components/ui/area-chart";
-import {
-  StaggeredDropdown,
-  StaggeredDropdownProps,
-} from "@/components/ui/dropdown";
-import { FiHome, FiUser, FiFile } from "react-icons/fi";
+// import {
+//   StaggeredDropdown,
+//   StaggeredDropdownProps,
+// } from "@/components/ui/dropdown";
+// import { FiHome, FiUser, FiFile } from "react-icons/fi";
 import { analyzeSentiment } from "@/services/sentiment-service";
 
 type CompanyData = {
@@ -33,7 +33,7 @@ type CompanyData = {
 
 const COLORS = ["#2563eb", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"];
 
-export function SentimentDashboard() {
+export function SentimentDashboard({ address }: { address: string }) {
   const [companies, setCompanies] = useState<string[]>([]);
   const [newCompany, setNewCompany] = useState("");
   const [results, setResults] = useState<Record<string, CompanyData>>({});
@@ -43,7 +43,7 @@ export function SentimentDashboard() {
   }>({});
   const { toast } = useToast();
 
-  const analyzeCompany = async (company: string) => {
+  const analyzeCompany = useCallback(async (company: string) => {
     try {
       setLoadingSources((prev) => ({
         ...prev,
@@ -70,25 +70,36 @@ export function SentimentDashboard() {
         [company]: false,
       }));
     }
-  };
+  }, [toast]);
 
-  const handleAddCompany = async () => {
-    if (!newCompany.trim()) return;
+  const handleAddCompany = useCallback(async (companyName?: string) => {
+    const company = (companyName || newCompany).trim();
+    if (!company) return;
 
-    const company = newCompany.trim();
     if (companies.includes(company)) {
       toast({
-        title: "Company already added",
-        description: "This company is already in the comparison list.",
+        title: "Location already added",
+        description: "This location is already in the analysis list.",
         variant: "destructive",
       });
       return;
     }
 
     setCompanies((prev) => [...prev, company]);
-    setNewCompany("");
+    // Only clear the input if it's not the address
+    if (!address || company !== address) {
+      setNewCompany("");
+    }
     await analyzeCompany(company);
-  };
+  }, [address, companies, newCompany, toast, analyzeCompany]);
+
+  // Auto-analyze address when provided
+  useEffect(() => {
+    if (address && !companies.includes(address)) {
+      setNewCompany(address);
+      handleAddCompany(address);
+    }
+  }, [address, companies, handleAddCompany]);
 
   // const response = await fetch("/api/sentiment", {
   //   method: "POST",
@@ -156,52 +167,48 @@ export function SentimentDashboard() {
     return dataPoints;
   })();
 
-  const dropdownOptions: StaggeredDropdownProps[] = [
-    {
-      text: "Home",
-      Icon: FiHome,
-      href: "/",
-    },
-    {
-      text: "Profile",
-      Icon: FiUser,
-      href: "/profile",
-    },
-    {
-      text: "Spreadsheet",
-      Icon: FiFile,
-      href: "/spreadsheet",
-    },
-  ];
+  // const dropdownOptions: StaggeredDropdownProps[] = [
+  //   {
+  //     text: "Home",
+  //     Icon: FiHome,
+  //     href: "/",
+  //   },
+  //   {
+  //     text: "Profile",
+  //     Icon: FiUser,
+  //     href: "/profile",
+  //   },
+  //   {
+  //     text: "Spreadsheet",
+  //     Icon: FiFile,
+  //     href: "/spreadsheet",
+  //   },
+  // ];
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
-      <div className="space-y-6">
+    <div className="h-full p-8">
+      <div className="space-y-8">
         <div className="space-y-4">
-          <div style={{ position: "absolute", top: 10, left: 20 }}>
-            <StaggeredDropdown options={dropdownOptions} />
-          </div>
 
           <h2 className="text-2xl font-bold text-white">
-            Company Sentiment Analysis
+            Sentiment Analysis
           </h2>
 
           <div className="flex gap-2">
             <Input
               placeholder="Enter company name..."
-              value={newCompany}
+              value={address ? address : newCompany}
               onChange={(e) => setNewCompany(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAddCompany()}
               className="max-w-xs"
             />
-            <Button onClick={handleAddCompany}>Add Company</Button>
           </div>
 
           <div className="flex flex-wrap gap-2">
             {companies.map((company) => (
               <div
                 key={company}
-                className="bg-white/10 text-white px-3 py-1 rounded-full flex items-center gap-2"
+                className="bg-white/20 text-white px-4 py-2 rounded-full flex items-center gap-2 hover:bg-white/30 transition-colors"
               >
                 <span>{company}</span>
                 <button
@@ -230,7 +237,7 @@ export function SentimentDashboard() {
                 {Object.entries(results).map(([company, data], index) => (
                   <div
                     key={company}
-                    className={`p-3 rounded bg-white/5 ${
+                    className={`p-4 rounded-xl bg-white/10 hover:bg-white/15 transition-colors ${
                       loadingSources[company] ? "opacity-50" : ""
                     }`}
                     style={{
