@@ -175,7 +175,7 @@ function containsUsedPhrases(text: string): boolean {
   return false;
 }
 
-function generateMentionText(location: string, sentiment: number, source: string): string {
+export function generateMentionText(location: string, sentiment: number, source: string): string {
   if (usedTemplates.size >= templates.positive.length + templates.neutral.length + templates.negative.length) {
     resetTracking();
   }
