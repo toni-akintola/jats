@@ -9,6 +9,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import {
   Select,
@@ -28,24 +29,57 @@ import {
   exitStrategyOptions,
 } from "@/types/profile";
 import { useProfileStore } from "@/store/profile-store";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const formSchema = z.object({
-  name: z.string().min(2),
-  title: z.string().min(2),
-  company: z.string().min(2),
-  location: z.string().min(2),
-  imageUrl: z.string(),
-  experience: z.string(),
-  specialization: z.string(),
-  investmentThesis: z.string().min(10),
-  riskProfile: z.enum(["Conservative", "Moderate", "Aggressive"]),
-  propertyTypes: z.string(),
-  marketTypes: z.string(),
-  dealSizeMin: z.string(),
-  dealSizeMax: z.string(),
-  developmentTypes: z.string(),
-  exitStrategy: z.string(),
-  preferredStructure: z.string(),
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters long",
+  }),
+  title: z.string().min(2, {
+    message: "Title is required",
+  }),
+  company: z.string().min(2, {
+    message: "Company name is required",
+  }),
+  location: z.string().min(2, {
+    message: "Location is required",
+  }),
+  imageUrl: z.string().min(1, {
+    message: "Profile image is required",
+  }),
+  experience: z.string().min(1, {
+    message: "Years of experience is required",
+  }),
+  specialization: z.string().min(1, {
+    message: "Please select at least one specialization",
+  }),
+  investmentThesis: z.string().min(10, {
+    message: "Investment thesis must be at least 10 characters long",
+  }),
+  riskProfile: z.enum(["Conservative", "Moderate", "Aggressive"], {
+    required_error: "Please select a risk profile",
+  }),
+  propertyTypes: z.string().min(1, {
+    message: "Please select at least one property type",
+  }),
+  marketTypes: z.string().min(1, {
+    message: "Please select at least one market type",
+  }),
+  dealSizeMin: z.string().min(1, {
+    message: "Minimum deal size is required",
+  }),
+  dealSizeMax: z.string().min(1, {
+    message: "Maximum deal size is required",
+  }),
+  developmentTypes: z.string().min(1, {
+    message: "Please select at least one development type",
+  }),
+  exitStrategy: z.string().min(1, {
+    message: "Please select an exit strategy",
+  }),
+  preferredStructure: z.string().min(1, {
+    message: "Please select a preferred structure",
+  }),
   sustainabilityFocus: z.boolean(),
 });
 
@@ -78,6 +112,7 @@ export function ProfileForm() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
     updateProfile({
       name: values.name,
       title: values.title,
@@ -132,6 +167,7 @@ export function ProfileForm() {
                           className="bg-white/5"
                         />
                       </FormControl>
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -149,6 +185,7 @@ export function ProfileForm() {
                           className="bg-white/5"
                         />
                       </FormControl>
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -166,6 +203,7 @@ export function ProfileForm() {
                           className="bg-white/5"
                         />
                       </FormControl>
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -183,6 +221,141 @@ export function ProfileForm() {
                           className="bg-white/5"
                         />
                       </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white/80">
+                Experience & Expertise
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="experience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Years of Experience</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          placeholder="15"
+                          {...field}
+                          className="bg-white/5"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="specialization"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Primary Specialization</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5">
+                            <SelectValue placeholder="Select specialization" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Urban Mixed-Use">
+                            Urban Mixed-Use
+                          </SelectItem>
+                          <SelectItem value="Transit-Oriented Development">
+                            Transit-Oriented Development
+                          </SelectItem>
+                          <SelectItem value="Affordable Housing">
+                            Affordable Housing
+                          </SelectItem>
+                          <SelectItem value="Luxury Residential">
+                            Luxury Residential
+                          </SelectItem>
+                          <SelectItem value="Commercial Office">
+                            Commercial Office
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-white/80">
+                Investment Profile
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="riskProfile"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Risk Profile</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5">
+                            <SelectValue placeholder="Select risk profile" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Conservative">
+                            Conservative
+                          </SelectItem>
+                          <SelectItem value="Moderate">Moderate</SelectItem>
+                          <SelectItem value="Aggressive">Aggressive</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-400" />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="preferredStructure"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Preferred Structure</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="bg-white/5">
+                            <SelectValue placeholder="Select structure" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Solo Development">
+                            Solo Development
+                          </SelectItem>
+                          <SelectItem value="Joint Venture">
+                            Joint Venture
+                          </SelectItem>
+                          <SelectItem value="Fund Investment">
+                            Fund Investment
+                          </SelectItem>
+                          <SelectItem value="Public-Private Partnership">
+                            Public-Private Partnership
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-red-400" />
                     </FormItem>
                   )}
                 />
@@ -213,6 +386,7 @@ export function ProfileForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -240,6 +414,7 @@ export function ProfileForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -257,6 +432,7 @@ export function ProfileForm() {
                         className="bg-white/5"
                       />
                     </FormControl>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -274,6 +450,7 @@ export function ProfileForm() {
                         className="bg-white/5"
                       />
                     </FormControl>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -292,6 +469,7 @@ export function ProfileForm() {
                       className="bg-white/5 min-h-[100px]"
                     />
                   </FormControl>
+                  <FormMessage className="text-red-400" />
                 </FormItem>
               )}
             />
@@ -320,6 +498,7 @@ export function ProfileForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
@@ -347,10 +526,29 @@ export function ProfileForm() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage className="text-red-400" />
                   </FormItem>
                 )}
               />
             </div>
+
+            <FormField
+              control={form.control}
+              name="sustainabilityFocus"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center gap-2">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      className="w-4 h-4 rounded border-white/20 bg-white/5"
+                    />
+                  </FormControl>
+                  <FormLabel className="!mt-0">Sustainability Focus</FormLabel>
+                  <FormMessage className="text-red-400" />
+                </FormItem>
+              )}
+            />
 
             <Button type="submit" className="w-full">
               Save Preferences
