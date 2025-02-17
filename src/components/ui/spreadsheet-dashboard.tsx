@@ -150,7 +150,7 @@ export function SpreadsheetDashboard() {
           </div>
 
           <h2 className="text-2xl font-bold text-white">
-            Company Sentiment Spreadsheet
+            Sentiment Spreadsheet
           </h2>
 
           <Card className="p-4 bg-white/10 backdrop-blur-md border-white/10">
@@ -161,7 +161,7 @@ export function SpreadsheetDashboard() {
                     <thead>
                       <tr className="bg-white/5">
                         <th className="px-3 py-3 text-left text-sm font-semibold text-white/90 border-r border-white/10">
-                          Company Name
+                          Name
                         </th>
                         <th className="px-3 py-3 text-left text-sm font-semibold text-white/90 border-r border-white/10">
                           Sentiment Score

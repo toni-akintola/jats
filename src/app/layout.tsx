@@ -41,7 +41,7 @@ export default function RootLayout({
           children
         ) : (
           <div className="relative pt-16">
-            <Header />
+            {/* <Header /> */}
             {children}
           </div>
         )}
